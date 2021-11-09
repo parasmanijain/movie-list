@@ -96,7 +96,7 @@ export const AddNewMovie = () => {
             </div>
             <div>
             <label htmlFor="year">Year</label>
-            <Datetime name="year" dateFormat="YYYY" timeFormat={false} onChange={setDate}/>
+            <Datetime  dateFormat="YYYY" timeFormat={false} onChange={setDate}/>
            </div>
            <div>
             <label htmlFor="url">URL</label>

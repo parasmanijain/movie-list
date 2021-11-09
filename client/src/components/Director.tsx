@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 import { Bar } from 'react-chartjs-2';
+import { ChartOptions } from 'chart.js';
 
 const initialData = {
     labels: [],
@@ -34,28 +35,28 @@ const poolColors = (a) => {
     return pool;
 }
   
-  const options = {
+  const options:ChartOptions = {
     responsive: true,
     maintainAspectRatio: false,
-    legend: { display: false },
-    scales: {
-      yAxes: [
-        {
-          ticks: {
-            beginAtZero: true,
-          },
-        },
-      ],
-      xAxes: [
-        {
-        ticks: {
-              autoSkip: false,
-              maxRotation: 90,
-              minRotation: 90
-          }
-        }
-      ]
-    },
+    // legend: { display: false },
+    // scales: {
+    //   yAxes: [
+    //     {
+    //       ticks: {
+    //         beginAtZero: true,
+    //       },
+    //     },
+    //   ],
+    //   xAxes: [
+    //     {
+    //     ticks: {
+    //           autoSkip: false,
+    //           maxRotation: 90,
+    //           minRotation: 90
+    //       }
+    //     }
+    //   ]
+    // },
   }
 
 export const Director = () => {
@@ -95,7 +96,7 @@ export const Director = () => {
          
          <div className="chart-container">{
           chartData.map((elem, index) => 
-            <Bar key={index}data={elem} options={options} height={300}/>
+            <Bar key={index}data={elem}  height={300}/>
           )
          }
          </div>

@@ -3,10 +3,10 @@ import { Link, Route, useParams, useRouteMatch } from "react-router-dom";
 
 import axios from 'axios';
 
-import { makeStyles } from '@material-ui/core/styles';
-import { Grid, Typography, Link as MaterialLink , Accordion, AccordionSummary,AccordionDetails, Button } from "@material-ui/core";
-import Pagination from '@material-ui/lab/Pagination';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { makeStyles } from '@mui/styles';
+import { Grid, Typography, Link as MaterialLink , Accordion, AccordionSummary,AccordionDetails, Button, Pagination } from "@mui/material";
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+
 
 const useStyles = makeStyles({
     root: {
@@ -89,7 +89,7 @@ export const Home = () => {
           aria-controls="panel1a-content"
           id="panel1a-header"
         >
-          <Typography component="div" className={classes.heading}>
+          <Typography component="div">
               {movie.name} ({movie.year})
               </Typography>
         </AccordionSummary>
@@ -166,7 +166,7 @@ export const Home = () => {
                 <div><label htmlFor="year">Most watched Year:</label> {topYearsList}</div>
             </div>
             <div style={{ margin: 5, padding: 5 }}>
-      <Grid container spacing={2} justify="flex-start">
+      <Grid container spacing={2} sx={{justifyContent:"flex-start"}}>
             {movieList}
            
       </Grid>

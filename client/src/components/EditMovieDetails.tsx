@@ -1,11 +1,15 @@
 import React, {useState, useEffect} from 'react';
-import { useParams } from "react-router-dom";
+import { RouteComponentProps, useParams } from "react-router-dom";
 import axios from 'axios';
 import Datetime from "react-datetime";
 import 'react-datetime/css/react-datetime.css';
 
-export const EditMovieDetails = () => {
-    const  { movieID }  = useParams();
+interface RouteParams {
+  movieID: string
+}
+
+export const EditMovieDetails = (props) => {
+  const {movieID} = useParams<RouteParams>();
     const fetchData = () => {
         const languages = axios.get('http://localhost:8000/languages');
         const directors = axios.get('http://localhost:8000/directors');
@@ -104,7 +108,7 @@ export const EditMovieDetails = () => {
             </div>
            <div>
             <label htmlFor="year">Year</label>
-            <Datetime name="year" dateFormat="YYYY" timeFormat={false} value= {formValues.year}
+            <Datetime  dateFormat="YYYY" timeFormat={false} value= {formValues.year}
             onChange={setDate}/>
            </div>
            <div>

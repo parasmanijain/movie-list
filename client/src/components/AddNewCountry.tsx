@@ -2,49 +2,46 @@ import React from 'react';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import axios from 'axios';
-import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
+import { makeStyles } from '@mui/styles';
+import { Button, TextField } from '@mui/material';
 
 const useStyles = makeStyles((theme) => ({
-    root: {
-      '& > *': {
-        margin: theme.spacing(2),
-        width: '50ch',
-      },
+  root: {
+    '& > *': {
+      width: '50ch',
     },
-  }));
+  },
+}));
 
-  const validationSchema = yup.object({
-    name: yup
-      .string('Enter the country')
-      .required('Country is required')
-  });
+const validationSchema = yup.object({
+  name: yup
+    .string()
+    .required('Country is required')
+});
 
 export const AddNewCountry = () => {
-    const classes = useStyles();
-    const formik = useFormik({
+  const classes = useStyles();
+  const formik = useFormik({
     initialValues: {
-        name: ''
+      name: ''
     },
     validationSchema: validationSchema,
     onSubmit: () => {
-        axios.post('http://localhost:8000/country', {
-            name:formik.values.name
-        })
+      axios.post('http://localhost:8000/country', {
+        name: formik.values.name
+      })
         .then(function (response) {
-        console.log(response);
         })
         .catch(function (response) {
-        console.log(response);
+          console.log(response);
         })
     },
-});
-    return (
-        <div className={classes.root}>
-        <form onSubmit={formik.handleSubmit}>
+  });
+  return (
+    <div className={classes.root}>
+      <form onSubmit={formik.handleSubmit}>
         <TextField
-        variant="outlined"
+          variant="outlined"
           id="name"
           name="name"
           label="Country"
@@ -57,6 +54,6 @@ export const AddNewCountry = () => {
           Submit
         </Button>
       </form>
-        </div>
-    )
+    </div>
+  )
 }

@@ -10,7 +10,6 @@ export const AddNewLanguage = () => {
             movies:[]
         })
         .then(function (response) {
-        console.log(response);
         })
         .catch(function (response) {
         console.log(response);
