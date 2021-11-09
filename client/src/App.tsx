@@ -75,12 +75,6 @@ function App() {
                   component={Link}
                   to="/add-new-movie"
                 />
-                <Tab
-                  value="/edit-movie-details/:movieID"
-                  label="Edit Movie Details"
-                  component={Link}
-                  to="/edit-movie-details/:movieID"
-                />
                  <Tab
                   value="/top-rated-movies"
                   label="Top Rated Movies"
