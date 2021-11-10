@@ -38,16 +38,14 @@ ul {
   position: relative;
 }
 
-.main-container > canvas {
-  position: absolute;
-  left: 0;
-  top: 0;
-  pointer-events:none;
-}
 
 .chart-container {
-  width: 3200px;
-  overflow-x: auto;
+  width:50%;
+  height:50%;
+  top: 50%;
+    left: 50%;
+    position: absolute;
+    transform: translate(-50%, -50%);
 }
 .movie-rating-container {
   display: flex;

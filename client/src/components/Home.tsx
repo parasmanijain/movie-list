@@ -171,7 +171,7 @@ export const Home = () => {
         <div><label htmlFor="year">Most watched Year:</label> {topYearsList}</div>
       </div>
       <div style={{ margin: 5, padding: 5 }}>
-        <Grid container spacing={2} sx={{ justifyContent: "flex-start" }}>
+        <Grid container spacing={2} sx={{ justifyContent: "center" }}>
           {movieList}
 
         </Grid>
