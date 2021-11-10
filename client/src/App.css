@@ -32,21 +32,23 @@ ul {
   justify-content: center;
 }
 
-.chart-container {
-}
+
 
 .main-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  position: relative;
+}
+
+.main-container > canvas {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events:none;
 }
 
 .chart-container {
-  height:100%;
-  width:100%;
-  overflow: auto;
+  width: 3200px;
+  overflow-x: auto;
 }
-
 .movie-rating-container {
   display: flex;
   justify-content: space-around;

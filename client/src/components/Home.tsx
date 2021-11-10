@@ -39,7 +39,7 @@ export const Home = () => {
   const [page, setPage] = useState(1);
   const [count, setCount] = useState(1);
   const [total, setTotal] = useState(0);
-  const limit = 32;
+  const limit = 60;
 
   const fetchData = () => {
     const moviesUrl = axios.get('http://localhost:8000/movies', { params: { page, limit } });

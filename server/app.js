@@ -64,7 +64,7 @@ app.get('/directors', (req, res) => {
 });
 app.get('/movies', (req, res) => {
     let page = parseInt(req.query.page) || 1;
-    let limit = parseInt(req.query.limit) || 32;
+    let limit = parseInt(req.query.limit) || 60;
     // get data from the view and add it to mongodb
     Movie.find({}, null, { sort: { name: 1 } })
         .skip((page - 1) * limit)
