@@ -92,7 +92,7 @@ export const Language = () => {
       {chartData.datasets[0].data.length &&
 
         <div className="chart-container">{
-          <Bar data={chartData} height={300} />
+          <Bar data={chartData} height={900} options={{ maintainAspectRatio: false }} />
         }
         </div>
       }

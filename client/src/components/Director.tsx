@@ -96,7 +96,7 @@ export const Director = () => {
          
          <div className="chart-container">{
           chartData.map((elem, index) => 
-            <Bar key={index}data={elem}  height={300}/>
+            <Bar key={index}data={elem} height={900} options={{ maintainAspectRatio: false }}/>
           )
          }
          </div>
