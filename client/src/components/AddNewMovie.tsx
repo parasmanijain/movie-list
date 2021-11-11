@@ -2,11 +2,12 @@ import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 import Datetime from "react-datetime";
 import 'react-datetime/css/react-datetime.css';
+import { API_URL } from '../config';
 
 export const AddNewMovie = () => {  
     const fetchData = () => {
-      const languages = axios.get('http://localhost:8000/languages');
-      const directors = axios.get('http://localhost:8000/directors');
+      const languages = axios.get(`${API_URL}/languages`);
+      const directors = axios.get(`${API_URL}/directors`);
       axios.all([languages, directors]).then(axios.spread((...responses) => {
         setLanguageData(responses[0].data);
         setDirectorData(responses[1].data);
@@ -33,7 +34,7 @@ export const AddNewMovie = () => {
 
     const submitHandler = (event) => {
         event.preventDefault();
-        axios.post('http://localhost:8000/movie', {
+        axios.post(`${API_URL}/movie`, {
             name: formValues.name,
             language: formValues.language,
             director:formValues.director,

@@ -4,6 +4,7 @@ import * as yup from 'yup';
 import axios from 'axios';
 import { makeStyles } from '@mui/styles';
 import { Button, TextField } from '@mui/material';
+import { API_URL } from '../config';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -27,7 +28,7 @@ export const AddNewCountry = () => {
     },
     validationSchema: validationSchema,
     onSubmit: () => {
-      axios.post('http://localhost:8000/country', {
+      axios.post(`${API_URL}/country`, {
         name: formik.values.name
       })
         .then(function (response) {

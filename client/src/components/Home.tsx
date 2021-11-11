@@ -6,6 +6,7 @@ import axios from 'axios';
 import { makeStyles } from '@mui/styles';
 import { Grid, Typography, Link as MaterialLink, Accordion, AccordionSummary, AccordionDetails, Button, Pagination } from "@mui/material";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { API_URL } from '../config';
 
 
 const useStyles = makeStyles({
@@ -42,7 +43,7 @@ export const Home = () => {
   const limit = 60;
 
   const fetchData = () => {
-    const moviesUrl = axios.get('http://localhost:8000/movies', { params: { page, limit } });
+    const moviesUrl = axios.get(`${API_URL}/movies`, { params: { page, limit } });
     axios.all([moviesUrl]).then(axios.spread((...responses) => {
       const { total, page, movies } = responses[0].data;
       setMovieData(movies);
@@ -55,9 +56,9 @@ export const Home = () => {
   }
 
   const fetchTopFilters = () => {
-    const topDirectors = axios.get('http://localhost:8000/topDirector');
-    const topLanguages = axios.get('http://localhost:8000/topLanguage');
-    const topYear = axios.get('http://localhost:8000/topYear');
+    const topDirectors = axios.get(`${API_URL}/topDirector`);
+    const topLanguages = axios.get(`${API_URL}/topLanguage`);
+    const topYear = axios.get(`${API_URL}/topYear`);
     axios.all([topDirectors, topLanguages, topYear]).then(axios.spread((...responses) => {
       setTopDirectorData(responses[0].data.slice(0, 1));
       setTopLanguageData(responses[1].data.slice(0, 1));

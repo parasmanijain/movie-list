@@ -4,6 +4,7 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 import { makeStyles } from '@mui/styles';
 import { Button, TextField, InputLabel, Select, FormControl, FormHelperText } from '@mui/material';
+import { API_URL } from '../config';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -36,7 +37,7 @@ export const AddNewDirector = () => {
   const classes = useStyles();
   const [countryData, setCountryData] = useState([]);
   useEffect(() => {
-    axios.get('http://localhost:8000/countries', {
+    axios.get(`${API_URL}/countries`, {
     })
       .then(function (response) {
         setCountryData(response.data);
@@ -56,7 +57,7 @@ export const AddNewDirector = () => {
     },
     validationSchema: validationSchema,
     onSubmit: () => {
-      axios.post('http://localhost:8000/director', {
+      axios.post(`${API_URL}/director`, {
         name: formik.values.name,
         url: formik.values.url,
         country: formik.values.country

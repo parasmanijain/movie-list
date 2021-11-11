@@ -4,6 +4,7 @@ const app = express();
 mongoose.connect('mongodb+srv://paras:paras@paras-db.j8cs9.mongodb.net/paras-db?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true });
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
+const { API_PORT } = require('./config');
 
 
 const languageSchema = new mongoose.Schema({
@@ -297,6 +298,6 @@ app.all('/*', setupCORS);
 //         res.json(data); 
 //      })      
 // });
-app.listen(8000,() => {
+app.listen(API_PORT,() => {
 	console.log("Server has started!")
 });

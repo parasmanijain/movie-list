@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 import PropTypes from 'prop-types';
-import clsx from 'clsx';
-import { FormControlLabel, lighten, Paper, Switch, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TableSortLabel, Toolbar, Typography } from '@mui/material';
+import { FormControlLabel, Paper, Switch, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TableSortLabel, Toolbar, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
+import { API_URL } from '../config';
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -35,12 +35,12 @@ function stableSort(array, comparator) {
 const headCells = [
   { id: 'name', numeric: false, disablePadding: true, label: 'Name', minWidth: 300 },
   { id: 'year', numeric: true, disablePadding: false, label: 'Year' },
-  { id: 'imdb', numeric: true, disablePadding: false, label: 'IMDB' },
+  { id: 'imdb', numeric: true, disablePadding: false, label: 'IMDB Rating (10)' },
   { id: 'rottenTomatoes', numeric: true, disablePadding: false, label: 'Rotten Tomatoes (%)' }
 ];
 
 function EnhancedTableHead(props) {
-  const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
+  const { classes, order, orderBy, onRequestSort } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
@@ -103,8 +103,6 @@ const useToolbarStyles = makeStyles((theme) => ({
 
 const EnhancedTableToolbar = (props) => {
   const classes = useToolbarStyles();
-  const { numSelected } = props;
-
   return (
     <Toolbar
       // className={clsx(classes.root, {
@@ -185,7 +183,7 @@ export const TopRatedMovies = () => {
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, topMovieList.length - page * rowsPerPage);
 
   useEffect(() => {
-    const topMovieUrl = axios.get('http://localhost:8000/topMovie');
+    const topMovieUrl = axios.get(`${API_URL}/topMovie`);
     axios.all([topMovieUrl]).then(axios.spread((...responses) => {
       setTopMovieList(responses[0].data);
     })).catch(errors => {

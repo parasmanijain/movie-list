@@ -1,10 +1,11 @@
 import React, {useState } from 'react';
 import axios from 'axios';
+import { API_URL } from '../config';
 
 export const AddNewLanguage = () => {
     const submitHandler = (event) => {
         event.preventDefault();
-        axios.post('http://localhost:8000/language', {
+        axios.post(`${API_URL}/language`, {
             name: formValues.name,
             code:formValues.code,
             movies:[]

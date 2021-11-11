@@ -1,19 +1,20 @@
 import React, {useState, useEffect} from 'react';
-import { RouteComponentProps, useParams } from "react-router-dom";
+import {useParams } from "react-router-dom";
 import axios from 'axios';
 import Datetime from "react-datetime";
 import 'react-datetime/css/react-datetime.css';
+import { API_URL } from '../config';
 
 interface RouteParams {
   movieID: string
 }
 
-export const EditMovieDetails = (props) => {
+export const EditMovieDetails = () => {
   const {movieID} = useParams<RouteParams>();
     const fetchData = () => {
-        const languages = axios.get('http://localhost:8000/languages');
-        const directors = axios.get('http://localhost:8000/directors');
-        const movieDetails = axios.get('http://localhost:8000/movieDetails', {
+        const languages = axios.get(`${API_URL}/languages`);
+        const directors = axios.get(`${API_URL}/directors`);
+        const movieDetails = axios.get(`${API_URL}/movieDetails`, {
             params: {
                 movieID:movieID
               }
@@ -46,7 +47,7 @@ export const EditMovieDetails = (props) => {
     const submitHandler = (event) => {
         event.preventDefault();
     
-        axios.post('http://localhost:8000/updateMovie', {
+        axios.post(`${API_URL}/updateMovie`, {
             _id: movieID,
             name: formValues.name,
             language: formValues.language,

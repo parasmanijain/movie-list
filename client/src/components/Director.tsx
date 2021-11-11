@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Bar, Pie } from 'react-chartjs-2';
 import { BarOptions, ChartOptions } from 'chart.js';
 import { chartColors } from "../helper/colors";
+import { API_URL } from '../config';
 
 
 const initialData = {
@@ -69,7 +70,7 @@ export const Director = () => {
   const [chartData, setChartData] = useState(initialData);
   let chartInstance = null;
   const fetchData = () => {
-    const directors = axios.get('http://localhost:8000/directorsCount');
+    const directors = axios.get(`${API_URL}/directorsCount`);
     axios.all([directors]).then(axios.spread((...responses) => {
       const directorData = responses[0].data;
       setDirectorData(responses[0].data);
