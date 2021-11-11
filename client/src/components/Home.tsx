@@ -82,6 +82,24 @@ export const Home = () => {
   const [topDirectorData, setTopDirectorData] = useState([]);
   const [topLanguageData, setTopLanguageData] = useState([]);
   const [topYearData, setTopYearData] = useState([]);
+
+  const directorURL = (url, name, index=0) => {
+    return   <MaterialLink key={index} href={url} target="_blank" rel="noreferrer">
+    {name}
+  </MaterialLink>
+  }
+
+  const directorName = (director) => {
+    const directorURLs = director.url.split(",");
+    if(directorURLs.length> 1) {
+      const directorNames = director.name.split("-");
+      return directorURLs.map((element,index) => {
+        return directorURL(element, directorNames[index], index);
+      });
+    } else {
+      return directorURL(director.url, director.name);
+    }
+  }
   const movieList = movieData?.map(movie => {
     return (
       <Grid item xs={6} lg={3} xl={2} key={movie._id}>
@@ -101,17 +119,17 @@ export const Home = () => {
             <Typography component="div">
               {movie.language.name}
               <Typography component="div">
-                <MaterialLink href={movie.director.url} target="_blank" rel="noreferrer">
-                  {movie.director.name}
-                </MaterialLink>
+                {
+                  directorName(movie.director)
+                }
               </Typography>
               <Typography component="div">
                 IMDB:
-                {movie.imdb}
+                {movie.imdb + "/10"}
               </Typography>
               <Typography component="div">
                 Rotten Tomatoes:
-                {movie.rottenTomatoes}%
+                {movie.rottenTomatoes ?  movie.rottenTomatoes + "%" : "Not Rated"  }
               </Typography>
               <Typography component="div">
                 <Link to={`/edit-movie-details/${movie._id}`}>Edit Movie Details</Link>
