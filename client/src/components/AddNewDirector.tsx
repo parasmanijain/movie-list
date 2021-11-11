@@ -2,23 +2,26 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
-import { makeStyles } from '@mui/styles';
-import { Button, TextField, InputLabel, Select, FormControl, FormHelperText } from '@mui/material';
-import { API_URL } from '../config';
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    '& > *': {
-    },
-  },
-  formControl: {
-    minWidth: 120,
-  },
-  selectEmpty: {
-  },
-}));
+import {Button, TextField, OutlinedInput, InputLabel, FormHelperText, MenuItem, FormControl, ListItemText, Checkbox, ListItemIcon} from '@mui/material';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+
+import { API_URL } from '../config';
+import { makeStyles } from '@mui/styles';
 
 const URL_REGEX = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/;
+
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
 
 const validationSchema = yup.object({
   name: yup
@@ -29,13 +32,34 @@ const validationSchema = yup.object({
     .matches(URL_REGEX)
     .required('URL is required'),
   country: yup
-    .string()
+    .array()
     .required('Country is required')
 });
 
-export const AddNewDirector = () => {
-  const classes = useStyles();
+
+export const  AddNewDirector = () => {
   const [countryData, setCountryData] = useState([]);
+  const formik = useFormik({
+    initialValues: {
+      name: '',
+      url: '',
+      country: []
+    },
+    validationSchema: validationSchema,
+    onSubmit: () => {
+      console.log(formik.values);
+      axios.post(`${API_URL}/director`, {
+        name: formik.values.name,
+        url: formik.values.url,
+        country: formik.values.country
+      })
+        .then(function (response) {
+        })
+        .catch(function (response) {
+          console.log(response);
+        })
+    }
+  });
   useEffect(() => {
     axios.get(`${API_URL}/countries`, {
     })
@@ -49,31 +73,12 @@ export const AddNewDirector = () => {
       setCountryData([]);
     }
   }, []);
-  const formik = useFormik({
-    initialValues: {
-      name: '',
-      url: '',
-      country: ''
-    },
-    validationSchema: validationSchema,
-    onSubmit: () => {
-      axios.post(`${API_URL}/director`, {
-        name: formik.values.name,
-        url: formik.values.url,
-        country: formik.values.country
-      })
-        .then(function (response) {
-        })
-        .catch(function (response) {
-          console.log(response);
-        })
 
-    }
-  });
+  
   return (
-    <div className={classes.root}>
-      <form onSubmit={formik.handleSubmit} id="form" autoComplete="off">
-        <TextField
+    <div>
+            <form onSubmit={formik.handleSubmit} id="form" autoComplete="off">
+            <TextField
           variant="outlined"
           id="name"
           name="name"
@@ -93,34 +98,38 @@ export const AddNewDirector = () => {
           error={formik.touched.url && Boolean(formik.errors.url)}
           helperText={formik.touched.url && formik.errors.url}
         />
-        <FormControl className={classes.formControl} variant="outlined">
-          <InputLabel htmlFor="country">Country</InputLabel>
-          <Select
-            native
-            variant="outlined"
-            id="country"
-            name="country"
-            value={formik.values.country}
-            onChange={formik.handleChange}
-            error={formik.touched.country && Boolean(formik.errors.country)}
-            label="Country"
-            inputProps={{
-              name: 'country',
-              id: 'outlined-age-native-simple',
-            }}
-          >
-            <option aria-label="None" value="" />
-            {
+      <FormControl sx={{ m: 1, width: 300 }}>
+        <InputLabel id="demo-multiple-checkbox-label">Country</InputLabel>
+        <Select
+          labelId="demo-multiple-checkbox-label"
+          id="demo-multiple-checkbox"
+          multiple
+          name="country"
+          value={formik.values.country}
+          onChange={formik.handleChange}
+          error={formik.touched.country && Boolean(formik.errors.country)}
 
-              countryData.map((e) => {
-                return <option key={e._id} value={e._id}>{e.name}</option>;
-              })}
-          </Select>
-          <FormHelperText>{formik.touched.country && formik.errors.country}</FormHelperText>
-        </FormControl>
-        <Button color="primary" variant="contained" type="submit">
+          input={<OutlinedInput label="Country" />}
+          renderValue={(selected:string[]) => {
+            const selectedCountries = (countryData.filter((country)=> selected.includes(country._id))).map((element)=> element.name);
+            return selectedCountries.join(', ')}
+          }
+          MenuProps={MenuProps}
+        >
+              
+          {countryData.map((country) => (
+            <MenuItem key={country._id} value={country._id}>
+              <Checkbox checked={formik.values.country.indexOf(country._id) > -1} />
+              <ListItemText primary={country.name} />
+            </MenuItem>
+          ))}
+        </Select>
+        <FormHelperText>{formik.touched.country && formik.errors.country}</FormHelperText>
+      </FormControl>
+      <Button color="primary" variant="contained" type="submit">
           Submit
         </Button>
       </form>
-    </div>)
+    </div>
+  );
 }

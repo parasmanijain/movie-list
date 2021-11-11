@@ -15,7 +15,7 @@ const languageSchema = new mongoose.Schema({
 const directorSchema = new mongoose.Schema({
     name: { type: String },
     url: { type: String },
-    country: { type: mongoose.Schema.Types.ObjectId, ref: 'Country' },
+    country: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Country' }],
     movies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Movie' }]
 });
 const countrySchema = new mongoose.Schema({
@@ -23,8 +23,8 @@ const countrySchema = new mongoose.Schema({
 });
 const movieSchema = new mongoose.Schema({
     name: { type: String },
-    language: { type: mongoose.Schema.Types.ObjectId, ref: 'Language' },
-    director: { type: mongoose.Schema.Types.ObjectId, ref: 'Director' },
+    language: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Language' }],
+    director: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Director' }],
     year: { type: String },
     url: { type: String },
     imdb: { type: Number },
@@ -32,16 +32,39 @@ const movieSchema = new mongoose.Schema({
 });
 
 directorSchema.index({ name: 1, country: 1, url: 1 }, { unique: true });
-movieSchema.index({ name: 1, language: 1, director: 1, year: 1, url: 1, imdb: 1, rottenTomatoes: 1 }, { unique: true });
+movieSchema.index({ name: 1, year: 1, url: 1, imdb: 1, rottenTomatoes: 1 }, { unique: true });
 const Language = mongoose.model('Language', languageSchema);
 const Country = mongoose.model('Country', countrySchema);
 const Director = mongoose.model('Director', directorSchema);
 const Movie = mongoose.model('Movie', movieSchema);
+
+// Movie.syncIndexes(function (err, res) {
+//     if (err) {
+//         console.log(err);
+//         return err;
+//     }
+//     console.log(res);
+//     return res;
+// });
 // Language.update({'_id':'5fb8aa6779e2affc100fe5fa'}, {"$pull": {movies: null}}).exec(function (err, results) {
 //     console.log(results);
 //     if (err) return err;
 //     return results;
-// });          
+// }); 
+
+// Movie.find({"director":{ $type: 7 }}).exec(function(err,results) {
+//     results.forEach( function(x) {
+//         Movie.updateOne({"_id": x._id}, {"$set": {"director": [ x.director ] }}).exec(function (err, res) {
+//             if (err) {
+//                 console.log(err);
+//                 return err;
+//             }
+//             console.log(res);
+//             return res;
+//         });
+//      });
+// });
+
 app.get('/languages', (req, res) => {
     // get data from the view and add it to mongodb
     Language.find({}, null, { sort: { name: 1 } }).populate('movies').exec(function (err, results) {
@@ -298,6 +321,6 @@ app.all('/*', setupCORS);
 //         res.json(data); 
 //      })      
 // });
-app.listen(API_PORT,() => {
-	console.log("Server has started!")
+app.listen(API_PORT, () => {
+    console.log("Server has started!")
 });
