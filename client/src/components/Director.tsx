@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Pie } from 'react-chartjs-2';
 import { chartColors } from '../helper/colors';
-import { API_URL } from '../helper/config';
-
+import { GET_DIRECTORS_COUNT_URL } from '../helper/config';
 
 const initialData = {
   labels: [],
@@ -70,7 +69,7 @@ export const Director = () => {
   // eslint-disable-next-line no-unused-vars
   let chartInstance = null;
   const fetchData = () => {
-    const directors = axios.get(`${API_URL}/directorsCount`);
+    const directors = axios.get(`${GET_DIRECTORS_COUNT_URL}`);
     axios.all([directors]).then(axios.spread((...responses) => {
       const directorData = responses[0].data;
       setDirectorData(responses[0].data);
@@ -105,7 +104,6 @@ export const Director = () => {
 
   return (
     <div className="main-container">
-
       <div className="chart-container">
         <Pie
           options={pieOptions}

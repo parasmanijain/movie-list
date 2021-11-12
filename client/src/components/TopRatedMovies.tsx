@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { FormControlLabel, Paper, Switch, Table, TableBody, TableCell, TableContainer,
   TableHead, TablePagination, TableRow, TableSortLabel, Toolbar, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import { API_URL } from '../helper/config';
+import { GET_TOP_RATED_MOVIE_URL } from '../helper/config';
 
 const descendingComparator = (a, b, orderBy) => {
   if (b[orderBy] < a[orderBy]) {
@@ -17,11 +17,9 @@ const descendingComparator = (a, b, orderBy) => {
   return 0;
 };
 
-const getComparator = (order, orderBy) => {
-  return order === 'desc' ?
+const getComparator = (order, orderBy) => order === 'desc' ?
     (a, b) => descendingComparator(a, b, orderBy) :
     (a, b) => -descendingComparator(a, b, orderBy);
-};
 
 const stableSort = (array, comparator) => {
   const stabilizedThis = array.map((el, index) => [el, index]);
@@ -184,7 +182,7 @@ export const TopRatedMovies = () => {
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, topMovieList.length - page * rowsPerPage);
 
   useEffect(() => {
-    const topMovieUrl = axios.get(`${API_URL}/topMovie`);
+    const topMovieUrl = axios.get(`${GET_TOP_RATED_MOVIE_URL}`);
     axios.all([topMovieUrl]).then(axios.spread((...responses) => {
       setTopMovieList(responses[0].data);
     })).catch((errors) => {

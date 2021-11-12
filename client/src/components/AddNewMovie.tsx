@@ -1,43 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useFormik } from 'formik';
-import 'react-datetime/css/react-datetime.css';
-import { API_URL, currentYear, MenuProps, URL_REGEX } from '../helper/config';
-import * as yup from 'yup';
-import { Box, Button, Checkbox, FormControl, FormHelperText, InputLabel, ListItemText,
-  MenuItem, OutlinedInput, Select, TextField } from '@mui/material';
+import { ADD_NEW_MOVIE_URL, currentYear, GET_DIRECTORS_URL, GET_LANGUAGES_URL, MenuProps } from '../helper/config';
+import {
+  Box, Button, Checkbox, FormControl, FormHelperText, InputLabel, ListItemText,
+  MenuItem, OutlinedInput, Select, TextField
+} from '@mui/material';
 import { LocalizationProvider, DatePicker } from '@mui/lab';
 
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import { movieValidationSchema as validationSchema } from '../helper/validationScehmas';
 
-const validationSchema = yup.object({
-  name: yup
-      .string()
-      .required('Name is required'),
-  language: yup
-      .array()
-      .required('Language is required'),
-  director: yup
-      .array()
-      .required('Director is required'),
-  imdb: yup
-      .string()
-      .required('IMDB Rating is required'),
-  rottenTomatoes: yup
-      .string(),
-  year: yup
-      .string()
-      .required('Year of Release is required'),
-  url: yup
-      .string()
-      .matches(URL_REGEX)
-      .required('URL is required')
-});
+interface AddMovieAttributes {
+  selectedMovie?: string;
+}
 
-
-export const AddNewMovie = () => {
+export const AddNewMovie = (props:AddMovieAttributes) => {
+  const { selectedMovie } = props;
   const [languageData, setLanguageData] = useState([]);
   const [directorData, setDirectorData] = useState([]);
+  console.log('selectedMovie', selectedMovie);
   const formik = useFormik({
     initialValues: {
       name: '',
@@ -48,9 +30,9 @@ export const AddNewMovie = () => {
       year: currentYear,
       url: ''
     },
-    validationSchema: validationSchema,
+    validationSchema,
     onSubmit: () => {
-      axios.post(`${API_URL}/movie`, {
+      axios.post(`${ADD_NEW_MOVIE_URL}`, {
         name: formik.values.name,
         language: formik.values.language,
         director: formik.values.director,
@@ -67,8 +49,8 @@ export const AddNewMovie = () => {
     }
   });
   const fetchData = () => {
-    const languages = axios.get(`${API_URL}/languages`);
-    const directors = axios.get(`${API_URL}/directors`);
+    const languages = axios.get(`${GET_LANGUAGES_URL}`);
+    const directors = axios.get(`${GET_DIRECTORS_URL}`);
     axios.all([languages, directors]).then(axios.spread((...responses) => {
       setLanguageData(responses[0].data);
       setDirectorData(responses[1].data);
@@ -108,8 +90,8 @@ export const AddNewMovie = () => {
             error={formik.touched.language && Boolean(formik.errors.language)}
 
             input={<OutlinedInput label="Language" />}
-            renderValue={(selected:string[]) => {
-              const selectedLanguages = (languageData.filter((language)=> selected.includes(language._id))).map((element)=> element.name);
+            renderValue={(selected: string[]) => {
+              const selectedLanguages = (languageData.filter((language) => selected.includes(language._id))).map((element) => element.name);
               return selectedLanguages.join(', ');
             }
             }
@@ -138,8 +120,9 @@ export const AddNewMovie = () => {
               onChange: formik.handleChange,
               MenuProps: MenuProps,
               error: formik.touched.director && Boolean(formik.errors.director),
-              renderValue: (selected:string[]) => {
-                const selectedDirectors = (directorData.filter((director)=> selected.includes(director._id))).map((element)=> element.name);
+              renderValue: (selected: string[]) => {
+                const selectedDirectors = (directorData.filter(
+                    (director) => selected.includes(director._id))).map((element) => element.name);
                 return selectedDirectors.join(', ');
               }
             }}
@@ -225,7 +208,7 @@ export const AddNewMovie = () => {
           />
         </FormControl>
         <Button color="primary" variant="contained" type="submit" sx={{ margin: 2, width: 300 }}>
-        Submit
+          Submit
         </Button>
       </Box>
     </form>

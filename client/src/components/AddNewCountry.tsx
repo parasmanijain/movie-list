@@ -1,25 +1,18 @@
 import React from 'react';
 import { useFormik } from 'formik';
-import * as yup from 'yup';
 import axios from 'axios';
 import { Box, Button, FormControl, TextField } from '@mui/material';
-import { API_URL } from '../helper/config';
-
-
-const validationSchema = yup.object({
-  name: yup
-      .string()
-      .required('Country is required')
-});
+import { ADD_NEW_COUNTRY_URL } from '../helper/config';
+import { countryValidationSchema as validationSchema } from '../helper/validationScehmas';
 
 export const AddNewCountry = () => {
   const formik = useFormik({
     initialValues: {
       name: ''
     },
-    validationSchema: validationSchema,
+    validationSchema,
     onSubmit: () => {
-      axios.post(`${API_URL}/country`, {
+      axios.post(`${ADD_NEW_COUNTRY_URL}`, {
         name: formik.values.name
       })
           .then(function(response) {

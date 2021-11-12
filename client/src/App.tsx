@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   BrowserRouter,
   Switch,
@@ -13,11 +13,15 @@ import { AddNewMovie } from './components/AddNewMovie';
 import { AddNewDirector } from './components/AddNewDirector';
 import { AddNewCountry } from './components/AddNewCountry';
 import { AddNewLanguage } from './components/AddNewLanguage';
-import { EditMovieDetails } from './components/EditMovieDetails';
 import { TopRatedMovies } from './components/TopRatedMovies';
 import { AppBar, Box, Tab, Tabs } from '@mui/material';
 
 export const App = () => {
+  const [selectedMovie, setSelectedMovie] = useState(null);
+
+  const handleMovieUpdateSelection = (movie) => {
+    setSelectedMovie(movie);
+  };
   return (
     <BrowserRouter>
       <Route
@@ -94,11 +98,10 @@ export const App = () => {
           <Route path="/director" component={Director} />
           <Route path="/add-new-director" component={AddNewDirector} />
           <Route path="/add-new-language" component={AddNewLanguage} />
-          <Route path="/add-new-movie" component={AddNewMovie} />
+          <Route path="/add-new-movie" render={() => <AddNewMovie selectedMovie = {selectedMovie} />} />
           <Route path="/add-new-country" component={AddNewCountry} />
-          <Route path="/edit-movie-details/:movieID" component={EditMovieDetails} />
           <Route path="/top-rated-movies" component={TopRatedMovies} />
-          <Route path="/" component={Home} />
+          <Route path="/" render={() => <Home handleMovieUpdateSelection = {handleMovieUpdateSelection} />} />
         </Switch>
       </Box>
     </BrowserRouter>

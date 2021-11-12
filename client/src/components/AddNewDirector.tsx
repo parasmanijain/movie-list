@@ -1,26 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useFormik } from 'formik';
-import * as yup from 'yup';
-
 import { Button, TextField, OutlinedInput, InputLabel, FormHelperText, MenuItem,
   FormControl, ListItemText, Checkbox, Select, Box } from '@mui/material';
-
-import { API_URL, MenuProps, URL_REGEX } from '../helper/config';
-
-const validationSchema = yup.object({
-  name: yup
-      .string()
-      .required('Name is required'),
-  url: yup
-      .string()
-      .matches(URL_REGEX)
-      .required('URL is required'),
-  country: yup
-      .array()
-      .required('Country is required')
-});
-
+import { ADD_NEW_DIRECTOR_URL, GET_COUNTRIES_URL, MenuProps } from '../helper/config';
+import { directorValidationSchema as validationSchema } from '../helper/validationScehmas';
 
 export const AddNewDirector = () => {
   const [countryData, setCountryData] = useState([]);
@@ -30,9 +14,9 @@ export const AddNewDirector = () => {
       url: '',
       country: []
     },
-    validationSchema: validationSchema,
+    validationSchema,
     onSubmit: () => {
-      axios.post(`${API_URL}/director`, {
+      axios.post(`${ADD_NEW_DIRECTOR_URL}`, {
         name: formik.values.name,
         url: formik.values.url,
         country: formik.values.country
@@ -45,7 +29,7 @@ export const AddNewDirector = () => {
     }
   });
   useEffect(() => {
-    axios.get(`${API_URL}/countries`, {
+    axios.get(`${GET_COUNTRIES_URL}`, {
     })
         .then(function(response) {
           setCountryData(response.data);

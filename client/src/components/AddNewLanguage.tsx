@@ -1,19 +1,9 @@
 import React from 'react';
 import axios from 'axios';
-import * as yup from 'yup';
 import { useFormik } from 'formik';
-import { API_URL } from '../helper/config';
 import { Box, Button, FormControl, TextField } from '@mui/material';
-
-const validationSchema = yup.object({
-  name: yup
-      .string()
-      .required('Name is required'),
-  code: yup
-      .string()
-      .required('Code is required').min(2)
-});
-
+import { languageValidationSchema as validationSchema } from '../helper/validationScehmas';
+import { ADD_NEW_LANGUAGE_URL } from '../helper/config';
 
 export const AddNewLanguage = () => {
   const formik = useFormik({
@@ -21,10 +11,10 @@ export const AddNewLanguage = () => {
       name: '',
       code: ''
     },
-    validationSchema: validationSchema,
+    validationSchema,
     onSubmit: () => {
       console.log(formik.values);
-      axios.post(`${API_URL}/language`, {
+      axios.post(`${ADD_NEW_LANGUAGE_URL}`, {
         name: formik.values.name,
         code: formik.values.code,
         movies: []

@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-
+import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 
 import { makeStyles } from '@mui/styles';
-import { Grid, Typography, Link as MaterialLink, Accordion, AccordionSummary, AccordionDetails, Pagination } from '@mui/material';
+import { Grid, Typography, Accordion, AccordionSummary, AccordionDetails, Pagination, Button } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { API_URL } from '../helper/config';
-
+import { GET_MOVIES_URL, GET_TOP_DIRECTOR_URL, GET_TOP_LANGUAGE_URL, GET_TOP_YEAR_URL } from '../helper/config';
 
 const useStyles = makeStyles({
   root: {
@@ -34,16 +32,23 @@ const summaryStyles = makeStyles({
     margin: 0
   }
 });
-export const Home = () => {
+
+interface HomeProps {
+  handleMovieUpdateSelection:any;
+}
+
+export const Home = (props:HomeProps) => {
+  const { handleMovieUpdateSelection } = props;
   const classes = useStyles();
   const summaryClass = summaryStyles();
   const [page, setPage] = useState(1);
   const [count, setCount] = useState(1);
   const [total, setTotal] = useState(0);
   const limit = 60;
+  const history = useHistory();
 
   const fetchData = () => {
-    const moviesUrl = axios.get(`${API_URL}/movies`, { params: { page, limit } });
+    const moviesUrl = axios.get(`${GET_MOVIES_URL}`, { params: { page, limit } });
     axios.all([moviesUrl]).then(axios.spread((...responses) => {
       const { total, page, movies } = responses[0].data;
       setMovieData(movies);
@@ -56,9 +61,9 @@ export const Home = () => {
   };
 
   const fetchTopFilters = () => {
-    const topDirectors = axios.get(`${API_URL}/topDirector`);
-    const topLanguages = axios.get(`${API_URL}/topLanguage`);
-    const topYear = axios.get(`${API_URL}/topYear`);
+    const topDirectors = axios.get(`${GET_TOP_DIRECTOR_URL}`);
+    const topLanguages = axios.get(`${GET_TOP_LANGUAGE_URL}`);
+    const topYear = axios.get(`${GET_TOP_YEAR_URL}`);
     axios.all([topDirectors, topLanguages, topYear]).then(axios.spread((...responses) => {
       setTopDirectorData(responses[0].data.slice(0, 1));
       setTopLanguageData(responses[1].data.slice(0, 1));
@@ -83,92 +88,97 @@ export const Home = () => {
   const [topLanguageData, setTopLanguageData] = useState([]);
   const [topYearData, setTopYearData] = useState([]);
 
-  const directorURL = (url, name, index) => {
-    return <MaterialLink key={index} href={url} target="_blank" rel="noreferrer">
+  const directorURL = (url, name, index) => (
+    <Button key={index} href={url} target="_blank" rel="noreferrer" variant="text" sx={{ padding: '4px 0px' }}>
       {name}
-    </MaterialLink>;
-  };
+    </Button>);
 
-  const directorName = (director, index) => {
-    return directorURL(director.url, director.name, index);
-  };
-  const movieList = movieData?.map((movie) => {
-    return (
-      <Grid item xs={6} lg={3} xl={2} key={movie._id}>
-        <Accordion>
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon />
+  const directorName = (director, index) => directorURL(director.url, director.name, index);
+
+  const movieList = movieData?.map((movie) => (
+    <Grid item xs={6} lg={3} xl={2} key={movie._id}>
+      <Accordion>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />
+          }
+          classes={summaryClass}
+          aria-controls="panel1a-content"
+          id="panel1a-header"
+        >
+          <Typography component="div">
+            {movie.name} ({movie.year})
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Typography component="div" sx={{ padding: '0px' }}>
+            {
+              movie.language.map(
+                  (element)=><Typography key={element._id} component="h6" sx={{ padding: '4px 0px' }}>{element.name}</Typography>)
             }
-            classes={summaryClass}
-            aria-controls="panel1a-content"
-            id="panel1a-header"
-          >
+
             <Typography component="div">
-              {movie.name} ({movie.year})
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Typography component="div">
-              {movie.language.name}
-              <Typography component="div">
-                {
-                  movie.director.map((element, index) => directorName(element, index))
-                }
-              </Typography>
-              <Typography component="div">
-                IMDB:
-                {movie.imdb + '/10'}
-              </Typography>
-              <Typography component="div">
-                Rotten Tomatoes:
-                {movie.rottenTomatoes ? movie.rottenTomatoes + '%' : 'Not Rated'}
-              </Typography>
-              <Typography component="div">
-                <Link to={`/edit-movie-details/${movie._id}`}>Edit Movie Details</Link>
-              </Typography>
-              <MaterialLink href={movie.url} target="_blank" rel="noreferrer">
-                More Details
-              </MaterialLink>
-              <Typography component="div">
-                Other Movies from Same Director:
-              </Typography>
               {
-                movie.director.map((element, index) => {
-                  return element.movies.map((otherMovie) => {
-                    if (otherMovie._id !== movie._id) {
-                      return (
-                        <Typography key={otherMovie._id} component="div">
-                          <MaterialLink href={otherMovie.url} target="_blank" rel="noreferrer">
-                            {otherMovie.name} ({otherMovie.year})
-                          </MaterialLink>
-                        </Typography>
-                      );
-                    }
-                  });
-                })
+                movie.director.map((element, index) => directorName(element, index))
               }
             </Typography>
-          </AccordionDetails>
-        </Accordion>
-      </Grid>
-    );
-  });
+            <Typography component="h6" sx={{ padding: '4px 0px' }}>
+                IMDB:
+              {movie.imdb + '/10'}
+            </Typography>
+            <Typography component="h6" sx={{ padding: '4px 0px' }}>
+                Rotten Tomatoes:
+              {movie.rottenTomatoes ? movie.rottenTomatoes + '%' : 'Not Rated'}
+            </Typography>
+            <Typography component="div">
+              <Button
+                variant="text"
+                sx={{ padding: '4px 0px' }}
+                onClick={() => {
+                  handleMovieUpdateSelection(movie._id);
+                  history.push('/add-new-movie');
+                }}
+              >
+                Edit Movie Details
+              </Button>
+            </Typography>
+            <Typography component="div">
+              <Button href={movie.url} target="_blank" rel="noreferrer" sx={{ padding: '4px 0px' }}>
+              More Details
+              </Button>
+            </Typography>
+            <Typography component="h6" sx={{ padding: '4px 0px' }}>
+                Other Movies from Same Director:
+            </Typography>
+            {
+              movie.director.map((element, index) => {
+                return element.movies.map((otherMovie) => {
+                  if (otherMovie._id !== movie._id) {
+                    return (
+                      <Button key={otherMovie._id} href={otherMovie.url} target="_blank" rel="noreferrer" sx={{ padding: '4px 0px' }}>
+                        {otherMovie.name} ({otherMovie.year})
+                      </Button>
+                    );
+                  }
+                });
+              })
+            }
+          </Typography>
+        </AccordionDetails>
+      </Accordion>
+    </Grid>
+  ));
 
-  const topDirectorsList = topDirectorData.map((director) => {
-    return (
-      <span key={director._id}>{director.name} ({director.length}) </span>
-    );
-  });
-  const topYearsList = topYearData.map((year) => {
-    return (
-      <span key={year._id}>{year._id} ({year.count}) </span>
-    );
-  });
-  const topLanguagesList = topLanguageData.map((language) => {
-    return (
-      <span key={language._id}>{language.name} ({language.length}) </span>
-    );
-  });
+  const topDirectorsList = topDirectorData.map((director) => (
+    <span key={director._id}>{director.name} ({director.length}) </span>
+  ));
+  const topYearsList = topYearData.map((year) => (
+    <span key={year._id}>{year._id} ({year.count}) </span>
+  ));
+
+  const topLanguagesList = topLanguageData.map((language) => (
+    <span key={language._id}>{language.name} ({language.length}) </span>
+  ));
+
   const handleChange = (event, value) => {
     setPage(value);
   };

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Bar } from 'react-chartjs-2';
-import { API_URL } from '../helper/config';
+import { GET_LANGUAGES_COUNT_URL } from '../helper/config';
 
 const initialData = {
   labels: [],
@@ -62,7 +62,7 @@ export const Language = () => {
   const [chartData, setChartData] = useState(initialData);
   const data = JSON.parse(JSON.stringify(initialData));
   useEffect(() => {
-    axios.get(`${API_URL}/languagesCount`, {
+    axios.get(`${GET_LANGUAGES_COUNT_URL}`, {
     })
         .then(function(response) {
           setLanguageData(response.data);
