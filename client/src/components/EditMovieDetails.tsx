@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import Datetime from 'react-datetime';
 import 'react-datetime/css/react-datetime.css';
-import { API_URL } from '../config';
+import { API_URL } from '../helper/config';
 
 interface RouteParams {
   movieID: string

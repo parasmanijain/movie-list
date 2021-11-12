@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { FormControlLabel, Paper, Switch, Table, TableBody, TableCell, TableContainer,
   TableHead, TablePagination, TableRow, TableSortLabel, Toolbar, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import { API_URL } from '../config';
+import { API_URL } from '../helper/config';
 
 const descendingComparator = (a, b, orderBy) => {
   if (b[orderBy] < a[orderBy]) {

@@ -6,7 +6,7 @@ import axios from 'axios';
 import { makeStyles } from '@mui/styles';
 import { Grid, Typography, Link as MaterialLink, Accordion, AccordionSummary, AccordionDetails, Pagination } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { API_URL } from '../config';
+import { API_URL } from '../helper/config';
 
 
 const useStyles = makeStyles({

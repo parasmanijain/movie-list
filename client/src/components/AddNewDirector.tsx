@@ -6,22 +6,7 @@ import * as yup from 'yup';
 import { Button, TextField, OutlinedInput, InputLabel, FormHelperText, MenuItem,
   FormControl, ListItemText, Checkbox, Select } from '@mui/material';
 
-import { API_URL } from '../config';
-
-// eslint-disable-next-line max-len
-const URL_REGEX = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/;
-
-
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250
-    }
-  }
-};
+import { API_URL, MenuProps, URL_REGEX } from '../helper/config';
 
 const validationSchema = yup.object({
   name: yup

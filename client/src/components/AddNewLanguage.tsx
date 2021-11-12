@@ -2,7 +2,7 @@ import React from 'react';
 import axios from 'axios';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
-import { API_URL } from '../config';
+import { API_URL } from '../helper/config';
 import { Button, TextField } from '@mui/material';
 
 const validationSchema = yup.object({
@@ -11,7 +11,7 @@ const validationSchema = yup.object({
       .required('Name is required'),
   code: yup
       .string()
-      .required('Code is required')
+      .required('Code is required').min(2)
 });
 
 
