@@ -4,7 +4,7 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 
 import { Button, TextField, OutlinedInput, InputLabel, FormHelperText, MenuItem,
-  FormControl, ListItemText, Checkbox, Select } from '@mui/material';
+  FormControl, ListItemText, Checkbox, Select, Box } from '@mui/material';
 
 import { API_URL, MenuProps, URL_REGEX } from '../helper/config';
 
@@ -60,27 +60,31 @@ export const AddNewDirector = () => {
 
 
   return (
-    <div>
-      <form onSubmit={formik.handleSubmit} id="form" autoComplete="off">
-        <TextField
-          id="name"
-          name="name"
-          label="Director"
-          value={formik.values.name}
-          onChange={formik.handleChange}
-          error={formik.touched.name && Boolean(formik.errors.name)}
-          helperText={formik.touched.name && formik.errors.name}
-        />
-        <TextField
-          id="url"
-          name="url"
-          label="URL"
-          value={formik.values.url}
-          onChange={formik.handleChange}
-          error={formik.touched.url && Boolean(formik.errors.url)}
-          helperText={formik.touched.url && formik.errors.url}
-        />
-        <FormControl sx={{ m: 1, width: 300 }}>
+    <form onSubmit={formik.handleSubmit} id="form" autoComplete="off">
+      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        <FormControl sx={{ m: 2, width: 300 }}>
+          <TextField
+            id="name"
+            name="name"
+            label="Director"
+            value={formik.values.name}
+            onChange={formik.handleChange}
+            error={formik.touched.name && Boolean(formik.errors.name)}
+            helperText={formik.touched.name && formik.errors.name}
+          />
+        </FormControl>
+        <FormControl sx={{ m: 2, width: 300 }}>
+          <TextField
+            id="url"
+            name="url"
+            label="URL"
+            value={formik.values.url}
+            onChange={formik.handleChange}
+            error={formik.touched.url && Boolean(formik.errors.url)}
+            helperText={formik.touched.url && formik.errors.url}
+          />
+        </FormControl>
+        <FormControl sx={{ m: 2, width: 300 }}>
           <InputLabel id="demo-multiple-checkbox-label">Country</InputLabel>
           <Select
             labelId="demo-multiple-checkbox-label"
@@ -112,7 +116,7 @@ export const AddNewDirector = () => {
         <Button color="primary" variant="contained" type="submit">
           Submit
         </Button>
-      </form>
-    </div>
+      </Box>
+    </form>
   );
 };
