@@ -3,30 +3,30 @@ import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 
 import { makeStyles } from '@mui/styles';
-import { Grid, Typography, Accordion, AccordionSummary, AccordionDetails, Pagination, Button } from '@mui/material';
+import { Grid, Typography, Accordion, AccordionSummary, AccordionDetails, Pagination, Button, Box } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { GET_MOVIES_URL, GET_TOP_DIRECTOR_URL, GET_TOP_LANGUAGE_URL, GET_TOP_YEAR_URL } from '../helper/config';
 
-const useStyles = makeStyles({
-  root: {
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    height: '100%'
-  },
-  title: {
-    fontSize: 14
-  },
-  pos: {
-    marginBottom: 12
-  }
-});
+// const useStyles = makeStyles({
+//   root: {
+//     width: '100%',
+//     display: 'flex',
+//     flexDirection: 'column',
+//     justifyContent: 'space-between',
+//     height: '100%'
+//   },
+//   title: {
+//     fontSize: 14
+//   },
+//   pos: {
+//     marginBottom: 12
+//   }
+// });
 
 const summaryStyles = makeStyles({
   root: {
     minHeight: 60,
-    padding: '0 5px'
+    padding: '5px'
   },
   content: {
     margin: 0
@@ -39,7 +39,6 @@ interface HomeProps {
 
 export const Home = (props:HomeProps) => {
   const { handleMovieUpdateSelection } = props;
-  const classes = useStyles();
   const summaryClass = summaryStyles();
   const [page, setPage] = useState(1);
   const [count, setCount] = useState(1);
@@ -96,8 +95,8 @@ export const Home = (props:HomeProps) => {
   const directorName = (director, index) => directorURL(director.url, director.name, index);
 
   const movieList = movieData?.map((movie) => (
-    <Grid item xs={6} lg={3} xl={2} key={movie._id}>
-      <Accordion>
+    <Grid item xs={6} md={4} lg={3} xl={2} key={movie._id}>
+      <Accordion sx = {{ padding: '0px' }}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />
           }
@@ -184,22 +183,19 @@ export const Home = (props:HomeProps) => {
   };
 
   return (
-    <div className={classes.root}>
-      <div className="top-panel">
-        <div><label htmlFor="movies">Total Movies watched so far: {total} </label></div>
-        <div><label htmlFor="directors">Most watched Director:</label> {topDirectorsList}</div>
-        <div><label htmlFor="languages">Most watched Language:</label> {topLanguagesList}</div>
-        <div><label htmlFor="year">Most watched Year:</label> {topYearsList}</div>
-      </div>
-      <div style={{ margin: 5, padding: 5 }}>
-        <Grid container spacing={2} sx={{ justifyContent: 'center' }}>
-          {movieList}
-
-        </Grid>
-      </div>
-      <div className="pagination-panel">
+    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ display: 'flex', margin: '16px 0px', justifyContent: 'space-evenly', alignItems: 'center' }}>
+        <Typography component="h6">Total Movies watched so far: {total}</Typography>
+        <Typography component="h6">Most watched Director: {topDirectorsList}</Typography>
+        <Typography component="h6">Most watched Language: {topLanguagesList}</Typography>
+        <Typography component="h6">Most watched Year: {topYearsList}</Typography>
+      </Box>
+      <Grid container spacing={2} sx={{ margin: '16px 0px', padding: '0px' }}>
+        {movieList}
+      </Grid>
+      <Box sx={{ margin: '16px 0px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <Pagination count={count} color="primary" onChange={handleChange} page={page} showFirstButton showLastButton />
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
