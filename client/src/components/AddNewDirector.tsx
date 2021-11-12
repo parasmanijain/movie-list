@@ -3,11 +3,9 @@ import axios from 'axios';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 
-import {Button, TextField, OutlinedInput, InputLabel, FormHelperText, MenuItem, FormControl, ListItemText, Checkbox, ListItemIcon} from '@mui/material';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
+import {Button, TextField, OutlinedInput, InputLabel, FormHelperText, MenuItem, FormControl, ListItemText, Checkbox, Select} from '@mui/material';
 
 import { API_URL } from '../config';
-import { makeStyles } from '@mui/styles';
 
 const URL_REGEX = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/;
 
@@ -47,7 +45,6 @@ export const  AddNewDirector = () => {
     },
     validationSchema: validationSchema,
     onSubmit: () => {
-      console.log(formik.values);
       axios.post(`${API_URL}/director`, {
         name: formik.values.name,
         url: formik.values.url,
@@ -79,7 +76,6 @@ export const  AddNewDirector = () => {
     <div>
             <form onSubmit={formik.handleSubmit} id="form" autoComplete="off">
             <TextField
-          variant="outlined"
           id="name"
           name="name"
           label="Director"
@@ -89,7 +85,6 @@ export const  AddNewDirector = () => {
           helperText={formik.touched.name && formik.errors.name}
         />
         <TextField
-          variant="outlined"
           id="url"
           name="url"
           label="URL"
