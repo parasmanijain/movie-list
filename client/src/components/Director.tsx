@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Pie } from 'react-chartjs-2';
-import { chartColors } from "../helper/colors";
+import { chartColors } from '../helper/colors';
 import { API_URL } from '../config';
 
 
@@ -13,14 +13,14 @@ const initialData = {
       data: [],
       backgroundColor: [],
       hoverBackgroundColor: []
-    },
-  ],
-}
+    }
+  ]
+};
 
 const pieOptions = {
   legend: {
     display: true,
-    position: "bottom"
+    position: 'bottom'
   },
   elements: {
     arc: {
@@ -29,91 +29,92 @@ const pieOptions = {
   }
 };
 
-const styles = {
-  pieContainer: {
-    width: "40%",
-    height: "40%",
-    top: "50%",
-    left: "50%",
-    position: "absolute",
-    transform: "translate(-50%, -50%)"
-  },
-  relative: {
-    position: "relative"
-  }
-};
+// const styles = {
+//   pieContainer: {
+//     width: '40%',
+//     height: '40%',
+//     top: '50%',
+//     left: '50%',
+//     position: 'absolute',
+//     transform: 'translate(-50%, -50%)'
+//   },
+//   relative: {
+//     position: 'relative'
+//   }
+// };
 
 
-const dynamicColors = () => {
-  var r = Math.floor(Math.random() * 255);
-  var g = Math.floor(Math.random() * 255);
-  var b = Math.floor(Math.random() * 255);
-  return "rgba(" + r + "," + g + "," + b + ", 0.5)";
-}
+// const dynamicColors = () => {
+//   const r = Math.floor(Math.random() * 255);
+//   const g = Math.floor(Math.random() * 255);
+//   const b = Math.floor(Math.random() * 255);
+//   return 'rgba(' + r + ',' + g + ',' + b + ', 0.5)';
+// };
 
-const poolColors = (a) => {
-  var pool = [];
-  for (let i = 0; i < a; i++) {
-    pool.push(dynamicColors());
-  }
-  return pool;
-}
+// const poolColors = (a) => {
+//   const pool = [];
+//   for (let i = 0; i < a; i++) {
+//     pool.push(dynamicColors());
+//   }
+//   return pool;
+// };
 
-const options = {
-  responsive: true,
-  maintainAspectRatio: false
-}
+// const options = {
+//   responsive: true,
+//   maintainAspectRatio: false
+// };
 
 export const Director = () => {
-  const [directorData, setDirectorData] = useState([]);
+  const [, setDirectorData] = useState([]);
   const [chartData, setChartData] = useState(initialData);
+  // eslint-disable-next-line no-unused-vars
   let chartInstance = null;
   const fetchData = () => {
     const directors = axios.get(`${API_URL}/directorsCount`);
     axios.all([directors]).then(axios.spread((...responses) => {
       const directorData = responses[0].data;
       setDirectorData(responses[0].data);
-      let data = []
-      let labels = [];
-      directorData.forEach(element=> {
+      const data = [];
+      const labels = [];
+      directorData.forEach((element)=> {
         labels.push(element.name);
         data.push(element.length);
-      })
+      });
       setChartData({
         labels,
         datasets: [
           {
-            label: "Directors",
+            label: 'Directors',
             backgroundColor: chartColors,
             hoverBackgroundColor: chartColors,
-            data: data,
-          },
-        ],
+            data: data
+          }
+        ]
       });
-    })).catch(errors => {
+    })).catch((errors) => {
       // react on errors.
-    })
-  }
+    });
+  };
   useEffect(() => {
     fetchData();
     return () => {
-      setChartData(initialData)
-      setDirectorData([])
-    }
-  }, [])
+      setChartData(initialData);
+      setDirectorData([]);
+    };
+  }, []);
 
   return (
     <div className="main-container">
 
-        <div className="chart-container">
-          <Pie
-            options={pieOptions}
-            data={chartData}
-            ref={input => {
-              chartInstance = input;
-            }}
-          />
-        </div>
+      <div className="chart-container">
+        <Pie
+          options={pieOptions}
+          data={chartData}
+          ref={(input) => {
+            chartInstance = input;
+          }}
+        />
+      </div>
     </div>
-  )
-}
+  );
+};

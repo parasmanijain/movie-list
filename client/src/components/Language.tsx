@@ -13,10 +13,10 @@ const initialData = {
       ],
       borderColor: [
       ],
-      borderWidth: 1,
-    },
-  ],
-}
+      borderWidth: 1
+    }
+  ]
+};
 
 // const options = {
 //   responsive: true,
@@ -43,50 +43,50 @@ const initialData = {
 // }
 
 const dynamicColors = () => {
-  var r = Math.floor(Math.random() * 255);
-  var g = Math.floor(Math.random() * 255);
-  var b = Math.floor(Math.random() * 255);
-  return "rgba(" + r + "," + g + "," + b + ", 0.5)";
-}
+  const r = Math.floor(Math.random() * 255);
+  const g = Math.floor(Math.random() * 255);
+  const b = Math.floor(Math.random() * 255);
+  return 'rgba(' + r + ',' + g + ',' + b + ', 0.5)';
+};
 
 const poolColors = (a) => {
-  var pool = [];
+  const pool = [];
   for (let i = 0; i < a; i++) {
     pool.push(dynamicColors());
   }
   return pool;
-}
+};
 
 export const Language = () => {
-  const [languageData, setLanguageData] = useState([]);
+  const [, setLanguageData] = useState([]);
   const [chartData, setChartData] = useState(initialData);
   const data = JSON.parse(JSON.stringify(initialData));
   useEffect(() => {
     axios.get(`${API_URL}/languagesCount`, {
     })
-      .then(function (response) {
-        setLanguageData(response.data);
-        response.data.forEach(elem => {
-          data.labels.push(elem.name);
-          data.datasets[0].data.push(elem.length);
-          data.datasets[0].backgroundColor = poolColors(response.data.length);
-          data.datasets[0].borderColor = poolColors(response.data.length);
+        .then(function(response) {
+          setLanguageData(response.data);
+          response.data.forEach((elem) => {
+            data.labels.push(elem.name);
+            data.datasets[0].data.push(elem.length);
+            data.datasets[0].backgroundColor = poolColors(response.data.length);
+            data.datasets[0].borderColor = poolColors(response.data.length);
+          });
+          setChartData({
+            labels: data.labels,
+            datasets: data.datasets
+          });
         })
-        setChartData({
-          labels: data.labels,
-          datasets: data.datasets
+        .catch(function(response) {
+          console.log(response);
         });
-      })
-      .catch(function (response) {
-        console.log(response);
-      })
     return () => {
       setChartData({
         labels: initialData.labels,
         datasets: initialData.datasets
       });
       setLanguageData([]);
-    }
+    };
   }, []);
   return (
     <div className="main-container">
@@ -97,6 +97,6 @@ export const Language = () => {
         }
         </div>
       }
-    </div>)
-}
+    </div>);
+};
 

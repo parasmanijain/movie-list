@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Link, Route, useParams, useRouteMatch } from "react-router-dom";
+import { Link } from 'react-router-dom';
 
 import axios from 'axios';
 
 import { makeStyles } from '@mui/styles';
-import { Grid, Typography, Link as MaterialLink, Accordion, AccordionSummary, AccordionDetails, Button, Pagination } from "@mui/material";
+import { Grid, Typography, Link as MaterialLink, Accordion, AccordionSummary, AccordionDetails, Pagination } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { API_URL } from '../config';
 
@@ -12,17 +12,17 @@ import { API_URL } from '../config';
 const useStyles = makeStyles({
   root: {
     width: '100%',
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
-    height: "100%"
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    height: '100%'
   },
   title: {
-    fontSize: 14,
+    fontSize: 14
   },
   pos: {
-    marginBottom: 12,
-  },
+    marginBottom: 12
+  }
 });
 
 const summaryStyles = makeStyles({
@@ -50,10 +50,10 @@ export const Home = () => {
       setTotal(total);
       setPage(page);
       setCount(Math.ceil(total / limit));
-    })).catch(errors => {
+    })).catch((errors) => {
       // react on errors.
-    })
-  }
+    });
+  };
 
   const fetchTopFilters = () => {
     const topDirectors = axios.get(`${API_URL}/topDirector`);
@@ -63,22 +63,21 @@ export const Home = () => {
       setTopDirectorData(responses[0].data.slice(0, 1));
       setTopLanguageData(responses[1].data.slice(0, 1));
       setTopYearData(responses[2].data.slice(0, 1));
-    })).catch(errors => {
+    })).catch((errors) => {
       // react on errors.
-    })
-  }
+    });
+  };
   useEffect(() => {
     fetchData();
     return () => {
-    }
+    };
   }, [page]);
 
   useEffect(() => {
     fetchTopFilters();
     return () => {
-    }
+    };
   }, []);
-  const { url, path } = useRouteMatch();
   const [movieData, setMovieData] = useState([]);
   const [topDirectorData, setTopDirectorData] = useState([]);
   const [topLanguageData, setTopLanguageData] = useState([]);
@@ -87,13 +86,13 @@ export const Home = () => {
   const directorURL = (url, name, index) => {
     return <MaterialLink key={index} href={url} target="_blank" rel="noreferrer">
       {name}
-    </MaterialLink>
-  }
+    </MaterialLink>;
+  };
 
   const directorName = (director, index) => {
     return directorURL(director.url, director.name, index);
-  }
-  const movieList = movieData?.map(movie => {
+  };
+  const movieList = movieData?.map((movie) => {
     return (
       <Grid item xs={6} lg={3} xl={2} key={movie._id}>
         <Accordion>
@@ -118,11 +117,11 @@ export const Home = () => {
               </Typography>
               <Typography component="div">
                 IMDB:
-                {movie.imdb + "/10"}
+                {movie.imdb + '/10'}
               </Typography>
               <Typography component="div">
                 Rotten Tomatoes:
-                {movie.rottenTomatoes ? movie.rottenTomatoes + "%" : "Not Rated"}
+                {movie.rottenTomatoes ? movie.rottenTomatoes + '%' : 'Not Rated'}
               </Typography>
               <Typography component="div">
                 <Link to={`/edit-movie-details/${movie._id}`}>Edit Movie Details</Link>
@@ -135,7 +134,7 @@ export const Home = () => {
               </Typography>
               {
                 movie.director.map((element, index) => {
-                  return element.movies.map(otherMovie => {
+                  return element.movies.map((otherMovie) => {
                     if (otherMovie._id !== movie._id) {
                       return (
                         <Typography key={otherMovie._id} component="div">
@@ -143,32 +142,32 @@ export const Home = () => {
                             {otherMovie.name} ({otherMovie.year})
                           </MaterialLink>
                         </Typography>
-                      )
+                      );
                     }
-                  })
+                  });
                 })
               }
             </Typography>
           </AccordionDetails>
         </Accordion>
       </Grid>
-    )
+    );
   });
 
-  const topDirectorsList = topDirectorData.map(director => {
+  const topDirectorsList = topDirectorData.map((director) => {
     return (
       <span key={director._id}>{director.name} ({director.length}) </span>
-    )
+    );
   });
-  const topYearsList = topYearData.map(year => {
+  const topYearsList = topYearData.map((year) => {
     return (
       <span key={year._id}>{year._id} ({year.count}) </span>
-    )
+    );
   });
-  const topLanguagesList = topLanguageData.map(language => {
+  const topLanguagesList = topLanguageData.map((language) => {
     return (
       <span key={language._id}>{language.name} ({language.length}) </span>
-    )
+    );
   });
   const handleChange = (event, value) => {
     setPage(value);
@@ -183,7 +182,7 @@ export const Home = () => {
         <div><label htmlFor="year">Most watched Year:</label> {topYearsList}</div>
       </div>
       <div style={{ margin: 5, padding: 5 }}>
-        <Grid container spacing={2} sx={{ justifyContent: "center" }}>
+        <Grid container spacing={2} sx={{ justifyContent: 'center' }}>
           {movieList}
 
         </Grid>
@@ -192,5 +191,5 @@ export const Home = () => {
         <Pagination count={count} color="primary" onChange={handleChange} page={page} showFirstButton showLastButton />
       </div>
     </div>
-  )
-}
+  );
+};

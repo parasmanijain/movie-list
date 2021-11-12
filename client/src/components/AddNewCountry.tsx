@@ -9,15 +9,15 @@ import { API_URL } from '../config';
 const useStyles = makeStyles((theme) => ({
   root: {
     '& > *': {
-      width: '50ch',
-    },
-  },
+      width: '50ch'
+    }
+  }
 }));
 
 const validationSchema = yup.object({
   name: yup
-    .string()
-    .required('Country is required')
+      .string()
+      .required('Country is required')
 });
 
 export const AddNewCountry = () => {
@@ -31,12 +31,12 @@ export const AddNewCountry = () => {
       axios.post(`${API_URL}/country`, {
         name: formik.values.name
       })
-        .then(function (response) {
-        })
-        .catch(function (response) {
-          console.log(response);
-        })
-    },
+          .then(function(response) {
+          })
+          .catch(function(response) {
+            console.log(response);
+          });
+    }
   });
   return (
     <div className={classes.root}>
@@ -56,5 +56,5 @@ export const AddNewCountry = () => {
         </Button>
       </form>
     </div>
-  )
-}
+  );
+};

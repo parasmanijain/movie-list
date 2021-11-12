@@ -1,4 +1,4 @@
-import React, {useState } from 'react';
+import React from 'react';
 import axios from 'axios';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
@@ -6,40 +6,40 @@ import { API_URL } from '../config';
 import { Button, TextField } from '@mui/material';
 
 const validationSchema = yup.object({
-    name: yup
+  name: yup
       .string()
       .required('Name is required'),
-    code: yup
+  code: yup
       .string()
       .required('Code is required')
-  });
+});
 
 
 export const AddNewLanguage = () => {
-    const formik = useFormik({
-        initialValues: {
-          name: '',
-          code: ''
-        },
-        validationSchema: validationSchema,
-        onSubmit: () => {
-          console.log(formik.values);
-          axios.post(`${API_URL}/language`, {
-            name: formik.values.name,
-            code: formik.values.code,
-            movies:[]
+  const formik = useFormik({
+    initialValues: {
+      name: '',
+      code: ''
+    },
+    validationSchema: validationSchema,
+    onSubmit: () => {
+      console.log(formik.values);
+      axios.post(`${API_URL}/language`, {
+        name: formik.values.name,
+        code: formik.values.code,
+        movies: []
+      })
+          .then(function(response) {
           })
-            .then(function (response) {
-            })
-            .catch(function (response) {
-              console.log(response);
-            })
-        }
-      });
-    return (
-        <div className="main-container">
-                <form id="form" onSubmit={formik.handleSubmit} autoComplete="off">
-                <TextField
+          .catch(function(response) {
+            console.log(response);
+          });
+    }
+  });
+  return (
+    <div className="main-container">
+      <form id="form" onSubmit={formik.handleSubmit} autoComplete="off">
+        <TextField
           id="name"
           name="name"
           label="Name"
@@ -60,8 +60,8 @@ export const AddNewLanguage = () => {
         <Button color="primary" variant="contained" type="submit">
           Submit
         </Button>
-       
-        </form>
-        </div>
-    )
-}
+
+      </form>
+    </div>
+  );
+};

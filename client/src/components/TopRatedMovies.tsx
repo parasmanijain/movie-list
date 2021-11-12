@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 import PropTypes from 'prop-types';
-import { FormControlLabel, Paper, Switch, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TableSortLabel, Toolbar, Typography } from '@mui/material';
+import { FormControlLabel, Paper, Switch, Table, TableBody, TableCell, TableContainer,
+  TableHead, TablePagination, TableRow, TableSortLabel, Toolbar, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { API_URL } from '../config';
 
-function descendingComparator(a, b, orderBy) {
+const descendingComparator = (a, b, orderBy) => {
   if (b[orderBy] < a[orderBy]) {
     return -1;
   }
@@ -14,15 +15,15 @@ function descendingComparator(a, b, orderBy) {
     return 1;
   }
   return 0;
-}
+};
 
-function getComparator(order, orderBy) {
-  return order === 'desc'
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
+const getComparator = (order, orderBy) => {
+  return order === 'desc' ?
+    (a, b) => descendingComparator(a, b, orderBy) :
+    (a, b) => -descendingComparator(a, b, orderBy);
+};
 
-function stableSort(array, comparator) {
+const stableSort = (array, comparator) => {
   const stabilizedThis = array.map((el, index) => [el, index]);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
@@ -30,7 +31,7 @@ function stableSort(array, comparator) {
     return a[1] - b[1];
   });
   return stabilizedThis.map((el) => el[0]);
-}
+};
 
 const headCells = [
   { id: 'name', numeric: false, disablePadding: true, label: 'Name', minWidth: 300 },
@@ -39,7 +40,7 @@ const headCells = [
   { id: 'rottenTomatoes', numeric: true, disablePadding: false, label: 'Rotten Tomatoes (%)' }
 ];
 
-function EnhancedTableHead(props) {
+const EnhancedTableHead = (props) => {
   const { classes, order, orderBy, onRequestSort } = props;
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
@@ -71,7 +72,7 @@ function EnhancedTableHead(props) {
       </TableRow>
     </TableHead>
   );
-}
+};
 
 EnhancedTableHead.propTypes = {
   classes: PropTypes.object.isRequired,
@@ -80,7 +81,7 @@ EnhancedTableHead.propTypes = {
   onSelectAllClick: PropTypes.func.isRequired,
   order: PropTypes.oneOf(['asc', 'desc']).isRequired,
   orderBy: PropTypes.string.isRequired,
-  rowCount: PropTypes.number.isRequired,
+  rowCount: PropTypes.number.isRequired
 };
 
 const useToolbarStyles = makeStyles((theme) => ({
@@ -97,8 +98,8 @@ const useToolbarStyles = makeStyles((theme) => ({
   //       backgroundColor: theme.palette.secondary.dark,
   //     },
   title: {
-    flex: '1 1 100%',
-  },
+    flex: '1 1 100%'
+  }
 }));
 
 const EnhancedTableToolbar = (props) => {
@@ -119,7 +120,7 @@ const EnhancedTableToolbar = (props) => {
 };
 
 EnhancedTableToolbar.propTypes = {
-  numSelected: PropTypes.number.isRequired,
+  numSelected: PropTypes.number.isRequired
 };
 
 const useStyles = makeStyles((theme) => ({
@@ -133,11 +134,11 @@ const useStyles = makeStyles((theme) => ({
 
   },
   paper: {
-    width: '75%',
+    width: '75%'
     // marginBottom: theme.spacing(2),
   },
   table: {
-    minWidth: 400,
+    minWidth: 400
   },
   visuallyHidden: {
     border: 0,
@@ -148,8 +149,8 @@ const useStyles = makeStyles((theme) => ({
     padding: 0,
     position: 'absolute',
     top: 20,
-    width: 1,
-  },
+    width: 1
+  }
 }));
 
 export const TopRatedMovies = () => {
@@ -157,7 +158,7 @@ export const TopRatedMovies = () => {
   const [topMovieList, setTopMovieList] = useState([]);
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('calories');
-  const [selected, setSelected] = React.useState([]);
+  const [selected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -186,12 +187,12 @@ export const TopRatedMovies = () => {
     const topMovieUrl = axios.get(`${API_URL}/topMovie`);
     axios.all([topMovieUrl]).then(axios.spread((...responses) => {
       setTopMovieList(responses[0].data);
-    })).catch(errors => {
+    })).catch((errors) => {
       // react on errors.
-    })
+    });
     return () => {
       setTopMovieList([]);
-    }
+    };
   }, []);
 
 
@@ -216,23 +217,21 @@ export const TopRatedMovies = () => {
             />
             <TableBody>
               {stableSort(topMovieList, getComparator(order, orderBy))
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row, index) => {
-                  const labelId = `enhanced-table-checkbox-${index}`;
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((row, index) => {
+                    return (
+                      <TableRow key= {index}
 
-                  return (
-                    <TableRow
-
-                    >
-                      <TableCell align="left" >
-                        {row.name}
-                      </TableCell>
-                      <TableCell align="center">{row.year}</TableCell>
-                      <TableCell align="center">{row.imdb}</TableCell>
-                      <TableCell align="center">{row.rottenTomatoes}</TableCell>
-                    </TableRow>
-                  );
-                })}
+                      >
+                        <TableCell align="left" >
+                          {row.name}
+                        </TableCell>
+                        <TableCell align="center">{row.year}</TableCell>
+                        <TableCell align="center">{row.imdb}</TableCell>
+                        <TableCell align="center">{row.rottenTomatoes}</TableCell>
+                      </TableRow>
+                    );
+                  })}
               {emptyRows > 0 && (
                 <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
                   <TableCell colSpan={6} />
@@ -257,5 +256,5 @@ export const TopRatedMovies = () => {
       />
     </div>
 
-  )
-}
+  );
+};
