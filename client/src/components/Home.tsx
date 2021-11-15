@@ -87,12 +87,16 @@ export const Home = (props:HomeProps) => {
   const [topLanguageData, setTopLanguageData] = useState([]);
   const [topYearData, setTopYearData] = useState([]);
 
-  const directorURL = (url, name, index) => (
-    <Button key={index} href={url} target="_blank" rel="noreferrer" variant="text" sx={{ padding: '4px 0px' }}>
-      {name}
-    </Button>);
+  const directorURL = (url, name, id, index, length) => (
+    <React.Fragment>
+      <Button key={id} href={url} target="_blank" rel="noreferrer" variant="text" sx={{ padding: '4px 0px' }}>
+        {name}
+      </Button>
+      {index !== length-1 ? ', ' : null}
+    </React.Fragment>
+  );
 
-  const directorName = (director, index) => directorURL(director.url, director.name, index);
+  const directorName = (director, index, length) => directorURL(director.url, director.name, director._id, index, length);
 
   const movieList = movieData?.map((movie) => (
     <Grid item xs={6} md={4} lg={3} xl={2} key={movie._id}>
@@ -112,12 +116,13 @@ export const Home = (props:HomeProps) => {
           <Typography component="div" sx={{ padding: '0px' }}>
             {
               movie.language.map(
-                  (element)=><Typography key={element._id} component="h6" sx={{ padding: '4px 0px' }}>{element.name}</Typography>)
+                  (element, index, arr)=><Typography key={element._id} component="span" sx={{ padding: '4px 0px' }}>
+                    {element.name} {index !== arr.length-1 ? ', ' : null}</Typography>)
             }
 
             <Typography component="div">
               {
-                movie.director.map((element, index) => directorName(element, index))
+                movie.director.map((element, index, arr) => directorName(element, index, arr.length))
               }
             </Typography>
             <Typography component="h6" sx={{ padding: '4px 0px' }}>
@@ -149,7 +154,7 @@ export const Home = (props:HomeProps) => {
                 Other Movies from Same Director:
             </Typography>
             {
-              movie.director.map((element, index) => {
+              movie.director.map((element) => {
                 return element.movies.map((otherMovie) => {
                   if (otherMovie._id !== movie._id) {
                     return (

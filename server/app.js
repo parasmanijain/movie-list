@@ -1,13 +1,11 @@
-const  { Language, Country, Movie, Director }  =  require('./schemaModel');
-
+const { Language, Country, Movie, Director } = require('./schemaModel');
 const express = require('express');
-
 const app = express();
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
 const { API_PORT } = require('./config');
 
-// Movie.syncIndexes(function (err, res) {
+// Director.syncIndexes(function (err, res) {
 //     if (err) {
 //         console.log(err);
 //         return err;
@@ -15,6 +13,7 @@ const { API_PORT } = require('./config');
 //     console.log(res);
 //     return res;
 // });
+
 // Language.update({'_id':'5fb8aa6779e2affc100fe5fa'}, {"$pull": {movies: null}}).exec(function (err, results) {
 //     console.log(results);
 //     if (err) return err;
@@ -238,14 +237,29 @@ app.post('/movie', async (req, res) => {
     try {
         const newMovie = await Movie.create(req.body);
         if (!newMovie) throw err;
-        let [someResult, anotherResult] = await Promise.all([Director.findOneAndUpdate(
-            { _id: newMovie.director },
-            { "$push": { "movies": newMovie._id } },
-            { upsert: true, useFindAndModify: false }),
-        Language.findOneAndUpdate(
-            { _id: newMovie.language },
-            { "$push": { "movies": newMovie._id } },
-            { upsert: true, useFindAndModify: false })]);
+        const bulkDirectorOps = newMovie.director.map(doc => ({
+            updateOne: {
+                filter: { _id: doc },
+                update: { "$push": { "movies": newMovie._id } },
+                upsert: true,
+                useFindAndModify: false
+            }
+        }));
+        const bulkLanguageOps = newMovie.language.map(doc => ({
+            updateOne: {
+                filter: { _id: doc },
+                update: { "$push": { "movies": newMovie._id } },
+                upsert: true,
+                useFindAndModify: false
+            }
+        }));
+        let [someResult, anotherResult] = await Promise.all(
+            Director.bulkWrite(bulkDirectorOps)
+                .then(bulkWriteOpResult => console.log('Director BULK update OK:', bulkWriteOpResult))
+                .catch(console.error.bind(console, 'Director BULK update error:')),
+            Language.bulkWrite(bulkLanguageOps)
+                .then(bulkWriteOpResult => console.log('Language BULK update OK:', bulkWriteOpResult))
+                .catch(console.error.bind(console, 'Language BULK update error:')))
         return res.status(200).json({ someResult, anotherResult });
     } catch (err) {
         return res.status(400).json(err);
