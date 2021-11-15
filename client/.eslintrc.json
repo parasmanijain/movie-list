@@ -34,6 +34,7 @@
             {
                 "code": 140
             }
-        ]
+        ],
+        "no-unused-vars": "off"
     }
 }

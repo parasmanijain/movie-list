@@ -15,22 +15,69 @@ interface AddMovieAttributes {
   selectedMovie?: string;
 }
 
+const initialValues = {
+  name: '',
+  language: [],
+  director: [],
+  imdb: '',
+  rottenTomatoes: '',
+  year: currentYear,
+  url: ''
+};
+
 export const AddNewMovie = (props:AddMovieAttributes) => {
   const { selectedMovie } = props;
   const [languageData, setLanguageData] = useState([]);
   const [directorData, setDirectorData] = useState([]);
-  let apis = [];
-  console.log('selectedMovie', selectedMovie);
+  const [, setSelectedMovieData] = useState(null);
+
+  const languages = axios.get(`${GET_LANGUAGES_URL}`);
+  const directors = axios.get(`${GET_DIRECTORS_URL}`);
+  const selectedMovieDetails = axios.get(`${GET_MOVIE_DETAILS_URL}`, { params: { movieID: selectedMovie } });
+  const fetchData = () => {
+    axios.all([languages, directors]).then(axios.spread((...responses) => {
+      setLanguageData(responses[0].data);
+      setDirectorData(responses[1].data);
+    })).catch((errors) => {
+      console.log(errors);
+    });
+  };
+
+  const fetchSelectedMovieDetails = () => {
+    axios.all([selectedMovieDetails]).then(axios.spread((...responses) => {
+      if (responses[0].data) {
+        setSelectedMovieData(responses[0].data);
+        const { name, language, director, imdb, rottenTomatoes, url, year } = responses[0].data;
+        const languageValues = language.map((element)=> element._id);
+        const directorValues = director.map((element)=> element._id);
+        formik.setValues({
+          name,
+          language: languageValues,
+          director: directorValues,
+          imdb,
+          rottenTomatoes,
+          url,
+          year
+        }, true);
+      }
+    })).catch((errors) => {
+      console.log(errors);
+    });
+  };
+
+  useEffect(() => {
+    fetchSelectedMovieDetails();
+    return () => {
+    };
+  }, [selectedMovie]);
+
+  useEffect(() => {
+    fetchData();
+    return () => {
+    };
+  }, []);
   const formik = useFormik({
-    initialValues: {
-      name: '',
-      language: [],
-      director: [],
-      imdb: '',
-      rottenTomatoes: '',
-      year: currentYear,
-      url: ''
-    },
+    initialValues,
     validationSchema,
     onSubmit: () => {
       axios.post(`${ADD_NEW_MOVIE_URL}`, {
@@ -49,27 +96,6 @@ export const AddNewMovie = (props:AddMovieAttributes) => {
           });
     }
   });
-  const languages = axios.get(`${GET_LANGUAGES_URL}`);
-  const directors = axios.get(`${GET_DIRECTORS_URL}`);
-  const selectedMovieDetails = axios.get(`${GET_MOVIE_DETAILS_URL}`, { params: { movieID: selectedMovie } });
-  apis = [languages, directors];
-  if (selectedMovie) {
-    apis = [...apis, selectedMovieDetails];
-  }
-  const fetchData = () => {
-    axios.all([...apis]).then(axios.spread((...responses) => {
-      setLanguageData(responses[0].data);
-      setDirectorData(responses[1].data);
-    })).catch((errors) => {
-      console.log(errors);
-    });
-  };
-  useEffect(() => {
-    fetchData();
-    return () => {
-    };
-  }, []);
-
   return (
     <form id="form" onSubmit={formik.handleSubmit} autoComplete="off">
       <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
