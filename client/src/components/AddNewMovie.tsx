@@ -31,10 +31,9 @@ export const AddNewMovie = (props:AddMovieAttributes) => {
   const [directorData, setDirectorData] = useState([]);
   const [, setSelectedMovieData] = useState(null);
 
-  const languages = axios.get(`${GET_LANGUAGES_URL}`);
-  const directors = axios.get(`${GET_DIRECTORS_URL}`);
-  const selectedMovieDetails = axios.get(`${GET_MOVIE_DETAILS_URL}`, { params: { movieID: selectedMovie } });
   const fetchData = () => {
+    const languages = axios.get(`${GET_LANGUAGES_URL}`);
+    const directors = axios.get(`${GET_DIRECTORS_URL}`);
     axios.all([languages, directors]).then(axios.spread((...responses) => {
       setLanguageData(responses[0].data);
       setDirectorData(responses[1].data);
@@ -44,6 +43,7 @@ export const AddNewMovie = (props:AddMovieAttributes) => {
   };
 
   const fetchSelectedMovieDetails = () => {
+    const selectedMovieDetails = axios.get(`${GET_MOVIE_DETAILS_URL}`, { params: { movieID: selectedMovie } });
     axios.all([selectedMovieDetails]).then(axios.spread((...responses) => {
       if (responses[0].data) {
         setSelectedMovieData(responses[0].data);
@@ -69,13 +69,14 @@ export const AddNewMovie = (props:AddMovieAttributes) => {
     fetchSelectedMovieDetails();
     return () => {
     };
-  }, [selectedMovie]);
+  }, []);
 
   useEffect(() => {
     fetchData();
     return () => {
     };
   }, []);
+
   const formik = useFormik({
     initialValues,
     validationSchema,
@@ -123,14 +124,15 @@ export const AddNewMovie = (props:AddMovieAttributes) => {
 
             input={<OutlinedInput label="Language" />}
             renderValue={(selected: string[]) => {
-              const selectedLanguages = (languageData.filter((language) => selected.includes(language._id))).map((element) => element.name);
+              const selectedLanguages = ([...languageData].filter(
+                  (language) => selected.includes(language._id))).map((element) => element.name);
               return selectedLanguages.join(', ');
             }
             }
             MenuProps={MenuProps}
           >
 
-            {languageData.map((language) => (
+            {[...languageData].map((language) => (
               <MenuItem key={language._id} value={language._id}>
                 <Checkbox checked={formik.values.language.indexOf(language._id) > -1} />
                 <ListItemText primary={language.name} />
@@ -153,7 +155,7 @@ export const AddNewMovie = (props:AddMovieAttributes) => {
               MenuProps: MenuProps,
               error: formik.touched.director && Boolean(formik.errors.director),
               renderValue: (selected: string[]) => {
-                const selectedDirectors = (directorData.filter(
+                const selectedDirectors = ([...directorData].filter(
                     (director) => selected.includes(director._id))).map((element) => element.name);
                 return selectedDirectors.join(', ');
               }
@@ -180,7 +182,7 @@ export const AddNewMovie = (props:AddMovieAttributes) => {
             MenuProps={MenuProps}
           > */}
 
-            {directorData.map((director) => (
+            {[...directorData].map((director) => (
               <MenuItem key={director._id} value={director._id}>
                 <Checkbox checked={formik.values.director.indexOf(director._id) > -1} />
                 <ListItemText primary={director.name} />
