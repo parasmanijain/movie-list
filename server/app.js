@@ -1,42 +1,11 @@
+const  { Language, Country, Movie, Director }  =  require('./schemaModel');
+
 const express = require('express');
-const mongoose = require('mongoose');
+
 const app = express();
-mongoose.connect('mongodb+srv://paras:paras@paras-db.j8cs9.mongodb.net/paras-db?retryWrites=true&w=majority', { useNewUrlParser: true, useUnifiedTopology: true });
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
 const { API_PORT } = require('./config');
-
-
-const languageSchema = new mongoose.Schema({
-    name: { type: String },
-    code: { type: String },
-    movies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Movie' }]
-});
-const directorSchema = new mongoose.Schema({
-    name: { type: String },
-    url: { type: String },
-    country: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Country' }],
-    movies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Movie' }]
-});
-const countrySchema = new mongoose.Schema({
-    name: { type: String },
-});
-const movieSchema = new mongoose.Schema({
-    name: { type: String },
-    language: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Language' }],
-    director: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Director' }],
-    year: { type: String },
-    url: { type: String },
-    imdb: { type: Number },
-    rottenTomatoes: { type: Number }
-});
-
-directorSchema.index({ name: 1, country: 1, url: 1 }, { unique: true });
-movieSchema.index({ name: 1, year: 1, url: 1, imdb: 1, rottenTomatoes: 1 }, { unique: true });
-const Language = mongoose.model('Language', languageSchema);
-const Country = mongoose.model('Country', countrySchema);
-const Director = mongoose.model('Director', directorSchema);
-const Movie = mongoose.model('Movie', movieSchema);
 
 // Movie.syncIndexes(function (err, res) {
 //     if (err) {
