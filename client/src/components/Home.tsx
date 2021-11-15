@@ -87,14 +87,37 @@ export const Home = (props:HomeProps) => {
   const [topLanguageData, setTopLanguageData] = useState([]);
   const [topYearData, setTopYearData] = useState([]);
 
+  const otherMovies = (movie, movies, id, name, index, arr) => {
+    return arr.length > 1 ? <React.Fragment><Typography component="div">{name}</Typography>
+      {
+        displayOtherMovies(movies)
+      }</React.Fragment> : displayOtherMovies(movies);
+  };
+
+  const displayOtherMovies = (movies) => movies.map((otherMovie, index, arr) => {
+    return otherMovieLinks(otherMovie, index, arr.length);
+  });
+
+  const otherMovieLinks = (otherMovie, index, length) => {
+    return (
+      <React.Fragment key={otherMovie._id} >
+        <Button href={otherMovie.url} target="_blank" rel="noreferrer" sx={{ padding: '4px 0px' }}>
+          {otherMovie.name} ({otherMovie.year})
+        </Button>
+        {index !== length-1 ? ' , ' : null}
+      </React.Fragment>
+    );
+  };
+
   const directorURL = (url, name, id, index, length) => (
     <React.Fragment key={id}>
       <Button href={url} target="_blank" rel="noreferrer" variant="text" sx={{ padding: '4px 0px' }}>
         {name}
       </Button>
-      {index !== length-1 ? ', ' : null}
+      {index !== length-1 ? ' , ' : null}
     </React.Fragment>
   );
+
 
   const directorName = (director, index, length) => directorURL(director.url, director.name, director._id, index, length);
 
@@ -154,16 +177,10 @@ export const Home = (props:HomeProps) => {
                 Other Movies from Same Director:
             </Typography>
             {
-              movie.director.map((element) => {
-                return element.movies.map((otherMovie) => {
-                  if (otherMovie._id !== movie._id) {
-                    return (
-                      <Button key={otherMovie._id} href={otherMovie.url} target="_blank" rel="noreferrer" sx={{ padding: '4px 0px' }}>
-                        {otherMovie.name} ({otherMovie.year})
-                      </Button>
-                    );
-                  }
-                });
+              movie.director.map((element, index, arr) => {
+                const { _id, movies, name } = element;
+                const otherMovieList = movies.filter((otherMovie)=> otherMovie._id !== movie._id);
+                return otherMovies(movie, otherMovieList, _id, name, index, arr);
               })
             }
           </Typography>
