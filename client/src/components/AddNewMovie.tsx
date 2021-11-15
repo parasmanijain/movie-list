@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useFormik } from 'formik';
-import { ADD_NEW_MOVIE_URL, currentYear, GET_DIRECTORS_URL, GET_LANGUAGES_URL, MenuProps } from '../helper/config';
+import { ADD_NEW_MOVIE_URL, currentYear, GET_DIRECTORS_URL, GET_LANGUAGES_URL, GET_MOVIE_DETAILS_URL, MenuProps } from '../helper/config';
 import {
   Box, Button, Checkbox, FormControl, FormHelperText, InputLabel, ListItemText,
   MenuItem, OutlinedInput, Select, TextField
@@ -19,6 +19,7 @@ export const AddNewMovie = (props:AddMovieAttributes) => {
   const { selectedMovie } = props;
   const [languageData, setLanguageData] = useState([]);
   const [directorData, setDirectorData] = useState([]);
+  let apis = [];
   console.log('selectedMovie', selectedMovie);
   const formik = useFormik({
     initialValues: {
@@ -48,10 +49,15 @@ export const AddNewMovie = (props:AddMovieAttributes) => {
           });
     }
   });
+  const languages = axios.get(`${GET_LANGUAGES_URL}`);
+  const directors = axios.get(`${GET_DIRECTORS_URL}`);
+  const selectedMovieDetails = axios.get(`${GET_MOVIE_DETAILS_URL}`, { params: { movieID: selectedMovie } });
+  apis = [languages, directors];
+  if (selectedMovie) {
+    apis = [...apis, selectedMovieDetails];
+  }
   const fetchData = () => {
-    const languages = axios.get(`${GET_LANGUAGES_URL}`);
-    const directors = axios.get(`${GET_DIRECTORS_URL}`);
-    axios.all([languages, directors]).then(axios.spread((...responses) => {
+    axios.all([...apis]).then(axios.spread((...responses) => {
       setLanguageData(responses[0].data);
       setDirectorData(responses[1].data);
     })).catch((errors) => {

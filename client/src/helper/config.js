@@ -9,6 +9,7 @@ export const GET_MOVIES_URL = API_URL + '/movies';
 export const GET_COUNTRIES_URL = API_URL + '/countries';
 export const GET_LANGUAGES_URL = API_URL + '/languages';
 export const GET_DIRECTORS_URL = API_URL + '/directors';
+export const GET_MOVIE_DETAILS_URL = API_URL + '/movieDetails';
 
 export const GET_DIRECTORS_COUNT_URL = API_URL + '/directorsCount';
 export const GET_LANGUAGES_COUNT_URL = API_URL + '/languagesCount';

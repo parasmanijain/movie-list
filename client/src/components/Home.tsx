@@ -43,7 +43,7 @@ export const Home = (props:HomeProps) => {
   const [page, setPage] = useState(1);
   const [count, setCount] = useState(1);
   const [total, setTotal] = useState(0);
-  const limit = 60;
+  const limit = 40;
   const history = useHistory();
 
   const fetchData = () => {
@@ -88,24 +88,23 @@ export const Home = (props:HomeProps) => {
   const [topYearData, setTopYearData] = useState([]);
 
   const otherMovies = (movie, movies, id, name, index, arr) => {
-    return arr.length > 1 ? <React.Fragment><Typography component="div">{name}</Typography>
+    return arr.length > 1 ? <React.Fragment><Typography variant="button" display="block">{name}</Typography>
       {
         displayOtherMovies(movies)
       }</React.Fragment> : displayOtherMovies(movies);
   };
 
-  const displayOtherMovies = (movies) => movies.map((otherMovie, index, arr) => {
-    return otherMovieLinks(otherMovie, index, arr.length);
+  const displayOtherMovies = (movies) => movies.map((otherMovie) => {
+    return otherMovieLinks(otherMovie);
   });
 
-  const otherMovieLinks = (otherMovie, index, length) => {
+  const otherMovieLinks = (otherMovie) => {
     return (
-      <React.Fragment key={otherMovie._id} >
+      <Typography component="div" key={otherMovie._id} >
         <Button href={otherMovie.url} target="_blank" rel="noreferrer" sx={{ padding: '4px 0px' }}>
           {otherMovie.name} ({otherMovie.year})
         </Button>
-        {index !== length-1 ? ' , ' : null}
-      </React.Fragment>
+      </Typography>
     );
   };
 
@@ -122,7 +121,7 @@ export const Home = (props:HomeProps) => {
   const directorName = (director, index, length) => directorURL(director.url, director.name, director._id, index, length);
 
   const movieList = movieData?.map((movie) => (
-    <Grid item xs={6} md={4} lg={3} xl={2} key={movie._id}>
+    <Grid item xs = {3} key={movie._id}>
       <Accordion sx = {{ padding: '0px' }}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />
@@ -131,7 +130,7 @@ export const Home = (props:HomeProps) => {
           aria-controls="panel1a-content"
           id="panel1a-header"
         >
-          <Typography component="div">
+          <Typography variant="button" display="block">
             {movie.name} ({movie.year})
           </Typography>
         </AccordionSummary>
@@ -139,7 +138,7 @@ export const Home = (props:HomeProps) => {
           <Typography component="div" sx={{ padding: '0px' }}>
             {
               movie.language.map(
-                  (element, index, arr)=><Typography key={element._id} component="span" sx={{ padding: '4px 0px' }}>
+                  (element, index, arr)=><Typography key={element._id} variant="button" display="span" sx={{ padding: '4px 0px' }}>
                     {element.name} {index !== arr.length-1 ? ', ' : null}</Typography>)
             }
 
@@ -190,14 +189,14 @@ export const Home = (props:HomeProps) => {
   ));
 
   const topDirectorsList = topDirectorData.map((director) => (
-    <span key={director._id}>{director.name} ({director.length}) </span>
+    <Typography variant="button" display="span" key={director._id}>{director.name} ({director.length}) </Typography>
   ));
   const topYearsList = topYearData.map((year) => (
-    <span key={year._id}>{year._id} ({year.count}) </span>
+    <Typography variant="button" display="span" key={year._id}>{year._id} ({year.count}) </Typography>
   ));
 
   const topLanguagesList = topLanguageData.map((language) => (
-    <span key={language._id}>{language.name} ({language.length}) </span>
+    <Typography variant="button" display="span"key={language._id}>{language.name} ({language.length}) </Typography>
   ));
 
   const handleChange = (event, value) => {
@@ -212,7 +211,7 @@ export const Home = (props:HomeProps) => {
         <Typography component="h6">Most watched Language: {topLanguagesList}</Typography>
         <Typography component="h6">Most watched Year: {topYearsList}</Typography>
       </Box>
-      <Grid container spacing={2} sx={{ margin: '16px 0px', padding: '0px' }}>
+      <Grid container spacing ={2} sx={{ margin: '16px 0px', padding: '0px' }}>
         {movieList}
       </Grid>
       <Box sx={{ margin: '16px 0px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>

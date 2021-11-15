@@ -62,7 +62,7 @@ app.get('/directors', (req, res) => {
 });
 app.get('/movies', (req, res) => {
     let page = parseInt(req.query.page) || 1;
-    let limit = parseInt(req.query.limit) || 60;
+    let limit = parseInt(req.query.limit) || 40;
     // get data from the view and add it to mongodb
     Movie.find({}, null, { sort: { name: 1 } })
         .skip((page - 1) * limit)
@@ -87,7 +87,7 @@ app.get('/movies', (req, res) => {
         });
 });
 app.get('/movieDetails', (req, res) => {
-    Movie.findById(req.query.movieID, function (err, movie) {
+    Movie.findById(req.query.movieID).populate('language').populate('director').exec(function (err, movie) {
         if (err) return res.send(500, { error: err });
         return res.send(movie);
     }
