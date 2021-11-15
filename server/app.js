@@ -14,7 +14,13 @@ const { API_PORT } = require('./config');
 //     return res;
 // });
 
-// Language.update({'_id':'5fb8aa6779e2affc100fe5fa'}, {"$pull": {movies: null}}).exec(function (err, results) {
+// Language.updateOne({'_id':'618a5d59b958c5b3059428d8'}, {"$pull": {movies: null}}).exec(function (err, results) {
+//     console.log(results);
+//     if (err) return err;
+//     return results;
+// }); 
+
+// Director.updateOne({'_id':'61921ae3c73fe3378115e617'}, {"$pull": {movies: null}}).exec(function (err, results) {
 //     console.log(results);
 //     if (err) return err;
 //     return results;

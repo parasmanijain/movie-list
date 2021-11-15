@@ -88,8 +88,8 @@ export const Home = (props:HomeProps) => {
   const [topYearData, setTopYearData] = useState([]);
 
   const directorURL = (url, name, id, index, length) => (
-    <React.Fragment>
-      <Button key={id} href={url} target="_blank" rel="noreferrer" variant="text" sx={{ padding: '4px 0px' }}>
+    <React.Fragment key={id}>
+      <Button href={url} target="_blank" rel="noreferrer" variant="text" sx={{ padding: '4px 0px' }}>
         {name}
       </Button>
       {index !== length-1 ? ', ' : null}
