@@ -87,14 +87,14 @@ export const Home = (props:HomeProps) => {
   const [topLanguageData, setTopLanguageData] = useState([]);
   const [topYearData, setTopYearData] = useState([]);
 
-  const otherMovies = (movie, movies, id, name, index, arr) => {
-    return arr.length > 1 ? <React.Fragment><Typography variant="button" display="block">{name}</Typography>
+  const otherMovies = (movies, name, arr) => {
+    return arr.length > 1 ? <React.Fragment key={name}><Typography variant="button" display="block">{name}</Typography>
       {
         displayOtherMovies(movies)
       }</React.Fragment> : displayOtherMovies(movies);
   };
 
-  const displayOtherMovies = (movies) => movies.map((otherMovie) => {
+  const displayOtherMovies = (movies) => movies.map((otherMovie ) => {
     return otherMovieLinks(otherMovie);
   });
 
@@ -179,7 +179,7 @@ export const Home = (props:HomeProps) => {
               movie.director.map((element, index, arr) => {
                 const { _id, movies, name } = element;
                 const otherMovieList = movies.filter((otherMovie)=> otherMovie._id !== movie._id);
-                return otherMovies(movie, otherMovieList, _id, name, index, arr);
+                return otherMovies( otherMovieList, name, arr);
               })
             }
           </Typography>

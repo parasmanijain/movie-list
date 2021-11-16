@@ -275,6 +275,8 @@ app.post('/movie', async (req, res) => {
 app.post('/updateMovie', async (req, res) => {
     // get data from the view and add it to mongodb
     try {
+        const oldMovie = await Movie.findById(req.query.movieID).populate('language').populate('director');
+        if(!oldMovie) throw err;
         const newMovie = await Movie.updateOne({ _id: req.body._id }, req.body, { upsert: true });
         if (!newMovie) throw err;
         let [someResult, anotherResult] = await Promise.all([Director.findOneAndUpdate(
@@ -286,6 +288,7 @@ app.post('/updateMovie', async (req, res) => {
             { "$push": { "movies": newMovie._id } },
             { upsert: true, useFindAndModify: false })]);
         return res.status(200).json({ someResult, anotherResult });
+        
     } catch (err) {
         return res.status(400).json(err);
     }
