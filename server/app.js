@@ -14,13 +14,13 @@ const { API_PORT } = require('./config');
 //     return res;
 // });
 
-// Language.updateOne({'_id':'618a5d59b958c5b3059428d8'}, {"$pull": {movies: null}}).exec(function (err, results) {
+// Language.updateOne({'_id':'618a5d02b958c5b30593f4f8'}, {"$pull": {movies: null}}).exec(function (err, results) {
 //     console.log(results);
 //     if (err) return err;
 //     return results;
 // }); 
 
-// Director.updateOne({'_id':'61921ae3c73fe3378115e617'}, {"$pull": {movies: null}}).exec(function (err, results) {
+// Director.updateOne({'_id':'618acee6c5f642268fc6c6fe'}, {"$pull": {movies: null}}).exec(function (err, results) {
 //     console.log(results);
 //     if (err) return err;
 //     return results;
@@ -277,18 +277,58 @@ app.post('/updateMovie', async (req, res) => {
     try {
         const oldMovie = await Movie.findById(req.query.movieID).populate('language').populate('director');
         if(!oldMovie) throw err;
+        console.log(oldMovie);
+        let bulkDirectorOps = oldMovie.director.map(doc => ({
+            deleteOne: {
+                filter: { _id: doc },
+                update: { "$pull": { "movies": oldMovie._id } },
+                upsert: true,
+                useFindAndModify: false
+            }
+        }));
+        let bulkLanguageOps = oldMovie.language.map(doc => ({
+            deleteOne: {
+                filter: { _id: doc },
+                update: { "$pull": { "movies": oldMovie._id } },
+                upsert: true,
+                useFindAndModify: false
+            }
+        }));
+        let [someResult, anotherResult] = await Promise.all(
+            Director.bulkWrite(bulkDirectorOps)
+                .then(bulkWriteOpResult => console.log('Director BULK update OK:', bulkWriteOpResult))
+                .catch(console.error.bind(console, 'Director BULK update error:')),
+            Language.bulkWrite(bulkLanguageOps)
+                .then(bulkWriteOpResult => console.log('Language BULK update OK:', bulkWriteOpResult))
+                .catch(console.error.bind(console, 'Language BULK update error:')));
+        const oldMovieDelete = await Movie.findByIdAndDelete(req.query.movieID);
+        if(!oldMovieDelete) throw err;
         const newMovie = await Movie.updateOne({ _id: req.body._id }, req.body, { upsert: true });
         if (!newMovie) throw err;
-        let [someResult, anotherResult] = await Promise.all([Director.findOneAndUpdate(
-            { _id: newMovie.director },
-            { "$push": { "movies": newMovie._id } },
-            { upsert: true, useFindAndModify: false }),
-        Language.findOneAndUpdate(
-            { _id: newMovie.language },
-            { "$push": { "movies": newMovie._id } },
-            { upsert: true, useFindAndModify: false })]);
+         bulkDirectorOps = newMovie.director.map(doc => ({
+            updateOne: {
+                filter: { _id: doc },
+                update: { "$push": { "movies": newMovie._id } },
+                upsert: true,
+                useFindAndModify: false
+            }
+        }));
+         bulkLanguageOps = newMovie.language.map(doc => ({
+            updateOne: {
+                filter: { _id: doc },
+                update: { "$push": { "movies": newMovie._id } },
+                upsert: true,
+                useFindAndModify: false
+            }
+        }));
+         [someResult, anotherResult] = await Promise.all(
+            Director.bulkWrite(bulkDirectorOps)
+                .then(bulkWriteOpResult => console.log('Director BULK update OK:', bulkWriteOpResult))
+                .catch(console.error.bind(console, 'Director BULK update error:')),
+            Language.bulkWrite(bulkLanguageOps)
+                .then(bulkWriteOpResult => console.log('Language BULK update OK:', bulkWriteOpResult))
+                .catch(console.error.bind(console, 'Language BULK update error:')))
         return res.status(200).json({ someResult, anotherResult });
-        
     } catch (err) {
         return res.status(400).json(err);
     }
