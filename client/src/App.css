@@ -20,19 +20,21 @@
 
 
 
-.main-container {
-  position: relative;
+ .main-container {
+  width:4000px;
+  overflow-x: auto;
+  overflow-y:hidden;
 }
 
 
-.chart-container {
+/*.chart-container {
   width:75%;
   height:75%;
   top: 50%;
     left: 50%;
     position: absolute;
     transform: translate(-50%, -50%);
-}
+} */
 .movie-rating-container {
   display: flex;
   justify-content: space-around;

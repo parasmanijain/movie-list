@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Pie } from 'react-chartjs-2';
+import { Bar } from 'react-chartjs-2';
 import { chartColors } from '../helper/colors';
 import { GET_DIRECTORS_COUNT_URL } from '../helper/config';
-
 const initialData = {
   labels: [],
   datasets: [
@@ -16,17 +15,30 @@ const initialData = {
   ]
 };
 
-const pieOptions = {
-  legend: {
-    display: true,
-    position: 'bottom'
-  },
-  elements: {
-    arc: {
-      borderWidth: 0
-    }
-  }
-};
+// const pieOptions = {
+//   legend: {
+//     display: true,
+//     position: 'bottom'
+//   },
+//   elements: {
+//     arc: {
+//       borderWidth: 0
+//     }
+//   }
+// };
+
+
+// const options = {
+//   scales: {
+//     yAxes: [
+//       {
+//         ticks: {
+//           beginAtZero: true
+//         }
+//       }
+//     ]
+//   }
+// };
 
 // const styles = {
 //   pieContainer: {
@@ -67,7 +79,7 @@ export const Director = () => {
   const [, setDirectorData] = useState([]);
   const [chartData, setChartData] = useState(initialData);
   // eslint-disable-next-line no-unused-vars
-  let chartInstance = null;
+  const chartInstance = null;
   const fetchData = () => {
     const directors = axios.get(`${GET_DIRECTORS_COUNT_URL}`);
     axios.all([directors]).then(axios.spread((...responses) => {
@@ -105,13 +117,14 @@ export const Director = () => {
   return (
     <div className="main-container">
       <div className="chart-container">
-        <Pie
+        <Bar data={chartData} height={900} options={{ maintainAspectRatio: false, scales: { } }} />
+        {/* <Pie
           options={pieOptions}
           data={chartData}
           ref={(input) => {
             chartInstance = input;
           }}
-        />
+        /> */}
       </div>
     </div>
   );
