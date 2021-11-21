@@ -15,6 +15,10 @@ import { AddNewCountry } from './components/AddNewCountry';
 import { AddNewLanguage } from './components/AddNewLanguage';
 import { TopRatedMovies } from './components/TopRatedMovies';
 import { AppBar, Box, Tab, Tabs } from '@mui/material';
+import { Franchise } from './components/Franchise';
+import { Genre } from './components/Genre';
+import { AddNewGenre } from './components/AddNewGenre';
+import { AddNewFranchise } from './components/AddNewFranchise';
 
 export const App = () => {
   const [selectedMovie, setSelectedMovie] = useState(null);
@@ -56,6 +60,18 @@ export const App = () => {
                 to="/director"
               />
               <Tab
+                value="/genre"
+                label="Genre"
+                component={Link}
+                to="/genre"
+              />
+              <Tab
+                value="/franchise"
+                label="Franchise"
+                component={Link}
+                to="/franchise"
+              />
+              <Tab
                 value="/add-new-country"
                 label="Add New Country"
                 component={Link}
@@ -72,6 +88,18 @@ export const App = () => {
                 label="Add New Language"
                 component={Link}
                 to="/add-new-language"
+              />
+              <Tab
+                value="/add-new-genre"
+                label="Add New Genre"
+                component={Link}
+                to="/add-new-genre"
+              />
+              <Tab
+                value="/add-new-franchise"
+                label="Add New Franchise"
+                component={Link}
+                to="/add-new-franchise"
               />
               <Tab
                 value="/add-new-movie"
@@ -96,8 +124,12 @@ export const App = () => {
         <Switch>
           <Route path="/language" component={Language} />
           <Route path="/director" component={Director} />
+          <Route path="/genre" component={Genre} />
+          <Route path="/franchise" component={Franchise} />
           <Route path="/add-new-director" component={AddNewDirector} />
           <Route path="/add-new-language" component={AddNewLanguage} />
+          <Route path="/add-new-genre" component={AddNewGenre} />
+          <Route path="/add-new-franchise" component={AddNewFranchise} />
           <Route path="/add-new-movie" render={() => <AddNewMovie selectedMovie = {selectedMovie} />} />
           <Route path="/add-new-country" component={AddNewCountry} />
           <Route path="/top-rated-movies" component={TopRatedMovies} />

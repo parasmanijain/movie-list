@@ -1,16 +1,16 @@
-const { Language, Country, Movie, Director } = require('./schemaModel');
+const { Language, Country, Movie, Director, Genre, Franchise } = require('./schemaModel');
 const express = require('express');
 const app = express();
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
 const { API_PORT } = require('./config');
 
-// Director.syncIndexes(function (err, res) {
+// Genre.syncIndexes(function (err, res) {
 //     if (err) {
-//         console.log(err);
+//         console.log("Error",err);
 //         return err;
 //     }
-//     console.log(res);
+//     console.log("Succes:",res);
 //     return res;
 // });
 
@@ -46,6 +46,20 @@ app.get('/languages', (req, res) => {
         return res.send(results);
     });
 });
+app.get('/genres', (req, res) => {
+    // get data from the view and add it to mongodb
+    Genre.find({}, null, { sort: { name: 1 } }).populate('movies').exec(function (err, results) {
+        if (err) return res.send(500, { error: err });
+        return res.send(results);
+    });
+});
+app.get('/franchises', (req, res) => {
+    // get data from the view and add it to mongodb
+    Franchise.find({}, null, { sort: { name: 1 } }).populate('movies').exec(function (err, results) {
+        if (err) return res.send(500, { error: err });
+        return res.send(results);
+    });
+});
 app.get('/countries', (req, res) => {
     // get data from the view and add it to mongodb
     Country.find({}, null, { sort: { name: 1 } }, (err, data) => {
@@ -66,7 +80,7 @@ app.get('/movies', (req, res) => {
     // get data from the view and add it to mongodb
     Movie.find({}, null, { sort: { name: 1 } })
         .skip((page - 1) * limit)
-        .limit(limit).populate('language')
+        .limit(limit).populate('language').populate('genre').populate('franchise')
         .populate({
             path: 'director',
             populate: [{ path: 'country' }, { path: 'movies', options: { sort: { year: 1 } } }]
@@ -205,6 +219,111 @@ app.get('/languagesCount', (req, res) => {
     )
 });
 
+app.get('/topGenre', (req, res) => {
+    // get data from the view and add it to mongodb
+    Genre.aggregate(
+        [
+            {
+                "$project": {
+                    "name": 1,
+                    "length": { "$size": "$movies" }
+                }
+            },
+            { "$sort": { "length": -1 } },
+            { "$limit": 1 }
+        ],
+        function (err, results) {
+            if (err) return res.send(500, { error: err });
+            return res.send(results);
+        }
+    )
+});
+
+app.get('/genresCount', (req, res) => {
+    // get data from the view and add it to mongodb
+    Genre.aggregate(
+        [
+            {
+                "$project": {
+                    "name": 1,
+                    "length": { "$size": "$movies" }
+                }
+            },
+            { "$sort": { "name": 1 } },
+        ],
+        function (err, results) {
+            if (err) return res.send(500, { error: err });
+            return res.send(results);
+        }
+    )
+});
+
+app.get('/topFranchise', (req, res) => {
+    // get data from the view and add it to mongodb
+    Franchise.aggregate(
+        [
+            {
+                "$project": {
+                    "name": 1,
+                    "length": { "$size": "$movies" }
+                }
+            },
+            { "$sort": { "length": -1 } },
+            { "$limit": 1 }
+        ],
+        function (err, results) {
+            if (err) return res.send(500, { error: err });
+            return res.send(results);
+        }
+    )
+});
+
+app.get('/franchisesCount', (req, res) => {
+    // get data from the view and add it to mongodb
+    Franchise.aggregate(
+        [
+            {
+                "$project": {
+                    "name": 1,
+                    "length": { "$size": "$movies" }
+                }
+            },
+            { "$sort": { "name": 1 } },
+        ],
+        function (err, results) {
+            if (err) return res.send(500, { error: err });
+            return res.send(results);
+        }
+    )
+});
+
+
+
+app.post('/genre', (req, res) => {
+    const { name, movies } = req.body;
+    // get data from the view and add it to mongodb
+    var query = { 'name': name, 'movies': movies };
+    Genre.findOneAndUpdate(query, { "$set": { "name": name} }, {
+        upsert: true,
+        useFindAndModify: false
+    }, (err, doc) => {
+        if (err) return res.send(500, { error: err });
+        return res.send('New Genre Succesfully added.');
+    });
+});
+
+app.post('/franchise', (req, res) => {
+    const { name, movies } = req.body;
+    // get data from the view and add it to mongodb
+    var query = { 'name': name, 'movies': movies };
+    Franchise.findOneAndUpdate(query, { "$set": { "name": name} }, {
+        upsert: true,
+        useFindAndModify: false
+    }, (err, doc) => {
+        if (err) return res.send(500, { error: err });
+        return res.send('New Franchise Succesfully added.');
+    });
+});
 
 app.post('/language', (req, res) => {
     const { name, code, movies } = req.body;
@@ -215,9 +334,10 @@ app.post('/language', (req, res) => {
         useFindAndModify: false
     }, (err, doc) => {
         if (err) return res.send(500, { error: err });
-        return res.send('Succesfully saved.');
+        return res.send('New Language Succesfully added.');
     });
 });
+
 app.post('/country', (req, res) => {
     // get data from the view and add it to mongodb
     var query = { 'name': req.body.name };
@@ -227,9 +347,10 @@ app.post('/country', (req, res) => {
         useFindAndModify: false
     }, (err, doc) => {
         if (err) return res.send(500, { error: err });
-        return res.send('Succesfully saved.');
+        return res.send('New Country Succesfully added.');
     });
 });
+
 app.post('/director', async (req, res) => {
     try {
         const newDirector = await Director.create(req.body);
@@ -259,13 +380,35 @@ app.post('/movie', async (req, res) => {
                 useFindAndModify: false
             }
         }));
+        const bulkFranchiseOps = newMovie.franchise.map(doc => ({
+            updateOne: {
+                filter: { _id: doc },
+                update: { "$push": { "movies": newMovie._id } },
+                upsert: true,
+                useFindAndModify: false
+            }
+        }));
+        const bulkGenreOps = newMovie.genre.map(doc => ({
+            updateOne: {
+                filter: { _id: doc },
+                update: { "$push": { "movies": newMovie._id } },
+                upsert: true,
+                useFindAndModify: false
+            }
+        }));
         let [someResult, anotherResult] = await Promise.all(
             Director.bulkWrite(bulkDirectorOps)
                 .then(bulkWriteOpResult => console.log('Director BULK update OK:', bulkWriteOpResult))
                 .catch(console.error.bind(console, 'Director BULK update error:')),
             Language.bulkWrite(bulkLanguageOps)
                 .then(bulkWriteOpResult => console.log('Language BULK update OK:', bulkWriteOpResult))
-                .catch(console.error.bind(console, 'Language BULK update error:')))
+                .catch(console.error.bind(console, 'Language BULK update error:')),
+            Franchise.bulkWrite(bulkFranchiseOps)
+                .then(bulkWriteOpResult => console.log('Franchise BULK update OK:', bulkWriteOpResult))
+                .catch(console.error.bind(console, 'Franchise BULK update error:')),
+            Genre.bulkWrite(bulkGenreOps)
+                .then(bulkWriteOpResult => console.log('Genre BULK update OK:', bulkWriteOpResult))
+                .catch(console.error.bind(console, 'Genre BULK update error:')))
         return res.status(200).json({ someResult, anotherResult });
     } catch (err) {
         return res.status(400).json(err);

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useFormik } from 'formik';
-import { ADD_NEW_MOVIE_URL, currentYear, GET_DIRECTORS_URL, GET_LANGUAGES_URL, GET_MOVIE_DETAILS_URL, MenuProps } from '../helper/config';
+import { ADD_NEW_MOVIE_URL, currentYear, GET_DIRECTORS_URL, GET_FRANCHISES_URL,
+  GET_GENRES_URL, GET_LANGUAGES_URL, GET_MOVIE_DETAILS_URL, MenuProps } from '../helper/config';
 import {
   Box, Button, Checkbox, FormControl, FormHelperText, InputLabel, ListItemText,
   MenuItem, OutlinedInput, Select, TextField
@@ -22,21 +23,29 @@ const initialValues = {
   imdb: '',
   rottenTomatoes: '',
   year: currentYear,
-  url: ''
+  url: '',
+  genre: [],
+  franchise: []
 };
 
 export const AddNewMovie = (props:AddMovieAttributes) => {
   const { selectedMovie } = props;
   const [languageData, setLanguageData] = useState([]);
+  const [genreData, setGenreData] = useState([]);
+  const [franchiseData, setFranchiseData] = useState([]);
   const [directorData, setDirectorData] = useState([]);
   const [, setSelectedMovieData] = useState(null);
 
   const fetchData = () => {
     const languages = axios.get(`${GET_LANGUAGES_URL}`);
     const directors = axios.get(`${GET_DIRECTORS_URL}`);
-    axios.all([languages, directors]).then(axios.spread((...responses) => {
+    const genres = axios.get(`${GET_GENRES_URL}`);
+    const franchises = axios.get(`${GET_FRANCHISES_URL}`);
+    axios.all([languages, directors, genres, franchises]).then(axios.spread((...responses) => {
       setLanguageData(responses[0].data);
       setDirectorData(responses[1].data);
+      setGenreData(responses[2].data);
+      setFranchiseData(responses[3].data);
     })).catch((errors) => {
       console.log(errors);
     });
@@ -47,9 +56,11 @@ export const AddNewMovie = (props:AddMovieAttributes) => {
     axios.all([selectedMovieDetails]).then(axios.spread((...responses) => {
       if (responses[0].data) {
         setSelectedMovieData(responses[0].data);
-        const { name, language, director, imdb, rottenTomatoes, url, year } = responses[0].data;
+        const { name, language, director, imdb, rottenTomatoes, url, year, genre, franchise } = responses[0].data;
         const languageValues = language.map((element)=> element._id);
         const directorValues = director.map((element)=> element._id);
+        const genreValues = genre.map((element)=> element._id);
+        const franchiseValues = franchise.map((element)=> element._id);
         formik.setValues({
           name,
           language: languageValues,
@@ -57,7 +68,9 @@ export const AddNewMovie = (props:AddMovieAttributes) => {
           imdb,
           rottenTomatoes,
           url,
-          year
+          year,
+          genre: genreValues,
+          franchise: franchiseValues
         }, true);
       }
     })).catch((errors) => {
@@ -88,7 +101,9 @@ export const AddNewMovie = (props:AddMovieAttributes) => {
         imdb: formik.values.imdb,
         rottenTomatoes: formik.values.rottenTomatoes,
         year: formik.values.year,
-        url: formik.values.url
+        url: formik.values.url,
+        genre: formik.values.genre,
+        franchise: formik.values.franchise
       })
           .then(function(response) {
           })
@@ -191,6 +206,65 @@ export const AddNewMovie = (props:AddMovieAttributes) => {
           </TextField>
           {/* </Select> */}
           {/* <FormHelperText>{formik.touched.director && formik.errors.director}</FormHelperText> */}
+        </FormControl>
+        <FormControl sx={{ m: 2, width: 300 }}>
+          <InputLabel id="genre-multiple-checkbox-label">Genre</InputLabel>
+          <Select
+            labelId="genre-multiple-checkbox-label"
+            id="genre-multiple-checkbox"
+            multiple
+            name="genre"
+            value={formik.values.genre}
+            onChange={formik.handleChange}
+            error={formik.touched.genre && Boolean(formik.errors.genre)}
+
+            input={<OutlinedInput label="Genre" />}
+            renderValue={(selected: string[]) => {
+              const selectedGenres = ([...genreData].filter(
+                  (genre) => selected.includes(genre._id))).map((element) => element.name);
+              return selectedGenres.join(', ');
+            }
+            }
+            MenuProps={MenuProps}
+          >
+            {[...genreData].map((genre) => (
+              <MenuItem key={genre._id} value={genre._id}>
+                <Checkbox checked={formik.values.genre.indexOf(genre._id) > -1} />
+                <ListItemText primary={genre.name} />
+              </MenuItem>
+            ))}
+          </Select>
+          <FormHelperText>{formik.touched.language && formik.errors.language}</FormHelperText>
+        </FormControl>
+        <FormControl sx={{ m: 2, width: 300 }}>
+          <InputLabel id="franchise-multiple-checkbox-label">Franchise</InputLabel>
+          <Select
+            labelId="franchise-multiple-checkbox-label"
+            id="franchise-multiple-checkbox"
+            multiple
+            name="franchise"
+            value={formik.values.franchise}
+            onChange={formik.handleChange}
+            error={formik.touched.franchise && Boolean(formik.errors.franchise)}
+
+            input={<OutlinedInput label="Franchise" />}
+            renderValue={(selected: string[]) => {
+              const selectedFranchises = ([...franchiseData].filter(
+                  (franchise) => selected.includes(franchise._id))).map((element) => element.name);
+              return selectedFranchises.join(', ');
+            }
+            }
+            MenuProps={MenuProps}
+          >
+
+            {[...franchiseData].map((franchise) => (
+              <MenuItem key={franchise._id} value={franchise._id}>
+                <Checkbox checked={formik.values.franchise.indexOf(franchise._id) > -1} />
+                <ListItemText primary={franchise.name} />
+              </MenuItem>
+            ))}
+          </Select>
+          <FormHelperText>{formik.touched.language && formik.errors.language}</FormHelperText>
         </FormControl>
         <FormControl sx={{ m: 2, width: 300 }}>
           <TextField

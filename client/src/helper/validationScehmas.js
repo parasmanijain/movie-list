@@ -33,7 +33,12 @@ export const movieValidationSchema = yup.object({
   url: yup
       .string()
       .matches(URL_REGEX)
-      .required('URL is required')
+      .required('URL is required'),
+  genre: yup
+      .array()
+      .required('Language is required'),
+  franchise: yup
+      .array()
 });
 
 export const countryValidationSchema = yup.object({
@@ -41,6 +46,19 @@ export const countryValidationSchema = yup.object({
       .string()
       .required('Country is required')
 });
+
+export const genreValidationSchema = yup.object({
+  name: yup
+      .string()
+      .required('Genre is required')
+});
+
+export const franchiseValidationSchema = yup.object({
+  name: yup
+      .string()
+      .required('Franchise is required')
+});
+
 
 export const directorValidationSchema = yup.object({
   name: yup
