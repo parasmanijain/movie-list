@@ -155,6 +155,26 @@ export const Home = (props:HomeProps) => {
                 Rotten Tomatoes:
               {movie.rottenTomatoes ? movie.rottenTomatoes + '%' : 'Not Rated'}
             </Typography>
+            { movie.franchise && <React.Fragment>
+              <Typography component="div" sx={{ padding: '0px' }}>
+                <Typography component="span" sx={{ padding: '4px 0px' }}>
+                Franchise:
+                </Typography>
+                <Typography variant="button" display="span" sx={{ padding: '4px 0px' }}>
+                  {movie.franchise.name}
+                </Typography>
+              </Typography>
+              { movie.franchise.universe &&
+               <Typography component="div" sx={{ padding: '0px' }}>
+                 <Typography component="span" sx={{ padding: '4px 0px' }}>
+                Universe:
+                   <Typography variant="button" display="span" sx={{ padding: '4px 0px' }}>
+                     {movie.franchise.universe.name}
+                   </Typography>
+                 </Typography>
+               </Typography>}
+            </React.Fragment>
+            }
             <Typography component="div">
               <Button
                 variant="text"
