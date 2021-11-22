@@ -1,19 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Bar } from 'react-chartjs-2';
-import { GET_FRANCHISES_COUNT_URL } from '../helper/config';
+import { GET_FRANCHISES_COUNT_URL, GET_UNIVERSES_COUNT_URL } from '../helper/config';
+import { chartColors } from '../helper/colors';
 
 const initialData = {
   labels: [],
   datasets: [
     {
-      label: '',
+      label: '# of Movies',
       data: [],
-      backgroundColor: [
-      ],
-      borderColor: [
-      ],
-      borderWidth: 1
+      backgroundColor: [],
+      hoverBackgroundColor: []
     }
   ]
 };
@@ -61,30 +59,40 @@ export const Franchise = () => {
   const [, setFranchiseData] = useState([]);
   const [chartData, setChartData] = useState(initialData);
   const data = JSON.parse(JSON.stringify(initialData));
-  useEffect(() => {
-    axios.get(`${GET_FRANCHISES_COUNT_URL}`, {
-    })
-        .then(function(response) {
-          setFranchiseData(response.data);
-          response.data.forEach((elem) => {
-            data.labels.push(elem.name);
-            data.datasets[0].data.push(elem.length);
-            data.datasets[0].backgroundColor = poolColors(response.data.length);
-            data.datasets[0].borderColor = poolColors(response.data.length);
-          });
-          setChartData({
-            labels: data.labels,
-            datasets: data.datasets
-          });
-        })
-        .catch(function(response) {
-          console.log(response);
-        });
-    return () => {
-      setChartData({
-        labels: initialData.labels,
-        datasets: initialData.datasets
+  // eslint-disable-next-line no-unused-vars
+  const chartInstance = null;
+  const fetchData = () => {
+    const franchises = axios.get(`${GET_FRANCHISES_COUNT_URL}`);
+    const universes = axios.get(`${GET_UNIVERSES_COUNT_URL}`);
+    axios.all([franchises]).then(axios.spread((...responses) => {
+      const franchiseData = responses[0].data;
+      console.log(responses[1].data);
+      setFranchiseData(responses[0].data);
+      const data = [];
+      const labels = [];
+      franchiseData.forEach((element)=> {
+        labels.push(element.name);
+        data.push(element.length);
       });
+      setChartData({
+        labels,
+        datasets: [
+          {
+            label: 'Franchise',
+            backgroundColor: chartColors,
+            hoverBackgroundColor: chartColors,
+            data: data
+          }
+        ]
+      });
+    })).catch((errors) => {
+      // react on errors.
+    });
+  };
+  useEffect(() => {
+    fetchData();
+    return () => {
+      setChartData(initialData);
       setFranchiseData([]);
     };
   }, []);

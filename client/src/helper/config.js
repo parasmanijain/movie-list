@@ -21,6 +21,7 @@ export const GET_DIRECTORS_COUNT_URL = API_URL + '/directorsCount';
 export const GET_LANGUAGES_COUNT_URL = API_URL + '/languagesCount';
 export const GET_GENRES_COUNT_URL = API_URL + '/genresCount';
 export const GET_FRANCHISES_COUNT_URL = API_URL + '/franchisesCount';
+export const GET_UNIVERSES_COUNT_URL = API_URL + '/universesCount';
 
 export const GET_TOP_RATED_MOVIE_URL = API_URL + '/topMovie';
 export const GET_TOP_DIRECTOR_URL = API_URL + '/topDirector';

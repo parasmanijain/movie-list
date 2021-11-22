@@ -301,6 +301,7 @@ app.get('/franchisesCount', (req, res) => {
     // get data from the view and add it to mongodb
     Franchise.aggregate(
         [
+            { "$match" : { "universe" : {"$exists": false} } },
             {
                 "$project": {
                     "name": 1,
@@ -310,6 +311,41 @@ app.get('/franchisesCount', (req, res) => {
             { "$sort": { "name": 1 } },
         ],
         function (err, results) {
+            if (err) return res.send(500, { error: err });
+            return res.send(results);
+        }
+    )
+});
+
+app.get('/universesCount', (req, res) => {
+    // get data from the view and add it to mongodb
+    Universe.aggregate(
+        [{
+            $lookup: {
+              from: 'franchises',
+              localField: '_id',
+              foreignField: 'universe',
+              as: 'franchises'
+            }
+          },  {
+                "$project": {
+                    "name": 1,
+                    "franchise": {
+                        "$map": {
+                          "input": "$franchises",
+                          "in": {
+                            "name": "$$this.name",
+                            "length": {
+                              "$size": "$$this.movies"
+                            }
+                          }
+                      }
+                }
+            }},
+            { "$sort": { "name": 1 } },
+        ],
+        function (err, results) {
+            console.log(results);
             if (err) return res.send(500, { error: err });
             return res.send(results);
         }
