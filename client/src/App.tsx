@@ -19,6 +19,7 @@ import { Franchise } from './components/Franchise';
 import { Genre } from './components/Genre';
 import { AddNewGenre } from './components/AddNewGenre';
 import { AddNewFranchise } from './components/AddNewFranchise';
+import { AddNewUniverse } from './components/AddNewUniverse';
 
 export const App = () => {
   const [selectedMovie, setSelectedMovie] = useState(null);
@@ -102,6 +103,12 @@ export const App = () => {
                 to="/add-new-franchise"
               />
               <Tab
+                value="/add-new-universe"
+                label="Add New Universe"
+                component={Link}
+                to="/add-new-universe"
+              />
+              <Tab
                 value="/add-new-movie"
                 label="Add New Movie"
                 component={Link}
@@ -130,6 +137,7 @@ export const App = () => {
           <Route path="/add-new-language" component={AddNewLanguage} />
           <Route path="/add-new-genre" component={AddNewGenre} />
           <Route path="/add-new-franchise" component={AddNewFranchise} />
+          <Route path="/add-new-universe" component={AddNewUniverse} />
           <Route path="/add-new-movie" render={() => <AddNewMovie selectedMovie = {selectedMovie} />} />
           <Route path="/add-new-country" component={AddNewCountry} />
           <Route path="/top-rated-movies" component={TopRatedMovies} />

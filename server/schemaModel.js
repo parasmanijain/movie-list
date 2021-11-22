@@ -8,6 +8,7 @@ const languageSchema = new mongoose.Schema({
 
 const franchiseSchema = new mongoose.Schema({
     name: { type: String, unique: true },
+    universe: { type: mongoose.Schema.Types.ObjectId, ref: 'Universe' },  
     movies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Movie' }]
 });
 
@@ -27,6 +28,11 @@ const countrySchema = new mongoose.Schema({
     name: { type: String, unique: true },
 });
 
+const universeSchema = new mongoose.Schema({
+    name: { type: String, unique: true },
+    franchises: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Franchise' }]
+});
+
 const movieSchema = new mongoose.Schema({
     name: { type: String},
     language: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Language' }],
@@ -35,7 +41,7 @@ const movieSchema = new mongoose.Schema({
     url: { type: String },
     imdb: { type: String },
     rottenTomatoes: { type: String },
-    franchise: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Franchise' }],
+    franchise: { type: mongoose.Schema.Types.ObjectId, ref: 'Franchise' },
     genre: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Genre' }],
 });
 
@@ -49,5 +55,6 @@ module.exports = {
     Director : mongoose.model('Director', directorSchema),
     Movie : mongoose.model('Movie', movieSchema),
     Franchise : mongoose.model('Franchise', franchiseSchema),
-    Genre : mongoose.model('Genre', genreSchema)
+    Genre : mongoose.model('Genre', genreSchema),
+    Universe: mongoose.model('Universe', universeSchema)
 }

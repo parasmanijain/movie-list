@@ -1,16 +1,16 @@
-const { Language, Country, Movie, Director, Genre, Franchise } = require('./schemaModel');
+const { Language, Country, Movie, Director, Genre, Franchise, Universe } = require('./schemaModel');
 const express = require('express');
 const app = express();
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
 const { API_PORT } = require('./config');
 
-// Genre.syncIndexes(function (err, res) {
+// Franchise.syncIndexes(function (err, res) {
 //     if (err) {
-//         console.log("Error",err);
+//         console.log("Error", err);
 //         return err;
 //     }
-//     console.log("Succes:",res);
+//     console.log("Succes:", res);
 //     return res;
 // });
 
@@ -26,9 +26,9 @@ const { API_PORT } = require('./config');
 //     return results;
 // }); 
 
-// Movie.find({"director":{ $type: 7 }}).exec(function(err,results) {
+// Movie.find({"franchise":{ $type: 7 }}).exec(function(err,results) {
 //     results.forEach( function(x) {
-//         Movie.updateOne({"_id": x._id}, {"$set": {"director": [ x.director ] }}).exec(function (err, res) {
+//         Movie.updateOne({"_id": x._id}, {"$set": {"franchise": [ x.director ] }}).exec(function (err, res) {
 //             if (err) {
 //                 console.log(err);
 //                 return err;
@@ -55,11 +55,30 @@ app.get('/genres', (req, res) => {
 });
 app.get('/franchises', (req, res) => {
     // get data from the view and add it to mongodb
-    Franchise.find({}, null, { sort: { name: 1 } }).populate('movies').exec(function (err, results) {
+    Franchise.find({}, null, { sort: { name: 1 } }).populate('movies').populate('universe').exec(function (err, results) {
+        if (err) return res.send(500, { error: err });
+        // const universeData = ((results.filter(result => !!result.universe)).sort((a, b) => {
+        //     if (a.universe.name < b.universe.name) { return -1; }
+        //     if (a.universe.name > b.universe.name) { return 1; }
+        //     return 0;
+        // }));
+        const restData = (results.filter(result => !!!result.universe)).sort((a, b) => {
+            if (a.name < b.name) { return -1; }
+            if (a.name > b.name) { return 1; }
+            return 0;
+        });
+        return res.send(restData);
+    });
+});
+
+app.get('/universes', (req, res) => {
+    // get data from the view and add it to mongodb
+    Universe.find({}, null, { sort: { name: 1 } }).populate('franchises').exec(function (err, results) {
         if (err) return res.send(500, { error: err });
         return res.send(results);
     });
 });
+
 app.get('/countries', (req, res) => {
     // get data from the view and add it to mongodb
     Country.find({}, null, { sort: { name: 1 } }, (err, data) => {
@@ -101,7 +120,7 @@ app.get('/movies', (req, res) => {
         });
 });
 app.get('/movieDetails', (req, res) => {
-    Movie.findById(req.query.movieID).populate('language').populate('director').exec(function (err, movie) {
+    Movie.findById(req.query.movieID).populate('language').populate('director').populate('genre').populate('franchise').exec(function (err, movie) {
         if (err) return res.send(500, { error: err });
         return res.send(movie);
     }
@@ -303,7 +322,7 @@ app.post('/genre', (req, res) => {
     const { name, movies } = req.body;
     // get data from the view and add it to mongodb
     var query = { 'name': name, 'movies': movies };
-    Genre.findOneAndUpdate(query, { "$set": { "name": name} }, {
+    Genre.findOneAndUpdate(query, { "$set": { "name": name } }, {
         upsert: true,
         useFindAndModify: false
     }, (err, doc) => {
@@ -313,10 +332,10 @@ app.post('/genre', (req, res) => {
 });
 
 app.post('/franchise', (req, res) => {
-    const { name, movies } = req.body;
+    const { name, movies, universe } = req.body;
     // get data from the view and add it to mongodb
-    var query = { 'name': name, 'movies': movies };
-    Franchise.findOneAndUpdate(query, { "$set": { "name": name} }, {
+    var query = { 'name': name, 'movies': movies, 'universe': universe };
+    Franchise.findOneAndUpdate(query, { "$set": { "name": name } }, {
         upsert: true,
         useFindAndModify: false
     }, (err, doc) => {
@@ -351,6 +370,19 @@ app.post('/country', (req, res) => {
     });
 });
 
+app.post('/universe', (req, res) => {
+    // get data from the view and add it to mongodb
+    var query = { 'name': req.body.name };
+    const existing = req.body;
+    Universe.findOneAndUpdate(query, existing, {
+        upsert: true,
+        useFindAndModify: false
+    }, (err, doc) => {
+        if (err) return res.send(500, { error: err });
+        return res.send('New Universe Succesfully added.');
+    });
+});
+
 app.post('/director', async (req, res) => {
     try {
         const newDirector = await Director.create(req.body);
@@ -380,14 +412,14 @@ app.post('/movie', async (req, res) => {
                 useFindAndModify: false
             }
         }));
-        const bulkFranchiseOps = newMovie.franchise.map(doc => ({
+        const bulkFranchiseOps = {
             updateOne: {
-                filter: { _id: doc },
+                filter: { _id: newMovie.franchise },
                 update: { "$push": { "movies": newMovie._id } },
                 upsert: true,
                 useFindAndModify: false
             }
-        }));
+        }
         const bulkGenreOps = newMovie.genre.map(doc => ({
             updateOne: {
                 filter: { _id: doc },
@@ -419,7 +451,7 @@ app.post('/updateMovie', async (req, res) => {
     // get data from the view and add it to mongodb
     try {
         const oldMovie = await Movie.findById(req.query.movieID).populate('language').populate('director');
-        if(!oldMovie) throw err;
+        if (!oldMovie) throw err;
         console.log(oldMovie);
         let bulkDirectorOps = oldMovie.director.map(doc => ({
             deleteOne: {
@@ -445,10 +477,10 @@ app.post('/updateMovie', async (req, res) => {
                 .then(bulkWriteOpResult => console.log('Language BULK update OK:', bulkWriteOpResult))
                 .catch(console.error.bind(console, 'Language BULK update error:')));
         const oldMovieDelete = await Movie.findByIdAndDelete(req.query.movieID);
-        if(!oldMovieDelete) throw err;
+        if (!oldMovieDelete) throw err;
         const newMovie = await Movie.updateOne({ _id: req.body._id }, req.body, { upsert: true });
         if (!newMovie) throw err;
-         bulkDirectorOps = newMovie.director.map(doc => ({
+        bulkDirectorOps = newMovie.director.map(doc => ({
             updateOne: {
                 filter: { _id: doc },
                 update: { "$push": { "movies": newMovie._id } },
@@ -456,7 +488,7 @@ app.post('/updateMovie', async (req, res) => {
                 useFindAndModify: false
             }
         }));
-         bulkLanguageOps = newMovie.language.map(doc => ({
+        bulkLanguageOps = newMovie.language.map(doc => ({
             updateOne: {
                 filter: { _id: doc },
                 update: { "$push": { "movies": newMovie._id } },
@@ -464,7 +496,7 @@ app.post('/updateMovie', async (req, res) => {
                 useFindAndModify: false
             }
         }));
-         [someResult, anotherResult] = await Promise.all(
+        [someResult, anotherResult] = await Promise.all(
             Director.bulkWrite(bulkDirectorOps)
                 .then(bulkWriteOpResult => console.log('Director BULK update OK:', bulkWriteOpResult))
                 .catch(console.error.bind(console, 'Director BULK update error:')),

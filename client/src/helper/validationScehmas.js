@@ -38,7 +38,7 @@ export const movieValidationSchema = yup.object({
       .array()
       .required('Language is required'),
   franchise: yup
-      .array()
+      .string()
 });
 
 export const countryValidationSchema = yup.object({
@@ -56,7 +56,15 @@ export const genreValidationSchema = yup.object({
 export const franchiseValidationSchema = yup.object({
   name: yup
       .string()
-      .required('Franchise is required')
+      .required('Franchise is required'),
+  universe: yup
+      .string()
+});
+
+export const universeValidationSchema = yup.object({
+  name: yup
+      .string()
+      .required('Universe is required')
 });
 
 

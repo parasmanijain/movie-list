@@ -5,6 +5,7 @@ export const ADD_NEW_DIRECTOR_URL = API_URL + '/director';
 export const ADD_NEW_LANGUAGE_URL = API_URL + '/language';
 export const ADD_NEW_GENRE_URL = API_URL + '/genre';
 export const ADD_NEW_FRANCHISE_URL = API_URL + '/franchise';
+export const ADD_NEW_UNIVERSE_URL = API_URL + '/universe';
 export const ADD_NEW_MOVIE_URL = API_URL + '/movie';
 
 export const GET_MOVIES_URL = API_URL + '/movies';
@@ -13,6 +14,7 @@ export const GET_LANGUAGES_URL = API_URL + '/languages';
 export const GET_DIRECTORS_URL = API_URL + '/directors';
 export const GET_GENRES_URL = API_URL + '/genres';
 export const GET_FRANCHISES_URL = API_URL + '/franchises';
+export const GET_UNIVERSES_URL = API_URL + '/universes';
 export const GET_MOVIE_DETAILS_URL = API_URL + '/movieDetails';
 
 export const GET_DIRECTORS_COUNT_URL = API_URL + '/directorsCount';

@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useFormik } from 'formik';
-import { ADD_NEW_MOVIE_URL, currentYear, GET_DIRECTORS_URL, GET_FRANCHISES_URL,
-  GET_GENRES_URL, GET_LANGUAGES_URL, GET_MOVIE_DETAILS_URL, MenuProps } from '../helper/config';
 import {
-  Box, Button, Checkbox, FormControl, FormHelperText, InputLabel, ListItemText,
+  ADD_NEW_MOVIE_URL, currentYear, GET_DIRECTORS_URL, GET_FRANCHISES_URL,
+  GET_GENRES_URL, GET_LANGUAGES_URL, GET_MOVIE_DETAILS_URL, GET_UNIVERSES_URL, MenuProps
+} from '../helper/config';
+import {
+  Box, Button, Checkbox, Divider, FormControl, FormHelperText, InputLabel, ListItemText,
+  ListSubheader,
   MenuItem, OutlinedInput, Select, TextField
 } from '@mui/material';
 import { LocalizationProvider, DatePicker } from '@mui/lab';
@@ -25,10 +28,10 @@ const initialValues = {
   year: currentYear,
   url: '',
   genre: [],
-  franchise: []
+  franchise: ''
 };
 
-export const AddNewMovie = (props:AddMovieAttributes) => {
+export const AddNewMovie = (props: AddMovieAttributes) => {
   const { selectedMovie } = props;
   const [languageData, setLanguageData] = useState([]);
   const [genreData, setGenreData] = useState([]);
@@ -41,11 +44,12 @@ export const AddNewMovie = (props:AddMovieAttributes) => {
     const directors = axios.get(`${GET_DIRECTORS_URL}`);
     const genres = axios.get(`${GET_GENRES_URL}`);
     const franchises = axios.get(`${GET_FRANCHISES_URL}`);
-    axios.all([languages, directors, genres, franchises]).then(axios.spread((...responses) => {
+    const universes = axios.get(`${GET_UNIVERSES_URL}`);
+    axios.all([languages, directors, genres, universes, franchises]).then(axios.spread((...responses) => {
       setLanguageData(responses[0].data);
       setDirectorData(responses[1].data);
       setGenreData(responses[2].data);
-      setFranchiseData(responses[3].data);
+      setFranchiseData([...responses[3].data, ...responses[4].data]);
     })).catch((errors) => {
       console.log(errors);
     });
@@ -57,10 +61,9 @@ export const AddNewMovie = (props:AddMovieAttributes) => {
       if (responses[0].data) {
         setSelectedMovieData(responses[0].data);
         const { name, language, director, imdb, rottenTomatoes, url, year, genre, franchise } = responses[0].data;
-        const languageValues = language.map((element)=> element._id);
-        const directorValues = director.map((element)=> element._id);
-        const genreValues = genre.map((element)=> element._id);
-        const franchiseValues = franchise.map((element)=> element._id);
+        const languageValues = language.map((element) => element._id);
+        const directorValues = director.map((element) => element._id);
+        const genreValues = genre.map((element) => element._id);
         formik.setValues({
           name,
           language: languageValues,
@@ -70,7 +73,7 @@ export const AddNewMovie = (props:AddMovieAttributes) => {
           url,
           year,
           genre: genreValues,
-          franchise: franchiseValues
+          franchise
         }, true);
       }
     })).catch((errors) => {
@@ -112,6 +115,30 @@ export const AddNewMovie = (props:AddMovieAttributes) => {
           });
     }
   });
+
+  const makeItems = (data) => {
+    const items = [];
+    data.forEach((element, index)=> {
+      if (element.franchises) {
+        items.push(<ListSubheader key={element._id}>{element.name}</ListSubheader>);
+        element.franchises.forEach((franchise)=> {
+          items.push(
+              <MenuItem key={franchise._id} value={franchise._id}>
+                {franchise.name}
+              </MenuItem>
+          );
+        });
+        items.push(<Divider key={index} />);
+      } else {
+        items.push(
+            <MenuItem key={element._id} value={element._id}>
+              {element.name}
+            </MenuItem>
+        );
+      }
+    });
+    return items;
+  };
   return (
     <form id="form" onSubmit={formik.handleSubmit} autoComplete="off">
       <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
@@ -237,34 +264,20 @@ export const AddNewMovie = (props:AddMovieAttributes) => {
           <FormHelperText>{formik.touched.language && formik.errors.language}</FormHelperText>
         </FormControl>
         <FormControl sx={{ m: 2, width: 300 }}>
-          <InputLabel id="franchise-multiple-checkbox-label">Franchise</InputLabel>
+          <InputLabel id="franchise-label">Franchise</InputLabel>
           <Select
-            labelId="franchise-multiple-checkbox-label"
-            id="franchise-multiple-checkbox"
-            multiple
+            labelId="franchise-label"
+            id="franchise"
             name="franchise"
             value={formik.values.franchise}
             onChange={formik.handleChange}
             error={formik.touched.franchise && Boolean(formik.errors.franchise)}
-
             input={<OutlinedInput label="Franchise" />}
-            renderValue={(selected: string[]) => {
-              const selectedFranchises = ([...franchiseData].filter(
-                  (franchise) => selected.includes(franchise._id))).map((element) => element.name);
-              return selectedFranchises.join(', ');
-            }
-            }
             MenuProps={MenuProps}
           >
-
-            {[...franchiseData].map((franchise) => (
-              <MenuItem key={franchise._id} value={franchise._id}>
-                <Checkbox checked={formik.values.franchise.indexOf(franchise._id) > -1} />
-                <ListItemText primary={franchise.name} />
-              </MenuItem>
-            ))}
+            {makeItems([...franchiseData])}
           </Select>
-          <FormHelperText>{formik.touched.language && formik.errors.language}</FormHelperText>
+          <FormHelperText>{formik.touched.franchise && formik.errors.franchise}</FormHelperText>
         </FormControl>
         <FormControl sx={{ m: 2, width: 300 }}>
           <TextField

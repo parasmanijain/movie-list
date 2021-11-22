@@ -1,19 +1,23 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import axios from 'axios';
-import { Box, Button, FormControl, TextField } from '@mui/material';
-import { ADD_NEW_FRANCHISE_URL } from '../helper/config';
+import { Box, Button, FormControl, FormHelperText, InputLabel, ListItemText, MenuItem,
+  OutlinedInput, Select, TextField } from '@mui/material';
+import { ADD_NEW_FRANCHISE_URL, GET_UNIVERSES_URL, MenuProps } from '../helper/config';
 import { franchiseValidationSchema as validationSchema } from '../helper/validationScehmas';
 
 export const AddNewFranchise = () => {
+  const [universeData, setUniverseData] = useState([]);
   const formik = useFormik({
     initialValues: {
-      name: ''
+      name: '',
+      universe: ''
     },
     validationSchema,
     onSubmit: () => {
       axios.post(`${ADD_NEW_FRANCHISE_URL}`, {
         name: formik.values.name,
+        universe: formik.values.universe,
         movies: []
       })
           .then(function(response) {
@@ -23,6 +27,19 @@ export const AddNewFranchise = () => {
           });
     }
   });
+  useEffect(() => {
+    axios.get(`${GET_UNIVERSES_URL}`, {
+    })
+        .then(function(response) {
+          setUniverseData(response.data);
+        })
+        .catch(function(response) {
+          console.log(response);
+        });
+    return () => {
+      setUniverseData([]);
+    };
+  }, []);
   return (
     <form onSubmit={formik.handleSubmit}>
       <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -36,6 +53,26 @@ export const AddNewFranchise = () => {
             error={formik.touched.name && Boolean(formik.errors.name)}
             helperText={formik.touched.name && formik.errors.name}
           />
+        </FormControl>
+        <FormControl sx={{ m: 2, width: 300 }}>
+          <InputLabel id="universe-label">Universe</InputLabel>
+          <Select
+            labelId="universe-label"
+            id="universe"
+            name="universe"
+            value={formik.values.universe}
+            onChange={formik.handleChange}
+            error={formik.touched.universe && Boolean(formik.errors.universe)}
+            input={<OutlinedInput label="Universe" />}
+            MenuProps={MenuProps}
+          >
+            {[...universeData].map((universe) => (
+              <MenuItem key={universe._id} value={universe._id}>
+                <ListItemText primary={universe.name} />
+              </MenuItem>
+            ))}
+          </Select>
+          <FormHelperText>{formik.touched.universe && formik.errors.universe}</FormHelperText>
         </FormControl>
         <Button color="primary" variant="contained" type="submit">
           Submit
