@@ -7,7 +7,7 @@ const languageSchema = new mongoose.Schema({
 });
 
 const franchiseSchema = new mongoose.Schema({
-    name: { type: String, unique: true },
+    name: { type: String },
     universe: { type: mongoose.Schema.Types.ObjectId, ref: 'Universe' },  
     movies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Movie' }]
 });

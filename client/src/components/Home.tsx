@@ -3,30 +3,14 @@ import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 
 import { makeStyles } from '@mui/styles';
-import { Grid, Typography, Accordion, AccordionSummary, AccordionDetails, Pagination, Button, Box } from '@mui/material';
+import { Grid, Typography, Accordion, AccordionSummary, AccordionDetails, Pagination, Button, Box, CircularProgress } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { GET_MOVIES_URL, GET_TOP_DIRECTOR_URL, GET_TOP_LANGUAGE_URL, GET_TOP_YEAR_URL } from '../helper/config';
-
-// const useStyles = makeStyles({
-//   root: {
-//     width: '100%',
-//     display: 'flex',
-//     flexDirection: 'column',
-//     justifyContent: 'space-between',
-//     height: '100%'
-//   },
-//   title: {
-//     fontSize: 14
-//   },
-//   pos: {
-//     marginBottom: 12
-//   }
-// });
 
 const summaryStyles = makeStyles({
   root: {
     minHeight: 60,
-    padding: '5px'
+    padding: '0px'
   },
   content: {
     margin: 0
@@ -43,19 +27,27 @@ export const Home = (props:HomeProps) => {
   const [page, setPage] = useState(1);
   const [count, setCount] = useState(1);
   const [total, setTotal] = useState(0);
+  const [movieData, setMovieData] = useState([]);
+  const [topDirectorData, setTopDirectorData] = useState([]);
+  const [topLanguageData, setTopLanguageData] = useState([]);
+  const [topYearData, setTopYearData] = useState([]);
+  const [filterLoading, setFilterLoading] = useState(false);
+  const [dataLoading, setDataLoading] = useState(false);
   const limit = 40;
   const history = useHistory();
 
   const fetchData = () => {
     const moviesUrl = axios.get(`${GET_MOVIES_URL}`, { params: { page, limit } });
+    setDataLoading(true);
     axios.all([moviesUrl]).then(axios.spread((...responses) => {
       const { total, page, movies } = responses[0].data;
       setMovieData(movies);
       setTotal(total);
       setPage(page);
       setCount(Math.ceil(total / limit));
+      setDataLoading(false);
     })).catch((errors) => {
-      // react on errors.
+      setDataLoading(false);
     });
   };
 
@@ -63,12 +55,14 @@ export const Home = (props:HomeProps) => {
     const topDirectors = axios.get(`${GET_TOP_DIRECTOR_URL}`);
     const topLanguages = axios.get(`${GET_TOP_LANGUAGE_URL}`);
     const topYear = axios.get(`${GET_TOP_YEAR_URL}`);
+    setFilterLoading(true);
     axios.all([topDirectors, topLanguages, topYear]).then(axios.spread((...responses) => {
       setTopDirectorData(responses[0].data.slice(0, 1));
       setTopLanguageData(responses[1].data.slice(0, 1));
       setTopYearData(responses[2].data.slice(0, 1));
+      setFilterLoading(false);
     })).catch((errors) => {
-      // react on errors.
+      setFilterLoading(false);
     });
   };
   useEffect(() => {
@@ -82,10 +76,7 @@ export const Home = (props:HomeProps) => {
     return () => {
     };
   }, []);
-  const [movieData, setMovieData] = useState([]);
-  const [topDirectorData, setTopDirectorData] = useState([]);
-  const [topLanguageData, setTopLanguageData] = useState([]);
-  const [topYearData, setTopYearData] = useState([]);
+
 
   const otherMovies = (movies, name, arr) => {
     return arr.length > 1 ? <React.Fragment key={name}><Typography variant="button" display="block">{name}</Typography>
@@ -122,11 +113,12 @@ export const Home = (props:HomeProps) => {
 
   const movieList = movieData?.map((movie) => (
     <Grid item xs = {3} key={movie._id}>
-      <Accordion sx = {{ padding: '0px' }}>
+      <Accordion sx = {{ padding: '0px', backgroundColor: movie.franchise ?
+      movie.franchise.universe ? '#b2dfdb' : '#c8e4fb' : '#ffffff' }} classes={summaryClass}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />
           }
-          classes={summaryClass}
+
           aria-controls="panel1a-content"
           id="panel1a-header"
         >
@@ -223,20 +215,21 @@ export const Home = (props:HomeProps) => {
     setPage(value);
   };
 
-  return (
-    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-      <Box sx={{ display: 'flex', margin: '16px 0px', justifyContent: 'space-evenly', alignItems: 'center' }}>
+  return (<Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+    { filterLoading && dataLoading ? <CircularProgress/> : <React.Fragment>
+      <Box sx={{ display: 'flex', margin: '12px 0px', justifyContent: 'space-evenly', alignItems: 'center', width: '100%' }}>
         <Typography component="h6">Total Movies watched so far: {total}</Typography>
         <Typography component="h6">Most watched Director: {topDirectorsList}</Typography>
         <Typography component="h6">Most watched Language: {topLanguagesList}</Typography>
         <Typography component="h6">Most watched Year: {topYearsList}</Typography>
       </Box>
-      <Grid container spacing ={2} sx={{ margin: '16px 0px', padding: '0px' }}>
+      <Grid container spacing={2} sx={{ margin: '16px 0px', padding: '0px' }}>
         {movieList}
       </Grid>
-      <Box sx={{ margin: '16px 0px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <Box sx={{ margin: '12px 0px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <Pagination count={count} color="primary" onChange={handleChange} page={page} showFirstButton showLastButton />
       </Box>
-    </Box>
-  );
+    </React.Fragment> }
+
+  </Box>);
 };
