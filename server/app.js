@@ -348,7 +348,6 @@ app.get('/universesCount', (req, res) => {
             { "$sort": { "name": 1 } },
         ],
         function (err, results) {
-            console.log(results);
             if (err) return res.send(500, { error: err });
             return res.send(results);
         }
