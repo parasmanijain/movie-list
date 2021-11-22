@@ -99,7 +99,10 @@ app.get('/movies', (req, res) => {
     // get data from the view and add it to mongodb
     Movie.find({}, null, { sort: { name: 1 } })
         .skip((page - 1) * limit)
-        .limit(limit).populate('language').populate('genre').populate('franchise')
+        .limit(limit).populate('language').populate('genre')
+        .populate({
+            path: 'franchise',
+            populate: [{ path: 'universe' }]})
         .populate({
             path: 'director',
             populate: [{ path: 'country' }, { path: 'movies', options: { sort: { year: 1 } } }]

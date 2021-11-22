@@ -21,20 +21,21 @@
 
 
  .main-container {
-  width:4000px;
   overflow-x: auto;
   overflow-y:hidden;
+  
 }
 
+.main-container-director {
+  overflow-x: auto;
+  overflow-y:hidden;
+  width:10000px;
+}
 
-/*.chart-container {
-  width:75%;
-  height:75%;
-  top: 50%;
-    left: 50%;
-    position: absolute;
-    transform: translate(-50%, -50%);
-} */
+.chart-container {
+  display: inline-block;
+}
+
 .movie-rating-container {
   display: flex;
   justify-content: space-around;

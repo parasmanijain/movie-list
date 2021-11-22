@@ -16,30 +16,6 @@ const initialData = {
   ]
 };
 
-// const options = {
-//   responsive: true,
-//   maintainAspectRatio: false,
-//   legend: { display: false },
-//   scales: {
-//     yAxes: [
-//       {
-//         ticks: {
-//           beginAtZero: true,
-//         },
-//       },
-//     ],
-//     xAxes: [
-//       {
-//       ticks: {
-//             autoSkip: false,
-//             maxRotation: 90,
-//             minRotation: 90
-//         }
-//       }
-//     ]
-//   },
-// }
-
 const dynamicColors = () => {
   const r = Math.floor(Math.random() * 255);
   const g = Math.floor(Math.random() * 255);
@@ -57,54 +33,89 @@ const poolColors = (a) => {
 
 export const Franchise = () => {
   const [, setFranchiseData] = useState([]);
-  const [chartData, setChartData] = useState(initialData);
-  const data = JSON.parse(JSON.stringify(initialData));
-  // eslint-disable-next-line no-unused-vars
-  const chartInstance = null;
+  const [, setUniverseData] = useState([]);
+  const [franchiseChartData, setFranchiseChartData] = useState(initialData);
+  const [universeChartData, setUniverseChartData] = useState([]);
   const fetchData = () => {
     const franchises = axios.get(`${GET_FRANCHISES_COUNT_URL}`);
     const universes = axios.get(`${GET_UNIVERSES_COUNT_URL}`);
-    axios.all([franchises]).then(axios.spread((...responses) => {
+    axios.all([franchises, universes]).then(axios.spread((...responses) => {
       const franchiseData = responses[0].data;
-      console.log(responses[1].data);
+      const universeData = responses[1].data;
       setFranchiseData(responses[0].data);
-      const data = [];
-      const labels = [];
+      setUniverseData(responses[1].data);
+      let data = [];
+      let labels = [];
+      const datasets = [];
       franchiseData.forEach((element)=> {
         labels.push(element.name);
         data.push(element.length);
       });
-      setChartData({
+      setFranchiseChartData({
         labels,
         datasets: [
           {
-            label: 'Franchise',
+            label: 'Movies',
             backgroundColor: chartColors,
             hoverBackgroundColor: chartColors,
             data: data
           }
         ]
       });
+
+      universeData.forEach((element)=> {
+        data= [];
+        labels = [];
+        element.franchise.forEach((e)=> {
+          labels.push(e.name);
+          data.push(e.length);
+        });
+        const obj = {
+          labels,
+          datasets: [
+            {
+              label: 'Movies',
+              backgroundColor: chartColors,
+              hoverBackgroundColor: chartColors,
+              data: data
+            }
+          ] };
+
+        datasets.push(obj);
+      });
+      setUniverseChartData(datasets);
     })).catch((errors) => {
       // react on errors.
     });
   };
+
+  const renderUniverseCharts = (element, index, length) => (<div className="chart-container" key={index}>{
+    <Bar data={element} height={450} width={1750/length}options={{ maintainAspectRatio: false }} />
+  }
+  </div>)
+  ;
+
   useEffect(() => {
     fetchData();
     return () => {
-      setChartData(initialData);
+      setFranchiseChartData(initialData);
       setFranchiseData([]);
+      setUniverseChartData([]);
+      setUniverseData([]);
     };
   }, []);
   return (
     <div className="main-container">
-      {chartData.datasets[0].data.length &&
+      {{ ...franchiseChartData }.datasets[0].data.length &&
 
-        <div className="chart-container">{
-          <Bar data={chartData} height={900} options={{ maintainAspectRatio: false }} />
+        <div className="chart-container" id="erg">{
+          <Bar data={{ ...franchiseChartData }} height={450} width={1750}options={{ maintainAspectRatio: false
+          }} />
         }
         </div>
       }
+      { [...universeChartData].length &&
+    [...universeChartData].map((element, index, arr) => renderUniverseCharts({ ...element }, index, arr.length))}
     </div>);
 };
 

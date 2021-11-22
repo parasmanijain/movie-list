@@ -78,8 +78,6 @@ const initialData = {
 export const Director = () => {
   const [, setDirectorData] = useState([]);
   const [chartData, setChartData] = useState(initialData);
-  // eslint-disable-next-line no-unused-vars
-  const chartInstance = null;
   const fetchData = () => {
     const directors = axios.get(`${GET_DIRECTORS_COUNT_URL}`);
     axios.all([directors]).then(axios.spread((...responses) => {
@@ -115,16 +113,9 @@ export const Director = () => {
   }, []);
 
   return (
-    <div className="main-container">
-      <div className="chart-container">
-        <Bar data={chartData} height={900} options={{ maintainAspectRatio: false, scales: { } }} />
-        {/* <Pie
-          options={pieOptions}
-          data={chartData}
-          ref={(input) => {
-            chartInstance = input;
-          }}
-        /> */}
+    <div className="main-container-director">
+      <div className="chart-container-director">
+        <Bar data={chartData} height={900}options={{ maintainAspectRatio: false }} />
       </div>
     </div>
   );
