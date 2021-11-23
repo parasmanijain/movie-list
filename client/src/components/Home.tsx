@@ -130,8 +130,10 @@ export const Home = (props:HomeProps) => {
           <Typography component="div" sx={{ padding: '0px' }}>
             {
               movie.language.map(
-                  (element, index, arr)=><Typography key={element._id} variant="button" display="span" sx={{ padding: '4px 0px' }}>
-                    {element.name} {index !== arr.length-1 ? ', ' : null}</Typography>)
+                  (element, index, arr)=>
+                    <Typography key={element._id} variant="button" display="span" sx={{ padding: '4px 0px' }}>
+                      {element.name} {index !== arr.length-1 ? ', ' : null}
+                    </Typography>)
             }
 
             <Typography component="div">
@@ -139,6 +141,13 @@ export const Home = (props:HomeProps) => {
                 movie.director.map((element, index, arr) => directorName(element, index, arr.length))
               }
             </Typography>
+            {
+              movie.genre.map(
+                  (element, index, arr)=>
+                    <Typography key={element._id} variant="button" display="span" sx={{ padding: '4px 0px' }}>
+                      {element.name} {index !== arr.length-1 ? ', ' : null}
+                    </Typography>)
+            }
             <Typography component="h6" sx={{ padding: '4px 0px' }}>
                 IMDB:
               {movie.imdb + '/10'}

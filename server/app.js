@@ -102,7 +102,8 @@ app.get('/movies', (req, res) => {
         .limit(limit).populate('language').populate('genre')
         .populate({
             path: 'franchise',
-            populate: [{ path: 'universe' }]})
+            populate: [{ path: 'universe' }]
+        })
         .populate({
             path: 'director',
             populate: [{ path: 'country' }, { path: 'movies', options: { sort: { year: 1 } } }]
@@ -304,7 +305,7 @@ app.get('/franchisesCount', (req, res) => {
     // get data from the view and add it to mongodb
     Franchise.aggregate(
         [
-            { "$match" : { "universe" : {"$exists": false} } },
+            { "$match": { "universe": { "$exists": false } } },
             {
                 "$project": {
                     "name": 1,
@@ -325,27 +326,28 @@ app.get('/universesCount', (req, res) => {
     Universe.aggregate(
         [{
             $lookup: {
-              from: 'franchises',
-              localField: '_id',
-              foreignField: 'universe',
-              as: 'franchises'
+                from: 'franchises',
+                localField: '_id',
+                foreignField: 'universe',
+                as: 'franchises'
             }
-          },  {
-                "$project": {
-                    "name": 1,
-                    "franchise": {
-                        "$map": {
-                          "input": "$franchises",
-                          "in": {
+        }, {
+            "$project": {
+                "name": 1,
+                "franchise": {
+                    "$map": {
+                        "input": "$franchises",
+                        "in": {
                             "name": "$$this.name",
                             "length": {
-                              "$size": "$$this.movies"
+                                "$size": "$$this.movies"
                             }
-                          }
-                      }
+                        }
+                    }
                 }
-            }},
-            { "$sort": { "name": 1 } },
+            }
+        },
+        { "$sort": { "name": 1 } },
         ],
         function (err, results) {
             if (err) return res.send(500, { error: err });
@@ -372,7 +374,10 @@ app.post('/genre', (req, res) => {
 app.post('/franchise', (req, res) => {
     const { name, movies, universe } = req.body;
     // get data from the view and add it to mongodb
-    var query = { 'name': name, 'movies': movies, 'universe': universe };
+    var query = { 'name': name, 'movies': movies };
+    if(universe) {
+        query = {...query, ...{'universe': universe}}
+    }
     Franchise.findOneAndUpdate(query, { "$set": { "name": name } }, {
         upsert: true,
         useFindAndModify: false
@@ -473,12 +478,13 @@ app.post('/movie', async (req, res) => {
             Language.bulkWrite(bulkLanguageOps)
                 .then(bulkWriteOpResult => console.log('Language BULK update OK:', bulkWriteOpResult))
                 .catch(console.error.bind(console, 'Language BULK update error:')),
-            Franchise.bulkWrite(bulkFranchiseOps)
-                .then(bulkWriteOpResult => console.log('Franchise BULK update OK:', bulkWriteOpResult))
-                .catch(console.error.bind(console, 'Franchise BULK update error:')),
             Genre.bulkWrite(bulkGenreOps)
                 .then(bulkWriteOpResult => console.log('Genre BULK update OK:', bulkWriteOpResult))
-                .catch(console.error.bind(console, 'Genre BULK update error:')))
+                .catch(console.error.bind(console, 'Genre BULK update error:')),
+            Franchise.bulkWrite(bulkFranchiseOps)
+                .then(bulkWriteOpResult => console.log('Franchise BULK update OK:', bulkWriteOpResult))
+                .catch(console.error.bind(console, 'Franchise BULK update error:')))
+
         return res.status(200).json({ someResult, anotherResult });
     } catch (err) {
         return res.status(400).json(err);

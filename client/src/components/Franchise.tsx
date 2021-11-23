@@ -71,6 +71,7 @@ export const Franchise = () => {
           data.push(e.length);
         });
         const obj = {
+          title: element.name,
           labels,
           datasets: [
             {
@@ -89,8 +90,10 @@ export const Franchise = () => {
     });
   };
 
-  const renderUniverseCharts = (element, index, length) => (<div className="chart-container" key={index}>{
-    <Bar data={element} height={450} width={1750/length}options={{ maintainAspectRatio: false }} />
+  const renderUniverseCharts = (title, element, index, length) => (<div className="chart-container" key={index}>{
+
+    <Bar data={element} height={450} width={1750/length}
+      options={{ maintainAspectRatio: false, plugins: { title: { text: title, display: true } } }} />
   }
   </div>)
   ;
@@ -115,7 +118,7 @@ export const Franchise = () => {
         </div>
       }
       { [...universeChartData].length &&
-    [...universeChartData].map((element, index, arr) => renderUniverseCharts({ ...element }, index, arr.length))}
+    [...universeChartData].map((element, index, arr) => renderUniverseCharts(element.title, { ...element }, index, arr.length))}
     </div>);
 };
 

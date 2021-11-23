@@ -11,13 +11,13 @@ export const AddNewFranchise = () => {
   const formik = useFormik({
     initialValues: {
       name: '',
-      universe: ''
+      universe: null
     },
     validationSchema,
     onSubmit: () => {
       axios.post(`${ADD_NEW_FRANCHISE_URL}`, {
         name: formik.values.name,
-        universe: formik.values.universe,
+        universe: formik.values.universe ? formik.values.universe : null,
         movies: []
       })
           .then(function(response) {

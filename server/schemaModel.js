@@ -8,7 +8,7 @@ const languageSchema = new mongoose.Schema({
 
 const franchiseSchema = new mongoose.Schema({
     name: { type: String },
-    universe: { type: mongoose.Schema.Types.ObjectId, ref: 'Universe' },  
+    universe: { type: mongoose.Schema.Types.ObjectId, ref: 'Universe', required: false },  
     movies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Movie' }]
 });
 
@@ -40,7 +40,7 @@ const movieSchema = new mongoose.Schema({
     year: { type: String },
     url: { type: String },
     imdb: { type: String },
-    rottenTomatoes: { type: String },
+    rottenTomatoes: { type: String, required: false },
     franchise: { type: mongoose.Schema.Types.ObjectId, ref: 'Franchise' },
     genre: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Genre' }],
 });
