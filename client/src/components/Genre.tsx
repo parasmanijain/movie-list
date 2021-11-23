@@ -93,7 +93,7 @@ export const Genre = () => {
       {chartData.datasets[0].data.length &&
 
         <div className="chart-container">{
-          <Bar data={chartData} height={900} options={{ maintainAspectRatio: false }} />
+          <Bar data={chartData} height={900} width={1750} options={{ maintainAspectRatio: false }} />
         }
         </div>
       }
