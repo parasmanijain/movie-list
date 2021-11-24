@@ -9,11 +9,12 @@ import { GET_MOVIES_URL, GET_TOP_DIRECTOR_URL, GET_TOP_GENRE_URL, GET_TOP_LANGUA
 
 const summaryStyles = makeStyles({
   root: {
-    minHeight: 60,
-    padding: '0px'
+    minHeight: 75,
+    padding: '0px',
+    boxSizing: 'border-box'
   },
   content: {
-    margin: 0
+    margin: '0px'
   }
 });
 
@@ -115,7 +116,7 @@ export const Home = (props:HomeProps) => {
   const directorName = (director, index, length) => directorURL(director.url, director.name, director._id, index, length);
 
   const movieList = movieData?.map((movie) => (
-    <Grid item xs = {3} key={movie._id}>
+    <Grid item xs = {3} key={movie._id} sx={{ padding: '0px' }}>
       <Accordion sx = {{ padding: '0px', backgroundColor: movie.franchise ?
       movie.franchise.universe ? '#b2dfdb' : '#c8e4fb' : '#ffffff' }} classes={summaryClass}>
         <AccordionSummary
@@ -124,8 +125,9 @@ export const Home = (props:HomeProps) => {
 
           aria-controls="panel1a-content"
           id="panel1a-header"
+          sx={{ margin: '0', padding: '0px 8px' }}
         >
-          <Typography variant="button" display="block">
+          <Typography variant="button" display="block" sx={{ margin: '0px' }}>
             {movie.name} ({movie.year})
           </Typography>
         </AccordionSummary>
@@ -233,17 +235,17 @@ export const Home = (props:HomeProps) => {
 
   return (<Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
     { filterLoading && dataLoading ? <CircularProgress/> : <React.Fragment>
-      <Box sx={{ display: 'flex', margin: '12px 0px', justifyContent: 'space-evenly', alignItems: 'center', width: '100%' }}>
+      <Box sx={{ display: 'flex', margin: '4px 0px', justifyContent: 'space-evenly', alignItems: 'center', width: '100%' }}>
         <Typography component="h6">Total Movies watched so far: {total}</Typography>
         <Typography component="h6">Most watched Director: {topDirectorsList}</Typography>
         <Typography component="h6">Most watched Language: {topLanguagesList}</Typography>
         <Typography component="h6">Most watched Year: {topYearsList}</Typography>
         <Typography component="h6">Most watched Genre: {topGenresList}</Typography>
       </Box>
-      <Grid container spacing={2} sx={{ margin: '16px 0px', padding: '0px' }}>
+      <Grid container spacing={2} sx={{ margin: '0px', padding: '0px' }}>
         {movieList}
       </Grid>
-      <Box sx={{ margin: '12px 0px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <Box sx={{ margin: '4px 0px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <Pagination count={count} color="primary" onChange={handleChange} page={page} showFirstButton showLastButton />
       </Box>
     </React.Fragment> }

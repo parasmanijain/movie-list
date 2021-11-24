@@ -126,7 +126,7 @@ export const App = () => {
       />
       {/* A <Switch> looks through its children <Route>s and
           renders the first one that matches the current URL. */}
-      <Box sx={{ marginTop: '40px', padding: '20px', boxSizing: 'border-box', height: '100%', width: '100%' }}>
+      <Box sx={{ marginTop: '40px', padding: '8px', boxSizing: 'border-box', height: '100%', width: '100%' }}>
 
         <Switch>
           <Route path="/language" component={Language} />

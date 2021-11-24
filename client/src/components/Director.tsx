@@ -33,7 +33,7 @@ const createChunks = (array, chunk) => {
 
 const renderDirectors = (chartData, index) => {
   return (<div className="chart-container" key = {index}>
-    <Bar data={chartData} width={1750} height={220} options={{ maintainAspectRatio: false,
+    <Bar data={chartData} width={1750} height={320} options={{ maintainAspectRatio: false,
       plugins: { title: { text: 'Directors', display: true } } }} /> </div>);
 };
 
@@ -46,7 +46,7 @@ export const Director = () => {
       const directorData = responses[0].data;
       setDirectorData(responses[0].data);
       let chartDetails = [];
-      const abc = createChunks(directorData, Math.floor(directorData.length / 4));
+      const abc = createChunks(directorData, Math.floor(directorData.length / 3));
       abc.forEach((e)=> {
         const data = [];
         const labels = [];
