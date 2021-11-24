@@ -3,58 +3,6 @@ import axios from 'axios';
 import { Bar } from 'react-chartjs-2';
 import { chartColors } from '../helper/colors';
 import { GET_DIRECTORS_COUNT_URL } from '../helper/config';
-const initialData = {
-  labels: [],
-  datasets: [
-    {
-      label: '# of Movies',
-      data: [],
-      backgroundColor: [],
-      hoverBackgroundColor: []
-    }
-  ]
-};
-
-// const pieOptions = {
-//   legend: {
-//     display: true,
-//     position: 'bottom'
-//   },
-//   elements: {
-//     arc: {
-//       borderWidth: 0
-//     }
-//   }
-// };
-
-
-// const options = {
-//   scales: {
-//     yAxes: [
-//       {
-//         ticks: {
-//           beginAtZero: true
-//         }
-//       }
-//     ]
-//   }
-// };
-
-// const styles = {
-//   pieContainer: {
-//     width: '40%',
-//     height: '40%',
-//     top: '50%',
-//     left: '50%',
-//     position: 'absolute',
-//     transform: 'translate(-50%, -50%)'
-//   },
-//   relative: {
-//     position: 'relative'
-//   }
-// };
-
-
 // const dynamicColors = () => {
 //   const r = Math.floor(Math.random() * 255);
 //   const g = Math.floor(Math.random() * 255);
@@ -75,31 +23,51 @@ const initialData = {
 //   maintainAspectRatio: false
 // };
 
+const createChunks = (array, chunk) => {
+  const temp = [];
+  for (let i = 0, j = array.length; i < j; i += chunk) {
+    temp.push(array.slice(i, i + chunk));
+  }
+  return temp;
+};
+
+const renderDirectors = (chartData, index) => {
+  return (<div className="chart-container" key = {index}>
+    <Bar data={chartData} width={1750} height={220} options={{ maintainAspectRatio: false,
+      plugins: { title: { text: 'Directors', display: true } } }} /> </div>);
+};
+
 export const Director = () => {
   const [, setDirectorData] = useState([]);
-  const [chartData, setChartData] = useState(initialData);
+  const [chartData, setChartData] = useState([]);
   const fetchData = () => {
     const directors = axios.get(`${GET_DIRECTORS_COUNT_URL}`);
     axios.all([directors]).then(axios.spread((...responses) => {
       const directorData = responses[0].data;
       setDirectorData(responses[0].data);
-      const data = [];
-      const labels = [];
-      directorData.forEach((element)=> {
-        labels.push(element.name);
-        data.push(element.length);
+      let chartDetails = [];
+      const abc = createChunks(directorData, Math.floor(directorData.length / 4));
+      abc.forEach((e)=> {
+        const data = [];
+        const labels = [];
+        e.forEach((e1)=> {
+          labels.push(e1.name);
+          data.push(e1.length);
+        });
+        const obj = {
+          labels,
+          datasets: [
+            {
+              label: 'Movies',
+              backgroundColor: chartColors,
+              hoverBackgroundColor: chartColors,
+              data: data
+            }
+          ]
+        };
+        chartDetails = [...chartDetails, obj];
       });
-      setChartData({
-        labels,
-        datasets: [
-          {
-            label: 'Directors',
-            backgroundColor: chartColors,
-            hoverBackgroundColor: chartColors,
-            data: data
-          }
-        ]
-      });
+      setChartData(chartDetails);
     })).catch((errors) => {
       // react on errors.
     });
@@ -107,16 +75,15 @@ export const Director = () => {
   useEffect(() => {
     fetchData();
     return () => {
-      setChartData(initialData);
+      setChartData([]);
       setDirectorData([]);
     };
   }, []);
 
   return (
-    <div className="main-container-director">
-      <div className="chart-container-director">
-        <Bar data={chartData} height={900}options={{ maintainAspectRatio: false }} />
-      </div>
+    <div className="main-container">
+
+      {[...chartData].length && [...chartData].map((data, index)=> renderDirectors(data, index))}
     </div>
   );
 };
