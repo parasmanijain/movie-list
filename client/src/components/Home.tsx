@@ -5,7 +5,7 @@ import axios from 'axios';
 import { makeStyles } from '@mui/styles';
 import { Grid, Typography, Accordion, AccordionSummary, AccordionDetails, Pagination, Button, Box, CircularProgress } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { GET_MOVIES_URL, GET_TOP_DIRECTOR_URL, GET_TOP_LANGUAGE_URL, GET_TOP_YEAR_URL } from '../helper/config';
+import { GET_MOVIES_URL, GET_TOP_DIRECTOR_URL, GET_TOP_GENRE_URL, GET_TOP_LANGUAGE_URL, GET_TOP_YEAR_URL } from '../helper/config';
 
 const summaryStyles = makeStyles({
   root: {
@@ -30,6 +30,7 @@ export const Home = (props:HomeProps) => {
   const [movieData, setMovieData] = useState([]);
   const [topDirectorData, setTopDirectorData] = useState([]);
   const [topLanguageData, setTopLanguageData] = useState([]);
+  const [topGenreData, setTopGenreData] = useState([]);
   const [topYearData, setTopYearData] = useState([]);
   const [filterLoading, setFilterLoading] = useState(false);
   const [dataLoading, setDataLoading] = useState(false);
@@ -55,11 +56,13 @@ export const Home = (props:HomeProps) => {
     const topDirectors = axios.get(`${GET_TOP_DIRECTOR_URL}`);
     const topLanguages = axios.get(`${GET_TOP_LANGUAGE_URL}`);
     const topYear = axios.get(`${GET_TOP_YEAR_URL}`);
+    const topGenre = axios.get(`${GET_TOP_GENRE_URL}`);
     setFilterLoading(true);
-    axios.all([topDirectors, topLanguages, topYear]).then(axios.spread((...responses) => {
+    axios.all([topDirectors, topLanguages, topYear, topGenre]).then(axios.spread((...responses) => {
       setTopDirectorData(responses[0].data.slice(0, 1));
       setTopLanguageData(responses[1].data.slice(0, 1));
       setTopYearData(responses[2].data.slice(0, 1));
+      setTopGenreData(responses[3].data.slice(0, 1));
       setFilterLoading(false);
     })).catch((errors) => {
       setFilterLoading(false);
@@ -220,6 +223,10 @@ export const Home = (props:HomeProps) => {
     <Typography variant="button" display="span"key={language._id}>{language.name} ({language.length}) </Typography>
   ));
 
+  const topGenresList = topGenreData.map((genre) => (
+    <Typography variant="button" display="span"key={genre._id}>{genre.name} ({genre.length}) </Typography>
+  ));
+
   const handleChange = (event, value) => {
     setPage(value);
   };
@@ -231,6 +238,7 @@ export const Home = (props:HomeProps) => {
         <Typography component="h6">Most watched Director: {topDirectorsList}</Typography>
         <Typography component="h6">Most watched Language: {topLanguagesList}</Typography>
         <Typography component="h6">Most watched Year: {topYearsList}</Typography>
+        <Typography component="h6">Most watched Genre: {topGenresList}</Typography>
       </Box>
       <Grid container spacing={2} sx={{ margin: '16px 0px', padding: '0px' }}>
         {movieList}

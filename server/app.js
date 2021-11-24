@@ -455,14 +455,8 @@ app.post('/movie', async (req, res) => {
                 useFindAndModify: false
             }
         }));
-        const bulkFranchiseOps = {
-            updateOne: {
-                filter: { _id: newMovie.franchise },
-                update: { "$push": { "movies": newMovie._id } },
-                upsert: true,
-                useFindAndModify: false
-            }
-        }
+      
+        
         const bulkGenreOps = newMovie.genre.map(doc => ({
             updateOne: {
                 filter: { _id: doc },
@@ -471,19 +465,34 @@ app.post('/movie', async (req, res) => {
                 useFindAndModify: false
             }
         }));
-        let [someResult, anotherResult] = await Promise.all(
-            Director.bulkWrite(bulkDirectorOps)
-                .then(bulkWriteOpResult => console.log('Director BULK update OK:', bulkWriteOpResult))
-                .catch(console.error.bind(console, 'Director BULK update error:')),
-            Language.bulkWrite(bulkLanguageOps)
-                .then(bulkWriteOpResult => console.log('Language BULK update OK:', bulkWriteOpResult))
-                .catch(console.error.bind(console, 'Language BULK update error:')),
-            Genre.bulkWrite(bulkGenreOps)
-                .then(bulkWriteOpResult => console.log('Genre BULK update OK:', bulkWriteOpResult))
-                .catch(console.error.bind(console, 'Genre BULK update error:')),
-            Franchise.bulkWrite(bulkFranchiseOps)
-                .then(bulkWriteOpResult => console.log('Franchise BULK update OK:', bulkWriteOpResult))
-                .catch(console.error.bind(console, 'Franchise BULK update error:')))
+        let operations = {};
+        const directorOption = Director.bulkWrite(bulkDirectorOps)
+        .then(bulkWriteOpResult => console.log('Director BULK update OK:', bulkWriteOpResult))
+        .catch(console.error.bind(console, 'Director BULK update error:'));
+        const languageOperation = Language.bulkWrite(bulkLanguageOps)
+        .then(bulkWriteOpResult => console.log('Language BULK update OK:', bulkWriteOpResult))
+        .catch(console.error.bind(console, 'Language BULK update error:'));
+        const genreOperation = Genre.bulkWrite(bulkGenreOps)
+        .then(bulkWriteOpResult => console.log('Genre BULK update OK:', bulkWriteOpResult))
+        .catch(console.error.bind(console, 'Genre BULK update error:'));
+        operations = {...directorOption, ...languageOperation, ...genreOperation};
+        if(newMovie.franchise) {
+            const bulkFranchiseOps = [{
+                updateOne: {
+                    filter: { _id: newMovie.franchise },
+                    update: { "$push": { "movies": newMovie._id } },
+                    upsert: true,
+                    useFindAndModify: false
+                }
+            }];
+            const franchiseOperation = Franchise.bulkWrite(bulkFranchiseOps)
+            .then(bulkWriteOpResult => console.log('Franchise BULK update OK:', bulkWriteOpResult))
+            .catch(console.error.bind(console, 'Franchise BULK update error:'));
+            operations = {...operations, franchiseOperation};
+        }
+      
+        let [someResult, anotherResult] = await Promise.all(operations
+            )
 
         return res.status(200).json({ someResult, anotherResult });
     } catch (err) {

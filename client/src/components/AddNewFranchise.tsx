@@ -11,7 +11,7 @@ export const AddNewFranchise = () => {
   const formik = useFormik({
     initialValues: {
       name: '',
-      universe: null
+      universe: ''
     },
     validationSchema,
     onSubmit: () => {

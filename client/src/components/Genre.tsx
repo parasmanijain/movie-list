@@ -7,7 +7,7 @@ const initialData = {
   labels: [],
   datasets: [
     {
-      label: '',
+      label: 'Movies',
       data: [],
       backgroundColor: [
       ],
