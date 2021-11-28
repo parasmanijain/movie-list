@@ -5,7 +5,7 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
 const { API_PORT } = require('./config');
 
-// Franchise.syncIndexes(function (err, res) {
+// Movie.syncIndexes(function (err, res) {
 //     if (err) {
 //         console.log("Error", err);
 //         return err;
@@ -462,9 +462,17 @@ app.post('/director', async (req, res) => {
     }
 });
 app.post('/movie', async (req, res) => {
-    // get data from the view and add it to mongodb
     try {
-        const newMovie = await Movie.create(req.body);
+        const { name, language, director, imdb, rottenTomatoes, year, url, genre, franchise } = req.body;
+        // get data from the view and add it to mongodb
+        let query = {
+            'name': name, 'language': language, 'director': director,
+            'imdb': imdb, 'rottenTomatoes': rottenTomatoes, 'year': year, "url": url, "genre": genre
+        };
+        if (franchise) {
+            query = { ...query, ...{ 'franchise': franchise } }
+        }
+        const newMovie = await Movie.create(query);
         if (!newMovie) throw err;
         const bulkDirectorOps = newMovie.director.map(doc => ({
             updateOne: {
@@ -517,7 +525,7 @@ app.post('/movie', async (req, res) => {
                 .catch(console.error.bind(console, 'Franchise BULK update error:'));
             operations = { ...operations, franchiseOperation };
         }
-
+        console.log("operaitons:", operations);
         let [someResult, anotherResult] = await Promise.all(operations
         )
 

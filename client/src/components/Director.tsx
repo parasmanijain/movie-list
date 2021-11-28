@@ -46,8 +46,8 @@ export const Director = () => {
       const directorData = responses[0].data;
       setDirectorData(responses[0].data);
       let chartDetails = [];
-      const abc = createChunks(directorData, Math.floor(directorData.length / 3));
-      abc.forEach((e)=> {
+      const sets = createChunks(directorData, Math.floor(directorData.length / 4));
+      sets.forEach((e)=> {
         const data = [];
         const labels = [];
         e.forEach((e1)=> {

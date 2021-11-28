@@ -41,7 +41,7 @@ const movieSchema = new mongoose.Schema({
     url: { type: String },
     imdb: { type: String },
     rottenTomatoes: { type: String, required: false },
-    franchise: { type: mongoose.Schema.Types.ObjectId, ref: 'Franchise' },
+    franchise: { type: mongoose.Schema.Types.ObjectId, ref: 'Franchise', required: false },
     genre: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Genre' }],
 });
 
