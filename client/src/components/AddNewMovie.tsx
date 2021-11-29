@@ -121,7 +121,7 @@ export const AddNewMovie = (props: AddMovieAttributes) => {
     const items = [];
     data.forEach((element, index)=> {
       if (element.franchises) {
-        items.push(<ListSubheader key={element._id}>{element.name}</ListSubheader>);
+        items.push(<ListSubheader key={element._id + index}>{element.name}</ListSubheader>);
         element.franchises.forEach((franchise)=> {
           items.push(
               <MenuItem key={franchise._id} value={franchise._id}>
@@ -132,7 +132,7 @@ export const AddNewMovie = (props: AddMovieAttributes) => {
         items.push(<Divider key={index} />);
       } else {
         items.push(
-            <MenuItem key={element._id} value={element._id}>
+            <MenuItem key={element._id + index} value={element._id}>
               {element.name}
             </MenuItem>
         );
