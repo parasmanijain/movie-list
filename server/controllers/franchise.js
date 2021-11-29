@@ -2,7 +2,7 @@ const { Franchise, Universe } = require('../models/schemaModel');
 
 const getFranchiseList =  (req, res) => {
     // get data from the view and add it to mongodb
-    Franchise.find({}, null, { sort: { name: 1 } }).populate('movies').populate('universe').exec(function (err, results) {
+    Franchise.find({"universe": { "$exists": false }}, null, { sort: { name: 1 } }).populate('movies').populate('universe').exec(function (err, results) {
         if (err) return res.send(500, { error: err });
         return res.send(results);
     });

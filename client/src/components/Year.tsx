@@ -14,7 +14,7 @@ const createChunks = (array, chunk) => {
 
 const renderYears = (chartData, index) => {
   return (<div className="chart-container" key = {index}>
-    <Bar data={chartData} width={1750} height={320} options={{ maintainAspectRatio: false,
+    <Bar data={chartData} width={1750} height={450} options={{ maintainAspectRatio: false,
       plugins: { title: { text: 'Years', display: true } } }} /> </div>);
 };
 
