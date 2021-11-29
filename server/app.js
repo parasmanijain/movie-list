@@ -1,4 +1,7 @@
-const { Language, Country, Movie, Director, Genre, Franchise, Universe } = require('./schemaModel');
+const { Language, Country, Movie, Director, Genre, Franchise, Universe } = require('./models/schemaModel');
+
+const language_controller = require('./controllers/language');
+const genre_controller = require('./controllers/genre');
 const express = require('express');
 const app = express();
 app.use(express.json())
@@ -39,20 +42,8 @@ const { API_PORT } = require('./config');
 //      });
 // });
 
-app.get('/languages', (req, res) => {
-    // get data from the view and add it to mongodb
-    Language.find({}, null, { sort: { name: 1 } }).populate('movies').exec(function (err, results) {
-        if (err) return res.send(500, { error: err });
-        return res.send(results);
-    });
-});
-app.get('/genres', (req, res) => {
-    // get data from the view and add it to mongodb
-    Genre.find({}, null, { sort: { name: 1 } }).populate('movies').exec(function (err, results) {
-        if (err) return res.send(500, { error: err });
-        return res.send(results);
-    });
-});
+app.get('/languages', language_controller.getLanguage);
+app.get('/genres', genre_controller.getGenre);
 app.get('/franchises', (req, res) => {
     // get data from the view and add it to mongodb
     Franchise.find({}, null, { sort: { name: 1 } }).populate('movies').populate('universe').exec(function (err, results) {

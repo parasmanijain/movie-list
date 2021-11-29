@@ -1,4 +1,4 @@
-const mongoose = require('./database');
+const mongoose = require('../database');
 
 const languageSchema = new mongoose.Schema({
     name: { type: String, unique: true },
