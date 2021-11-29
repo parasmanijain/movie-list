@@ -3,9 +3,10 @@ import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 
 import { makeStyles } from '@mui/styles';
-import { Grid, Typography, Accordion, AccordionSummary, AccordionDetails, Pagination, Button, Box, CircularProgress } from '@mui/material';
+import { Grid, Typography, Accordion, AccordionSummary, AccordionDetails, Pagination, CircularProgress } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { GET_MOVIES_URL, GET_TOP_DIRECTOR_URL, GET_TOP_GENRE_URL, GET_TOP_LANGUAGE_URL, GET_TOP_YEAR_URL } from '../helper/config';
+import { Box, Button } from '../lib';
 
 const summaryStyles = makeStyles({
   root: {

@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import axios from 'axios';
-import { Box, Button, FormControl, FormHelperText, InputLabel, ListItemText, MenuItem,
-  OutlinedInput, Select, TextField } from '@mui/material';
+import { FormControl, FormHelperText, InputLabel, ListItemText, MenuItem,
+  OutlinedInput, Select } from '@mui/material';
 import { ADD_NEW_FRANCHISE_URL, GET_UNIVERSES_URL, MenuProps } from '../helper/config';
 import { franchiseValidationSchema as validationSchema } from '../helper/validationScehmas';
+import { Box, Button, TextField } from '../lib';
 
 export const AddNewFranchise = () => {
   const [universeData, setUniverseData] = useState([]);
