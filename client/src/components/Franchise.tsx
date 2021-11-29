@@ -33,20 +33,25 @@ const poolColors = (a) => {
 
 export const Franchise = () => {
   const [, setFranchiseData] = useState([]);
-  const [, setUniverseData] = useState([]);
+  const [, setOtherUniverseData] = useState([]);
+  const [, setMarvelsUniverseData] = useState([]);
   const [franchiseChartData, setFranchiseChartData] = useState(initialData);
-  const [universeChartData, setUniverseChartData] = useState([]);
+  const [otherUniverseChartData, setOtherUniverseChartData] = useState([]);
+  const [marvelsUniverseChartData, setMarvelsUniverseChartData] = useState([]);
   const fetchData = () => {
     const franchises = axios.get(`${GET_FRANCHISES_COUNT_URL}`);
     const universes = axios.get(`${GET_UNIVERSES_COUNT_URL}`);
     axios.all([franchises, universes]).then(axios.spread((...responses) => {
       const franchiseData = responses[0].data;
       const universeData = responses[1].data;
+      const marvelUniverseData = universeData.filter((ele)=> (ele.name).toLowerCase().includes('marvel'));
+      const otherUniverseData = universeData.filter((ele)=> !(ele.name).toLowerCase().includes('marvel'));
       setFranchiseData(responses[0].data);
-      setUniverseData(responses[1].data);
+      setOtherUniverseData(otherUniverseData);
+      setMarvelsUniverseData(marvelUniverseData);
       let data = [];
       let labels = [];
-      const datasets = [];
+      let datasets = [];
       franchiseData.forEach((element)=> {
         labels.push(element.name);
         data.push(element.length);
@@ -62,8 +67,7 @@ export const Franchise = () => {
           }
         ]
       });
-
-      universeData.forEach((element)=> {
+      otherUniverseData.forEach((element)=> {
         data= [];
         labels = [];
         element.franchise.forEach((e)=> {
@@ -84,7 +88,30 @@ export const Franchise = () => {
 
         datasets.push(obj);
       });
-      setUniverseChartData(datasets);
+      setOtherUniverseChartData(datasets);
+      datasets = [];
+      marvelUniverseData.forEach((element)=> {
+        data= [];
+        labels = [];
+        element.franchise.forEach((e)=> {
+          labels.push(e.name);
+          data.push(e.length);
+        });
+        const obj = {
+          title: element.name,
+          labels,
+          datasets: [
+            {
+              label: 'Movies',
+              backgroundColor: chartColors,
+              hoverBackgroundColor: chartColors,
+              data: data
+            }
+          ] };
+
+        datasets.push(obj);
+      });
+      setMarvelsUniverseChartData(datasets);
     })).catch((errors) => {
       // react on errors.
     });
@@ -103,8 +130,10 @@ export const Franchise = () => {
     return () => {
       setFranchiseChartData(initialData);
       setFranchiseData([]);
-      setUniverseChartData([]);
-      setUniverseData([]);
+      setOtherUniverseChartData([]);
+      setOtherUniverseData([]);
+      setMarvelsUniverseChartData([]);
+      setMarvelsUniverseData([]);
     };
   }, []);
   return (
@@ -117,8 +146,11 @@ export const Franchise = () => {
         }
         </div>
       }
-      { [...universeChartData].length &&
-    [...universeChartData].map((element, index, arr) => renderUniverseCharts(element.title, { ...element }, index, arr.length))}
+      { [...marvelsUniverseChartData].length &&
+    [...marvelsUniverseChartData].map((element, index, arr) => renderUniverseCharts(element.title, { ...element }, index, arr.length))}
+      { [...otherUniverseChartData].length &&
+    [...otherUniverseChartData].map((element, index, arr) => renderUniverseCharts(element.title, { ...element }, index, arr.length))}
+
     </div>);
 };
 
