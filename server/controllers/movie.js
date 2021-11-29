@@ -199,8 +199,24 @@ const getTopYear = (req, res) => {
     // get data from the view and add it to mongodb
     Movie.aggregate(
         [
-            { $group: { _id: "$year", count: { $sum: 1 } } },
-            { $sort: { count: -1 } }
+            { "$group": { _id: "$year", count: { $sum: 1 } } },
+            { "$sort": { count: -1 } },
+            { "$limit": 1 }
+        ],
+        function (err, results) {
+            if (err) return res.send(500, { error: err });
+            return res.send(results);
+        }
+    )
+}
+
+const getYearCount = (req, res) => {
+    // get data from the view and add it to mongodb
+    Movie.aggregate(
+        [
+            { "$group": { _id: "$year", count: { $sum: 1 } } },
+            { "$sort": { "_id": 1 } },
+           
         ],
         function (err, results) {
             if (err) return res.send(500, { error: err });
@@ -238,5 +254,6 @@ module.exports = {
     getTopMovie,
     addNewMovie,
     updateExistingMovie,
-    getTopYear
+    getTopYear,
+    getYearCount
 };

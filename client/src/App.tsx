@@ -20,6 +20,7 @@ import { Genre } from './components/Genre';
 import { AddNewGenre } from './components/AddNewGenre';
 import { AddNewFranchise } from './components/AddNewFranchise';
 import { AddNewUniverse } from './components/AddNewUniverse';
+import { Year } from './components/Year';
 
 export const App = () => {
   const [selectedMovie, setSelectedMovie] = useState(null);
@@ -65,6 +66,12 @@ export const App = () => {
                 label="Genre"
                 component={Link}
                 to="/genre"
+              />
+              <Tab
+                value="/year"
+                label="Year"
+                component={Link}
+                to="/year"
               />
               <Tab
                 value="/franchise"
@@ -132,6 +139,7 @@ export const App = () => {
           <Route path="/language" component={Language} />
           <Route path="/director" component={Director} />
           <Route path="/genre" component={Genre} />
+          <Route path="/year" component={Year} />
           <Route path="/franchise" component={Franchise} />
           <Route path="/add-new-director" component={AddNewDirector} />
           <Route path="/add-new-language" component={AddNewLanguage} />

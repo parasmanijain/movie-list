@@ -18,30 +18,6 @@ const initialData = {
   ]
 };
 
-// const options = {
-//   responsive: true,
-//   maintainAspectRatio: false,
-//   legend: { display: false },
-//   scales: {
-//     yAxes: [
-//       {
-//         ticks: {
-//           beginAtZero: true,
-//         },
-//       },
-//     ],
-//     xAxes: [
-//       {
-//       ticks: {
-//             autoSkip: false,
-//             maxRotation: 90,
-//             minRotation: 90
-//         }
-//       }
-//     ]
-//   },
-// }
-
 const dynamicColors = () => {
   const r = Math.floor(Math.random() * 255);
   const g = Math.floor(Math.random() * 255);

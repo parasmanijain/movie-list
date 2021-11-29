@@ -45,6 +45,7 @@ app.get('/topMovie', movie_controller.getTopMovie);
 app.post('/movie',movie_controller.addNewMovie);
 app.post('/updateMovie', movie_controller.updateExistingMovie);
 app.get('/topYear', movie_controller.getTopYear);
+app.get('/yearsCount', movie_controller.getYearCount);
 
 function setupCORS(req, res, next) {
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
