@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Bar } from 'react-chartjs-2';
 import { chartColors } from '../helper/colors';
 import { GET_YEARS_COUNT_URL } from '../helper/config';
+import { useWindowDimensions } from '../hooks/useWindowDimensions';
 
 const createChunks = (array, chunk) => {
   const temp = [];
@@ -12,13 +13,16 @@ const createChunks = (array, chunk) => {
   return temp;
 };
 
-const renderYears = (chartData, index) => {
+const renderYears = (chartData, index, width, height, length) => {
+  const canvasHeight = length> 1 ? height>450? height/2: height : height;
   return (<div className="chart-container" key = {index}>
-    <Bar data={chartData} width={1750} height={450} options={{ maintainAspectRatio: false,
+    <Bar data={chartData} width={width-50} height={canvasHeight-50} options={{ maintainAspectRatio: false,
       plugins: { title: { text: 'Years', display: true } } }} /> </div>);
 };
 
 export const Year = () => {
+  const { height, width } = useWindowDimensions();
+  const chunkSize = width>= 1536 ? 50 : width>= 1200 ? 40 : width>= 900 ? 30 : width>=600 ? 20 : 10;
   const [, setYearData] = useState([]);
   const [chartData, setChartData] = useState([]);
   const fetchData = () => {
@@ -27,7 +31,7 @@ export const Year = () => {
       const yearData = responses[0].data;
       setYearData(responses[0].data);
       let chartDetails = [];
-      const sets = createChunks(yearData, Math.min(Math.ceil((yearData.length/2)), 50));
+      const sets = createChunks(yearData, Math.min(Math.ceil((yearData.length/2)), chunkSize));
       sets.forEach((e)=> {
         const data = [];
         const labels = [];
@@ -64,7 +68,7 @@ export const Year = () => {
   return (
     <div className="main-container">
 
-      {[...chartData].length && [...chartData].map((data, index)=> renderYears(data, index))}
+      {[...chartData].length && [...chartData].map((data, index, arr)=> renderYears(data, index, width, height, arr.length))}
     </div>
   );
 };
