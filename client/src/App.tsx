@@ -80,52 +80,59 @@ export const App = () => {
                 to="/franchise"
               />
               <Tab
+                value="/top-rated-movies"
+                label="Top Rated Movies"
+                component={Link}
+                to="/top-rated-movies"
+              />
+              <Tab
                 value="/add-new-country"
                 label="Add New Country"
                 component={Link}
                 to="/add-new-country"
+                wrapped
               />
               <Tab
                 value="/add-new-director"
                 label="Add New Director"
                 component={Link}
                 to="/add-new-director"
+                wrapped
               />
               <Tab
                 value="/add-new-language"
                 label="Add New Language"
                 component={Link}
                 to="/add-new-language"
+                wrapped
               />
               <Tab
                 value="/add-new-genre"
                 label="Add New Genre"
                 component={Link}
                 to="/add-new-genre"
+                wrapped
               />
               <Tab
                 value="/add-new-franchise"
                 label="Add New Franchise"
                 component={Link}
                 to="/add-new-franchise"
+                wrapped
               />
               <Tab
                 value="/add-new-universe"
                 label="Add New Universe"
                 component={Link}
                 to="/add-new-universe"
+                wrapped
               />
               <Tab
                 value="/add-new-movie"
                 label="Add New Movie"
                 component={Link}
                 to="/add-new-movie"
-              />
-              <Tab
-                value="/top-rated-movies"
-                label="Top Rated Movies"
-                component={Link}
-                to="/top-rated-movies"
+                wrapped
               />
             </Tabs>
           </AppBar>
@@ -141,6 +148,7 @@ export const App = () => {
           <Route path="/genre" component={Genre} />
           <Route path="/year" component={Year} />
           <Route path="/franchise" component={Franchise} />
+          <Route path="/top-rated-movies" component={TopRatedMovies} />
           <Route path="/add-new-director" component={AddNewDirector} />
           <Route path="/add-new-language" component={AddNewLanguage} />
           <Route path="/add-new-genre" component={AddNewGenre} />
@@ -148,7 +156,6 @@ export const App = () => {
           <Route path="/add-new-universe" component={AddNewUniverse} />
           <Route path="/add-new-movie" render={() => <AddNewMovie selectedMovie = {selectedMovie} />} />
           <Route path="/add-new-country" component={AddNewCountry} />
-          <Route path="/top-rated-movies" component={TopRatedMovies} />
           <Route path="/" render={() => <Home handleMovieUpdateSelection = {handleMovieUpdateSelection} />} />
         </Switch>
       </Box>

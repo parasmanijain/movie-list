@@ -10,7 +10,7 @@ import { Box, Button } from '../lib';
 
 const summaryStyles = makeStyles({
   root: {
-    minHeight: 75,
+    minHeight: 80,
     padding: '0px',
     boxSizing: 'border-box'
   },
@@ -36,7 +36,7 @@ export const Home = (props:HomeProps) => {
   const [topYearData, setTopYearData] = useState([]);
   const [filterLoading, setFilterLoading] = useState(false);
   const [dataLoading, setDataLoading] = useState(false);
-  const limit = 40;
+  const limit = 36;
   const history = useHistory();
 
   const fetchData = () => {
@@ -119,7 +119,7 @@ export const Home = (props:HomeProps) => {
   const movieList = movieData?.map((movie) => (
     <Grid item xs = {3} key={movie._id} sx={{ padding: '0px' }}>
       <Accordion sx = {{ padding: '0px', backgroundColor: movie.franchise ?
-      movie.franchise.universe ? '#b2dfdb' : '#c8e4fb' : '#ffffff' }} classes={summaryClass}>
+      movie.franchise.universe ? '#b2dfdb' : '#c8e4fb' : '#ffffed' }} classes={summaryClass}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />
           }
@@ -234,19 +234,24 @@ export const Home = (props:HomeProps) => {
     setPage(value);
   };
 
-  return (<Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+  return (<Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
+    alignItems: 'center', height: 'calc(100vh - 56px)', boxSizing: 'border-box' }}>
     { filterLoading && dataLoading ? <CircularProgress/> : <React.Fragment>
-      <Box sx={{ display: 'flex', margin: '4px 0px', justifyContent: 'space-evenly', alignItems: 'center', width: '100%' }}>
-        <Typography component="h6">Total Movies watched so far: {total}</Typography>
-        <Typography component="h6">Most watched Director: {topDirectorsList}</Typography>
-        <Typography component="h6">Most watched Language: {topLanguagesList}</Typography>
-        <Typography component="h6">Most watched Year: {topYearsList}</Typography>
-        <Typography component="h6">Most watched Genre: {topGenresList}</Typography>
+      <Box sx={{ display: 'flex', margin: '0px', boxSizing: 'border-box',
+        alignContent: 'flex-start', justifyContent: 'space-evenly', alignItems: 'center', width: '100%' }}>
+        <Typography component="h6">Total: {total}</Typography>
+        <Typography component="h6">Director: {topDirectorsList}</Typography>
+        <Typography component="h6">Language: {topLanguagesList}</Typography>
+        <Typography component="h6">Year: {topYearsList}</Typography>
+        <Typography component="h6">Genre: {topGenresList}</Typography>
       </Box>
-      <Grid container spacing={2} sx={{ margin: '0px', padding: '0px' }}>
+      <Grid container
+        spacing = {2} sx={{ margin: '0px', padding: '0px', boxSizing: 'border-box' }}>
         {movieList}
       </Grid>
-      <Box sx={{ margin: '4px 0px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <Box sx={{ margin: '0px ', boxSizing: 'border-box',
+        display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'flex-end'
+      }}>
         <Pagination count={count} color="primary" onChange={handleChange} page={page} showFirstButton showLastButton />
       </Box>
     </React.Fragment> }

@@ -2,7 +2,7 @@ const { Movie, Director, Language, Genre, Franchise } = require('../models/schem
 
 const getMovieList =  (req, res) => {
     let page = parseInt(req.query.page) || 1;
-    let limit = parseInt(req.query.limit) || 40;
+    let limit = parseInt(req.query.limit) || 36;
     // get data from the view and add it to mongodb
     Movie.find({}, null, { sort: { name: 1 } })
         .skip((page - 1) * limit)
