@@ -1,102 +1,70 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Bar } from 'react-chartjs-2';
+import { chartColors } from '../helper/colors';
 import { GET_LANGUAGES_COUNT_URL } from '../helper/config';
 
-const initialData = {
-  labels: [],
-  datasets: [
-    {
-      label: '',
-      data: [],
-      backgroundColor: [
-      ],
-      borderColor: [
-      ],
-      borderWidth: 1
-    }
-  ]
-};
-
-// const options = {
-//   responsive: true,
-//   maintainAspectRatio: false,
-//   legend: { display: false },
-//   scales: {
-//     yAxes: [
-//       {
-//         ticks: {
-//           beginAtZero: true,
-//         },
-//       },
-//     ],
-//     xAxes: [
-//       {
-//       ticks: {
-//             autoSkip: false,
-//             maxRotation: 90,
-//             minRotation: 90
-//         }
-//       }
-//     ]
-//   },
-// }
-
-const dynamicColors = () => {
-  const r = Math.floor(Math.random() * 255);
-  const g = Math.floor(Math.random() * 255);
-  const b = Math.floor(Math.random() * 255);
-  return 'rgba(' + r + ',' + g + ',' + b + ', 0.5)';
-};
-
-const poolColors = (a) => {
-  const pool = [];
-  for (let i = 0; i < a; i++) {
-    pool.push(dynamicColors());
+const createChunks = (array, chunk) => {
+  const temp = [];
+  for (let i = 0, j = array.length; i < j; i += chunk) {
+    temp.push(array.slice(i, i + chunk));
   }
-  return pool;
+  return temp;
+};
+
+const renderLanguages = (chartData, index) => {
+  return (<div className="chart-container" key = {index}>
+    <Bar data={chartData} width={1750} height={450} options={{ maintainAspectRatio: false,
+      plugins: { title: { text: 'Languages', display: true } } }} /> </div>);
 };
 
 export const Language = () => {
   const [, setLanguageData] = useState([]);
-  const [chartData, setChartData] = useState(initialData);
-  const data = JSON.parse(JSON.stringify(initialData));
-  useEffect(() => {
-    axios.get(`${GET_LANGUAGES_COUNT_URL}`, {
-    })
-        .then(function(response) {
-          setLanguageData(response.data);
-          response.data.forEach((elem) => {
-            data.labels.push(elem.name);
-            data.datasets[0].data.push(elem.length);
-            data.datasets[0].backgroundColor = poolColors(response.data.length);
-            data.datasets[0].borderColor = poolColors(response.data.length);
-          });
-          setChartData({
-            labels: data.labels,
-            datasets: data.datasets
-          });
-        })
-        .catch(function(response) {
-          console.log(response);
+  const [chartData, setChartData] = useState([]);
+  const fetchData = () => {
+    const languages = axios.get(`${GET_LANGUAGES_COUNT_URL}`);
+    axios.all([languages]).then(axios.spread((...responses) => {
+      const languageData = responses[0].data;
+      setLanguageData(responses[0].data);
+      let chartDetails = [];
+      const sets = createChunks(languageData, Math.min(Math.ceil((languageData.length)/2), 50));
+      sets.forEach((e)=> {
+        const data = [];
+        const labels = [];
+        e.forEach((e1)=> {
+          labels.push(e1.name);
+          data.push(e1.length);
         });
-    return () => {
-      setChartData({
-        labels: initialData.labels,
-        datasets: initialData.datasets
+        const obj = {
+          labels,
+          datasets: [
+            {
+              label: 'Movies',
+              backgroundColor: chartColors,
+              hoverBackgroundColor: chartColors,
+              data: data
+            }
+          ]
+        };
+        chartDetails = [...chartDetails, obj];
       });
+      setChartData(chartDetails);
+    })).catch((errors) => {
+      // react on errors.
+    });
+  };
+  useEffect(() => {
+    fetchData();
+    return () => {
+      setChartData([]);
       setLanguageData([]);
     };
   }, []);
+
   return (
     <div className="main-container">
-      {chartData.datasets[0].data.length &&
 
-        <div className="chart-container">{
-          <Bar data={chartData} height={900} width={1750} options={{ maintainAspectRatio: false }} />
-        }
-        </div>
-      }
-    </div>);
+      {[...chartData].length && [...chartData].map((data, index)=> renderLanguages(data, index))}
+    </div>
+  );
 };
-

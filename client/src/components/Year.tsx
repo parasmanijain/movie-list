@@ -27,7 +27,7 @@ export const Year = () => {
       const yearData = responses[0].data;
       setYearData(responses[0].data);
       let chartDetails = [];
-      const sets = createChunks(yearData, 50);
+      const sets = createChunks(yearData, Math.min(Math.ceil((yearData.length/2)), 50));
       sets.forEach((e)=> {
         const data = [];
         const labels = [];
