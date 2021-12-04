@@ -182,7 +182,7 @@ export const Home = (props:HomeProps) => {
                </Typography>}
             </React.Fragment>
             }
-            <Typography component="div">
+            {/* <Typography component="div">
               <Button
                 variant="text"
                 sx={{ padding: '4px 0px' }}
@@ -193,7 +193,7 @@ export const Home = (props:HomeProps) => {
               >
                 Edit Movie Details
               </Button>
-            </Typography>
+            </Typography> */}
             <Typography component="div">
               <Button href={movie.url} target="_blank" rel="noreferrer" sx={{ padding: '4px 0px' }}>
               More Details

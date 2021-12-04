@@ -74,7 +74,7 @@ export const AddNewMovie = (props: AddMovieAttributes) => {
           url,
           year,
           genre: genreValues,
-          franchise
+          franchise: franchise? franchise: ''
         }, true);
       }
     })).catch((errors) => {
