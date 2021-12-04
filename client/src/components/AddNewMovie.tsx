@@ -5,16 +5,12 @@ import {
   ADD_NEW_MOVIE_URL, currentYear, GET_DIRECTORS_URL, GET_FRANCHISES_URL,
   GET_GENRES_URL, GET_LANGUAGES_URL, GET_MOVIE_DETAILS_URL, GET_UNIVERSES_URL, MenuProps
 } from '../helper/config';
-import {
-  Divider, FormControl, FormHelperText, InputLabel, ListItemText,
-  ListSubheader,
-  MenuItem, OutlinedInput
-} from '@mui/material';
+import { FormHelperText, ListSubheader, OutlinedInput } from '@mui/material';
 import { LocalizationProvider, DatePicker } from '@mui/lab';
 
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import { movieValidationSchema as validationSchema } from '../helper/validationScehmas';
-import { Box, Button, TextField, Select, CheckBox } from '../lib';
+import { Box, Button, TextField, Select, CheckBox, FormControl, InputLabel, MenuItem, ListItemText, Divider } from '../lib';
 
 interface AddMovieAttributes {
   selectedMovie?: string;

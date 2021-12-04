@@ -3,10 +3,10 @@ import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 
 import { makeStyles } from '@mui/styles';
-import { Grid, Typography, Accordion, AccordionSummary, AccordionDetails, Pagination, CircularProgress } from '@mui/material';
+import { Grid, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { GET_MOVIES_URL, GET_TOP_DIRECTOR_URL, GET_TOP_GENRE_URL, GET_TOP_LANGUAGE_URL, GET_TOP_YEAR_URL } from '../helper/config';
-import { Box, Button } from '../lib';
+import { Box, Button, Typography, Progress, Pagination } from '../lib';
 
 const summaryStyles = makeStyles({
   root: {
@@ -236,7 +236,7 @@ export const Home = (props:HomeProps) => {
 
   return (<Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
     alignItems: 'center', height: 'calc(100vh - 56px)', boxSizing: 'border-box' }}>
-    { filterLoading && dataLoading ? <CircularProgress/> : <React.Fragment>
+    { filterLoading && dataLoading ? <Progress/> : <React.Fragment>
       <Box sx={{ display: 'flex', margin: '0px', boxSizing: 'border-box',
         alignContent: 'flex-start', justifyContent: 'space-evenly', alignItems: 'center', width: '100%' }}>
         <Typography component="h6">Total: {total}</Typography>

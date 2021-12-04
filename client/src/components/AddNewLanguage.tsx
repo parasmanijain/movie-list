@@ -1,10 +1,9 @@
 import React from 'react';
 import axios from 'axios';
 import { useFormik } from 'formik';
-import { FormControl } from '@mui/material';
 import { languageValidationSchema as validationSchema } from '../helper/validationScehmas';
 import { ADD_NEW_LANGUAGE_URL } from '../helper/config';
-import { Box, Button, TextField } from '../lib';
+import { Box, Button, TextField, FormControl } from '../lib';
 
 export const AddNewLanguage = () => {
   const formik = useFormik({
