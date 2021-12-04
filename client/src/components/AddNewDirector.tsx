@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useFormik } from 'formik';
-import { OutlinedInput, InputLabel, FormHelperText, MenuItem,
+import { OutlinedInput, FormHelperText, MenuItem,
   FormControl, ListItemText } from '@mui/material';
 import { ADD_NEW_DIRECTOR_URL, GET_COUNTRIES_URL, MenuProps } from '../helper/config';
 import { directorValidationSchema as validationSchema } from '../helper/validationScehmas';
-import { Box, Button, TextField, Select, CheckBox } from '../lib';
+import { Box, Button, TextField, Select, CheckBox, InputLabel } from '../lib';
 
 export const AddNewDirector = () => {
   const [countryData, setCountryData] = useState([]);

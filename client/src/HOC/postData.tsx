@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-export const withData = (WrappedComponent, { apiUrl, label }) => {
+export const postData = (WrappedComponent, { apiUrl, label }) => {
   const Component = (props) => {
     const [data, setData] = useState([]);
     const fetchData = () => {
