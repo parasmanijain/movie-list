@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { Bar } from 'react-chartjs-2';
 import { chartColors } from '../helper/colors';
 import { useWindowDimensions } from '../hooks/useWindowDimensions';
@@ -21,49 +20,40 @@ const renderData = (chartData, index, width, height, length, label, partialHeigh
 
 export const RenderChart = (props:any) => {
   const [width, height] = useWindowDimensions();
-  const { apiUrl, label, partialHeight } = props;
+  const { label, partialHeight, apiData } = props;
   const chunkSize = width>= 1536 ? 50 : width>= 1200 ? 40 : width>= 900 ? 30 : width>=600 ? 20 : 10;
-  const [, setData] = useState([]);
   const [chartData, setChartData] = useState([]);
   const fetchData = () => {
-    const list = axios.get(apiUrl);
-    axios.all([list]).then(axios.spread((...responses) => {
-      const apiData = responses[0].data;
-      setData(responses[0].data);
-      let chartDetails = [];
-      const sets = createChunks(apiData, apiData.length> chunkSize ? Math.min(Math.ceil((apiData.length)/2), chunkSize): apiData.length);
-      sets.forEach((e)=> {
-        const data = [];
-        const labels = [];
-        e.forEach((e1)=> {
-          labels.push(e1.name);
-          data.push(e1.length);
-        });
-        const obj = {
-          labels,
-          datasets: [
-            {
-              label: 'Movies',
-              backgroundColor: chartColors,
-              hoverBackgroundColor: chartColors,
-              data: data
-            }
-          ]
-        };
-        chartDetails = [...chartDetails, obj];
+    let chartDetails = [];
+    const sets = createChunks(apiData, apiData.length> chunkSize ? Math.min(Math.ceil((apiData.length)/2), chunkSize): apiData.length);
+    sets.forEach((e)=> {
+      const data = [];
+      const labels = [];
+      e.forEach((e1)=> {
+        labels.push(e1.name);
+        data.push(e1.length);
       });
-      setChartData(chartDetails);
-    })).catch((errors) => {
-      // react on errors.
+      const obj = {
+        labels,
+        datasets: [
+          {
+            label: 'Movies',
+            backgroundColor: chartColors,
+            hoverBackgroundColor: chartColors,
+            data: data
+          }
+        ]
+      };
+      chartDetails = [...chartDetails, obj];
     });
+    setChartData(chartDetails);
   };
   useEffect(() => {
     fetchData();
     return () => {
       setChartData([]);
-      setData([]);
     };
-  }, []);
+  }, [apiData]);
 
   return (
     <div className="main-container">

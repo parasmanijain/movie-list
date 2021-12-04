@@ -6,21 +6,25 @@ import {
   Link
 } from 'react-router-dom';
 import './App.css';
-import { Language } from './components/Language';
+
 import { Home } from './components/Home';
-import { Director } from './components/Director';
+
 import { AddNewMovie } from './components/AddNewMovie';
 import { AddNewDirector } from './components/AddNewDirector';
 import { AddNewCountry } from './components/AddNewCountry';
 import { AddNewLanguage } from './components/AddNewLanguage';
 import { TopRatedMovies } from './components/TopRatedMovies';
 import { AppBar, Box, Tab, Tabs } from '@mui/material';
-import { Franchise } from './components/Franchise';
-import { Genre } from './components/Genre';
+
+import Genre from './components/Genre';
+import Language from './components/Language';
+import Director from './components/Director';
+import Year from './components/Year';
+import Franchise from './components/Franchise';
+import { Universe } from './components/Universe';
 import { AddNewGenre } from './components/AddNewGenre';
 import { AddNewFranchise } from './components/AddNewFranchise';
 import { AddNewUniverse } from './components/AddNewUniverse';
-import { Year } from './components/Year';
 
 export const App = () => {
   const [selectedMovie, setSelectedMovie] = useState(null);
@@ -78,6 +82,12 @@ export const App = () => {
                 label="Franchise"
                 component={Link}
                 to="/franchise"
+              />
+              <Tab
+                value="/universe"
+                label="Universe"
+                component={Link}
+                to="/universe"
               />
               <Tab
                 value="/top-rated-movies"
@@ -148,6 +158,7 @@ export const App = () => {
           <Route path="/genre" component={Genre} />
           <Route path="/year" component={Year} />
           <Route path="/franchise" component={Franchise} />
+          <Route path="/universe" component={Universe} />
           <Route path="/top-rated-movies" component={TopRatedMovies} />
           <Route path="/add-new-director" component={AddNewDirector} />
           <Route path="/add-new-language" component={AddNewLanguage} />
