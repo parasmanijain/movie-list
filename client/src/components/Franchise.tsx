@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Bar } from 'react-chartjs-2';
 import { GET_FRANCHISES_COUNT_URL, GET_UNIVERSES_COUNT_URL } from '../helper/config';
 import { chartColors } from '../helper/colors';
+import { RenderChart } from '../shared/RenderChart';
 
 const initialData = {
   labels: [],
@@ -137,20 +138,17 @@ export const Franchise = () => {
     };
   }, []);
   return (
-    <div className="main-container">
-      {{ ...franchiseChartData }.datasets[0].data.length &&
+    <React.Fragment>
 
-        <div className="chart-container" id="erg">{
-          <Bar data={{ ...franchiseChartData }} height={450} width={1750}options={{ maintainAspectRatio: false
-          }} />
-        }
-        </div>
-      }
-      { [...marvelsUniverseChartData].length &&
+
+      <RenderChart apiUrl={GET_FRANCHISES_COUNT_URL} label={'Franchises'}/>
+      <div className="main-container">
+        { [...marvelsUniverseChartData].length &&
     [...marvelsUniverseChartData].map((element, index, arr) => renderUniverseCharts(element.title, { ...element }, index, arr.length))}
-      { [...otherUniverseChartData].length &&
+        { [...otherUniverseChartData].length &&
     [...otherUniverseChartData].map((element, index, arr) => renderUniverseCharts(element.title, { ...element }, index, arr.length))}
 
-    </div>);
+      </div>
+    </React.Fragment>);
 };
 

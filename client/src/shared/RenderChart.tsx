@@ -20,7 +20,7 @@ const renderData = (chartData, index, width, height, length, label) => {
 };
 
 export const RenderChart = (props:any) => {
-  const { height, width } = useWindowDimensions();
+  const [width, height] = useWindowDimensions();
   const { apiUrl, label } = props;
   const chunkSize = width>= 1536 ? 50 : width>= 1200 ? 40 : width>= 900 ? 30 : width>=600 ? 20 : 10;
   const [, setData] = useState([]);
@@ -31,7 +31,7 @@ export const RenderChart = (props:any) => {
       const apiData = responses[0].data;
       setData(responses[0].data);
       let chartDetails = [];
-      const sets = createChunks(apiData, Math.min(Math.ceil((apiData.length)/2), chunkSize));
+      const sets = createChunks(apiData, apiData.length> chunkSize ? Math.min(Math.ceil((apiData.length)/2), chunkSize): apiData.length);
       sets.forEach((e)=> {
         const data = [];
         const labels = [];

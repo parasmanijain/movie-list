@@ -6,15 +6,15 @@ import {
   GET_GENRES_URL, GET_LANGUAGES_URL, GET_MOVIE_DETAILS_URL, GET_UNIVERSES_URL, MenuProps
 } from '../helper/config';
 import {
-  Checkbox, Divider, FormControl, FormHelperText, InputLabel, ListItemText,
+  Divider, FormControl, FormHelperText, InputLabel, ListItemText,
   ListSubheader,
-  MenuItem, OutlinedInput, Select
+  MenuItem, OutlinedInput
 } from '@mui/material';
 import { LocalizationProvider, DatePicker } from '@mui/lab';
 
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import { movieValidationSchema as validationSchema } from '../helper/validationScehmas';
-import { Box, Button, TextField } from '../lib';
+import { Box, Button, TextField, Select, CheckBox } from '../lib';
 
 interface AddMovieAttributes {
   selectedMovie?: string;
@@ -177,7 +177,7 @@ export const AddNewMovie = (props: AddMovieAttributes) => {
 
             {[...languageData].map((language) => (
               <MenuItem key={language._id} value={language._id}>
-                <Checkbox checked={formik.values.language.indexOf(language._id) > -1} />
+                <CheckBox checked={formik.values.language.indexOf(language._id) > -1} />
                 <ListItemText primary={language.name} />
               </MenuItem>
             ))}
@@ -227,7 +227,7 @@ export const AddNewMovie = (props: AddMovieAttributes) => {
 
             {[...directorData].map((director) => (
               <MenuItem key={director._id} value={director._id}>
-                <Checkbox checked={formik.values.director.indexOf(director._id) > -1} />
+                <CheckBox checked={formik.values.director.indexOf(director._id) > -1} />
                 <ListItemText primary={director.name} />
               </MenuItem>
             ))}
@@ -257,7 +257,7 @@ export const AddNewMovie = (props: AddMovieAttributes) => {
           >
             {[...genreData].map((genre) => (
               <MenuItem key={genre._id} value={genre._id}>
-                <Checkbox checked={formik.values.genre.indexOf(genre._id) > -1} />
+                <CheckBox checked={formik.values.genre.indexOf(genre._id) > -1} />
                 <ListItemText primary={genre.name} />
               </MenuItem>
             ))}
