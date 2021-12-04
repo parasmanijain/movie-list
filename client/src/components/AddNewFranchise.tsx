@@ -14,13 +14,14 @@ export const AddNewFranchise = () => {
       universe: ''
     },
     validationSchema,
-    onSubmit: () => {
+    onSubmit: (values, { resetForm }) => {
       axios.post(`${ADD_NEW_FRANCHISE_URL}`, {
         name: formik.values.name,
         universe: formik.values.universe ? formik.values.universe : null,
         movies: []
       })
           .then(function(response) {
+            resetForm();
           })
           .catch(function(response) {
             console.log(response);

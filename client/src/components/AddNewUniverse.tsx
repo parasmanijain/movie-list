@@ -11,12 +11,13 @@ export const AddNewUniverse = () => {
       name: ''
     },
     validationSchema,
-    onSubmit: () => {
+    onSubmit: (values, { resetForm }) => {
       axios.post(`${ADD_NEW_UNIVERSE_URL}`, {
         name: formik.values.name,
         franchises: []
       })
           .then(function(response) {
+            resetForm();
           })
           .catch(function(response) {
             console.log(response);

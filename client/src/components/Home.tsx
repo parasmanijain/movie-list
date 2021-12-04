@@ -236,25 +236,26 @@ export const Home = (props:HomeProps) => {
 
   return (<Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
     alignItems: 'center', height: 'calc(100vh - 56px)', boxSizing: 'border-box' }}>
-    { filterLoading && dataLoading ? <Progress/> : <React.Fragment>
-      <Box sx={{ display: 'flex', margin: '0px', boxSizing: 'border-box',
-        alignContent: 'flex-start', justifyContent: 'space-evenly', alignItems: 'center', width: '100%' }}>
-        <Typography component="h6">Total: {total}</Typography>
-        <Typography component="h6">Director: {topDirectorsList}</Typography>
-        <Typography component="h6">Language: {topLanguagesList}</Typography>
-        <Typography component="h6">Year: {topYearsList}</Typography>
-        <Typography component="h6">Genre: {topGenresList}</Typography>
-      </Box>
-      <Grid container
-        spacing = {2} sx={{ margin: '0px', padding: '0px', boxSizing: 'border-box' }}>
-        {movieList}
-      </Grid>
-      <Box sx={{ margin: '0px ', boxSizing: 'border-box',
-        display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'flex-end'
-      }}>
-        <Pagination count={count} color="primary" onChange={handleChange} page={page} showFirstButton showLastButton />
-      </Box>
-    </React.Fragment> }
+    { filterLoading && dataLoading ? <Box sx={{ height: '100vh', width: '100vw', display: 'flex',
+      justifyContent: 'center', alignItems: 'center' }}><Progress/></Box> : <React.Fragment>
+        <Box sx={{ display: 'flex', margin: '0px', boxSizing: 'border-box',
+          alignContent: 'flex-start', justifyContent: 'space-evenly', alignItems: 'center', width: '100%' }}>
+          <Typography component="h6">Total: {total}</Typography>
+          <Typography component="h6">Director: {topDirectorsList}</Typography>
+          <Typography component="h6">Language: {topLanguagesList}</Typography>
+          <Typography component="h6">Year: {topYearsList}</Typography>
+          <Typography component="h6">Genre: {topGenresList}</Typography>
+        </Box>
+        <Grid container
+          spacing = {2} sx={{ margin: '0px', padding: '0px', boxSizing: 'border-box' }}>
+          {movieList}
+        </Grid>
+        <Box sx={{ margin: '0px ', boxSizing: 'border-box',
+          display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'flex-end'
+        }}>
+          <Pagination count={count} color="primary" onChange={handleChange} page={page} showFirstButton showLastButton />
+        </Box>
+      </React.Fragment> }
 
   </Box>);
 };

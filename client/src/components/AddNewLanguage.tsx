@@ -12,7 +12,7 @@ export const AddNewLanguage = () => {
       code: ''
     },
     validationSchema,
-    onSubmit: () => {
+    onSubmit: (values, { resetForm }) => {
       console.log(formik.values);
       axios.post(`${ADD_NEW_LANGUAGE_URL}`, {
         name: formik.values.name,
@@ -20,6 +20,7 @@ export const AddNewLanguage = () => {
         movies: []
       })
           .then(function(response) {
+            resetForm();
           })
           .catch(function(response) {
             console.log(response);

@@ -11,12 +11,13 @@ export const AddNewGenre = () => {
       name: ''
     },
     validationSchema,
-    onSubmit: () => {
+    onSubmit: (values, { resetForm }) => {
       axios.post(`${ADD_NEW_GENRE_URL}`, {
         name: formik.values.name,
         movies: []
       })
           .then(function(response) {
+            resetForm();
           })
           .catch(function(response) {
             console.log(response);

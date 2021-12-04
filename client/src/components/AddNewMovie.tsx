@@ -93,7 +93,7 @@ export const AddNewMovie = (props: AddMovieAttributes) => {
   const formik = useFormik({
     initialValues,
     validationSchema,
-    onSubmit: () => {
+    onSubmit: (values, { resetForm }) => {
       axios.post(`${ADD_NEW_MOVIE_URL}`, {
         name: formik.values.name,
         language: formik.values.language,
@@ -106,6 +106,7 @@ export const AddNewMovie = (props: AddMovieAttributes) => {
         franchise: formik.values.franchise
       })
           .then(function(response) {
+            resetForm();
           })
           .catch(function(response) {
             console.log(response);

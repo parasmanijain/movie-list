@@ -11,11 +11,12 @@ export const AddNewCountry = () => {
       name: ''
     },
     validationSchema,
-    onSubmit: () => {
+    onSubmit: (values, { resetForm }) => {
       axios.post(`${ADD_NEW_COUNTRY_URL}`, {
         name: formik.values.name
       })
           .then(function(response) {
+            resetForm();
           })
           .catch(function(response) {
             console.log(response);

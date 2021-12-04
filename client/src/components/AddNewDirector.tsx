@@ -16,13 +16,14 @@ export const AddNewDirector = () => {
       country: []
     },
     validationSchema,
-    onSubmit: () => {
+    onSubmit: (values, { resetForm }) => {
       axios.post(`${ADD_NEW_DIRECTOR_URL}`, {
         name: formik.values.name,
         url: formik.values.url,
         country: formik.values.country
       })
           .then(function(response) {
+            resetForm();
           })
           .catch(function(response) {
             console.log(response);
