@@ -214,7 +214,12 @@ const getYearCount = (req, res) => {
     // get data from the view and add it to mongodb
     Movie.aggregate(
         [
-            { "$group": { _id: "$year", count: { $sum: 1 } } },
+            { "$group": { _id: "$year", length: { $sum: 1 } } },
+            { "$project": {  
+                name: "$_id",
+                "length": 1
+             }
+          },
             { "$sort": { "_id": 1 } },
            
         ],
