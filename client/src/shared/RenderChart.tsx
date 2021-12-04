@@ -12,8 +12,8 @@ const createChunks = (array, chunk) => {
   return temp;
 };
 
-const renderData = (chartData, index, width, height, length, label) => {
-  const canvasHeight = length> 1 ? height>450? height/2: height : height;
+const renderData = (chartData, index, width, height, length, label, partialHeight) => {
+  const canvasHeight = !partialHeight ? length> 1 ? height>450? height/2: height : height: height/2;
   return (<div className="chart-container" key = {index}>
     <Bar data={chartData} width={width-50} height={canvasHeight-50} options={{ maintainAspectRatio: false,
       plugins: { title: { text: label, display: true } } }} /> </div>);
@@ -21,7 +21,7 @@ const renderData = (chartData, index, width, height, length, label) => {
 
 export const RenderChart = (props:any) => {
   const [width, height] = useWindowDimensions();
-  const { apiUrl, label } = props;
+  const { apiUrl, label, partialHeight } = props;
   const chunkSize = width>= 1536 ? 50 : width>= 1200 ? 40 : width>= 900 ? 30 : width>=600 ? 20 : 10;
   const [, setData] = useState([]);
   const [chartData, setChartData] = useState([]);
@@ -68,7 +68,8 @@ export const RenderChart = (props:any) => {
   return (
     <div className="main-container">
 
-      {[...chartData].length && [...chartData].map((data, index, arr)=> renderData(data, index, width, height, arr.length, label))}
+      {[...chartData].length && [...chartData].map((data, index, arr)=>
+        renderData(data, index, width, height, arr.length, label, partialHeight))}
     </div>
   );
 };

@@ -33,41 +33,21 @@ const poolColors = (a) => {
 };
 
 export const Franchise = () => {
-  const [, setFranchiseData] = useState([]);
   const [, setOtherUniverseData] = useState([]);
   const [, setMarvelsUniverseData] = useState([]);
-  const [franchiseChartData, setFranchiseChartData] = useState(initialData);
   const [otherUniverseChartData, setOtherUniverseChartData] = useState([]);
   const [marvelsUniverseChartData, setMarvelsUniverseChartData] = useState([]);
   const fetchData = () => {
-    const franchises = axios.get(`${GET_FRANCHISES_COUNT_URL}`);
     const universes = axios.get(`${GET_UNIVERSES_COUNT_URL}`);
-    axios.all([franchises, universes]).then(axios.spread((...responses) => {
-      const franchiseData = responses[0].data;
-      const universeData = responses[1].data;
+    axios.all([universes]).then(axios.spread((...responses) => {
+      const universeData = responses[0].data;
       const marvelUniverseData = universeData.filter((ele)=> (ele.name).toLowerCase().includes('marvel'));
       const otherUniverseData = universeData.filter((ele)=> !(ele.name).toLowerCase().includes('marvel'));
-      setFranchiseData(responses[0].data);
       setOtherUniverseData(otherUniverseData);
       setMarvelsUniverseData(marvelUniverseData);
       let data = [];
       let labels = [];
       let datasets = [];
-      franchiseData.forEach((element)=> {
-        labels.push(element.name);
-        data.push(element.length);
-      });
-      setFranchiseChartData({
-        labels,
-        datasets: [
-          {
-            label: 'Movies',
-            backgroundColor: chartColors,
-            hoverBackgroundColor: chartColors,
-            data: data
-          }
-        ]
-      });
       otherUniverseData.forEach((element)=> {
         data= [];
         labels = [];
@@ -129,8 +109,6 @@ export const Franchise = () => {
   useEffect(() => {
     fetchData();
     return () => {
-      setFranchiseChartData(initialData);
-      setFranchiseData([]);
       setOtherUniverseChartData([]);
       setOtherUniverseData([]);
       setMarvelsUniverseChartData([]);
@@ -141,7 +119,7 @@ export const Franchise = () => {
     <React.Fragment>
 
 
-      <RenderChart apiUrl={GET_FRANCHISES_COUNT_URL} label={'Franchises'}/>
+      <RenderChart apiUrl={GET_FRANCHISES_COUNT_URL} label={'Franchises'} partialHeight = {true}/>
       <div className="main-container">
         { [...marvelsUniverseChartData].length &&
     [...marvelsUniverseChartData].map((element, index, arr) => renderUniverseCharts(element.title, { ...element }, index, arr.length))}
