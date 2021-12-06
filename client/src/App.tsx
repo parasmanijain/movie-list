@@ -41,6 +41,8 @@ export const App = () => {
             <Tabs
               textColor="secondary"
               indicatorColor="secondary"
+              variant="scrollable"
+              scrollButtons="auto"
               value={
                 history.location.pathname !== '/' ?
                   history.location.pathname :
@@ -100,49 +102,42 @@ export const App = () => {
                 label="Add New Country"
                 component={Link}
                 to="/add-new-country"
-                wrapped
               />
               <Tab
                 value="/add-new-director"
                 label="Add New Director"
                 component={Link}
                 to="/add-new-director"
-                wrapped
               />
               <Tab
                 value="/add-new-language"
                 label="Add New Language"
                 component={Link}
                 to="/add-new-language"
-                wrapped
               />
               <Tab
                 value="/add-new-genre"
                 label="Add New Genre"
                 component={Link}
                 to="/add-new-genre"
-                wrapped
               />
               <Tab
                 value="/add-new-franchise"
                 label="Add New Franchise"
                 component={Link}
                 to="/add-new-franchise"
-                wrapped
               />
               <Tab
                 value="/add-new-universe"
                 label="Add New Universe"
                 component={Link}
                 to="/add-new-universe"
-                wrapped
               />
               <Tab
                 value="/add-new-movie"
                 label="Add New Movie"
                 component={Link}
                 to="/add-new-movie"
-                wrapped
               />
             </Tabs>
           </AppBar>

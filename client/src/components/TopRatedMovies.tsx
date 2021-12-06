@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 import PropTypes from 'prop-types';
-import { FormControlLabel, Paper, Switch, Table, TableBody, TableCell, TableContainer,
-  TableHead, TablePagination, TableRow, TableSortLabel, Toolbar, Typography } from '@mui/material';
+import {
+  FormControlLabel, Paper, Switch, Table, TableBody, TableCell, TableContainer,
+  TableHead, TablePagination, TableRow, TableSortLabel, Toolbar, Typography
+} from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { GET_TOP_RATED_MOVIE_URL } from '../helper/config';
 
@@ -18,8 +20,8 @@ const descendingComparator = (a, b, orderBy) => {
 };
 
 const getComparator = (order, orderBy) => order === 'desc' ?
-    (a, b) => descendingComparator(a, b, orderBy) :
-    (a, b) => -descendingComparator(a, b, orderBy);
+  (a, b) => descendingComparator(a, b, orderBy) :
+  (a, b) => -descendingComparator(a, b, orderBy);
 
 const stableSort = (array, comparator) => {
   const stabilizedThis = array.map((el, index) => [el, index]);
@@ -76,7 +78,6 @@ EnhancedTableHead.propTypes = {
   classes: PropTypes.object.isRequired,
   numSelected: PropTypes.number.isRequired,
   onRequestSort: PropTypes.func.isRequired,
-  onSelectAllClick: PropTypes.func.isRequired,
   order: PropTypes.oneOf(['asc', 'desc']).isRequired,
   orderBy: PropTypes.string.isRequired,
   rowCount: PropTypes.number.isRequired
@@ -85,16 +86,6 @@ EnhancedTableHead.propTypes = {
 const useToolbarStyles = makeStyles((theme) => ({
   root: {
   },
-  // highlight:
-  //   theme.palette.type === 'light'
-  //     ? {
-  //       color: theme.palette.secondary.main,
-  //       backgroundColor: lighten(theme.palette.secondary.light, 0.85),
-  //     }
-  //     : {
-  //       color: theme.palette.text.primary,
-  //       backgroundColor: theme.palette.secondary.dark,
-  //     },
   title: {
     flex: '1 1 100%'
   }
@@ -104,9 +95,7 @@ const EnhancedTableToolbar = (props) => {
   const classes = useToolbarStyles();
   return (
     <Toolbar
-      // className={clsx(classes.root, {
-      //   [classes.highlight]: numSelected > 0,
-      // })}
+
     >
       {(
         <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
@@ -159,7 +148,7 @@ export const TopRatedMovies = () => {
   const [selected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -207,6 +196,7 @@ export const TopRatedMovies = () => {
             aria-label="enhanced table"
           >
             <EnhancedTableHead
+              numSelected={selected.length}
               classes={classes}
               order={order}
               orderBy={orderBy}
@@ -218,7 +208,7 @@ export const TopRatedMovies = () => {
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row, index) => {
                     return (
-                      <TableRow key= {index}
+                      <TableRow key={index}
 
                       >
                         <TableCell align="left" >
@@ -239,13 +229,13 @@ export const TopRatedMovies = () => {
           </Table>
         </TableContainer>
         <TablePagination
-          rowsPerPageOptions={[25, 50, 100]}
+          rowsPerPageOptions={[10, 20, 50]}
           component="div"
           count={topMovieList.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
-          onChangeRowsPerPage={handleChangeRowsPerPage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
       <FormControlLabel
