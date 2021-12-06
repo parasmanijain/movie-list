@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useFormik } from 'formik';
+import * as _ from 'lodash';
 import {
   ADD_NEW_MOVIE_URL, currentYear, GET_DIRECTORS_URL, GET_FRANCHISES_URL,
-  GET_GENRES_URL, GET_LANGUAGES_URL, GET_MOVIE_DETAILS_URL, GET_UNIVERSES_URL, MenuProps
+  GET_GENRES_URL, GET_LANGUAGES_URL, GET_MOVIE_DETAILS_URL, GET_UNIVERSES_URL, MenuProps, UPDATE_EXISTING_MOVIE_URL
 } from '../helper/config';
 import { FormHelperText, ListSubheader, OutlinedInput } from '@mui/material';
 import { LocalizationProvider, DatePicker } from '@mui/lab';
@@ -34,6 +35,7 @@ export const AddNewMovie = (props: AddMovieAttributes) => {
   const [genreData, setGenreData] = useState([]);
   const [franchiseData, setFranchiseData] = useState([]);
   const [directorData, setDirectorData] = useState([]);
+  const [existingValues, setExistingValues] = useState({});
   const [, setSelectedMovieData] = useState(null);
 
   const fetchData = () => {
@@ -46,13 +48,15 @@ export const AddNewMovie = (props: AddMovieAttributes) => {
       setLanguageData(responses[0].data);
       setDirectorData(responses[1].data);
       setGenreData(responses[2].data);
-      setFranchiseData([...responses[3].data, ...responses[4].data]);
+      const arr = [...responses[3].data, ...responses[4].data];
+      setFranchiseData(arr);
+      fetchSelectedMovieDetails(arr);
     })).catch((errors) => {
       console.log(errors);
     });
   };
 
-  const fetchSelectedMovieDetails = () => {
+  const fetchSelectedMovieDetails = (arr) => {
     const selectedMovieDetails = axios.get(`${GET_MOVIE_DETAILS_URL}`, { params: { movieID: selectedMovie } });
     axios.all([selectedMovieDetails]).then(axios.spread((...responses) => {
       if (responses[0].data) {
@@ -61,7 +65,11 @@ export const AddNewMovie = (props: AddMovieAttributes) => {
         const languageValues = language.map((element) => element._id);
         const directorValues = director.map((element) => element._id);
         const genreValues = genre.map((element) => element._id);
-        formik.setValues({
+        let franchiseValue;
+        if (franchise.universe) {
+          franchiseValue = (arr.find((ele)=> ele._id === franchise.universe)).franchises.filter((x)=> x._id=== franchise._id);
+        }
+        const obj = {
           name,
           language: languageValues,
           director: directorValues,
@@ -70,22 +78,22 @@ export const AddNewMovie = (props: AddMovieAttributes) => {
           url,
           year,
           genre: genreValues,
-          franchise: franchise? franchise: ''
-        }, true);
+          franchise: franchise? franchiseValue[0]._id: ''
+        };
+        formik.setValues(obj, true);
+        setExistingValues(obj);
       }
     })).catch((errors) => {
       console.log(errors);
     });
   };
 
-  useEffect(() => {
-    fetchSelectedMovieDetails();
-    return () => {
-    };
-  }, []);
 
   useEffect(() => {
     fetchData();
+    if (selectedMovie) {
+
+    }
     return () => {
     };
   }, []);
@@ -94,17 +102,55 @@ export const AddNewMovie = (props: AddMovieAttributes) => {
     initialValues,
     validationSchema,
     onSubmit: (values, { resetForm }) => {
-      axios.post(`${ADD_NEW_MOVIE_URL}`, {
-        name: formik.values.name,
-        language: formik.values.language,
-        director: formik.values.director,
-        imdb: formik.values.imdb,
-        rottenTomatoes: formik.values.rottenTomatoes,
-        year: formik.values.year,
-        url: formik.values.url,
-        genre: formik.values.genre,
-        franchise: formik.values.franchise
-      })
+      let apiURL = '';
+      let request = {};
+      if (selectedMovie) {
+        apiURL = UPDATE_EXISTING_MOVIE_URL;
+        const diff = _.reduce(existingValues, (result, value, key) =>
+         _.isEqual(value, formik.values[key]) ? result : result.concat(key), []);
+        const arrkeys= ['language', 'director', 'genre'];
+        diff.forEach((ele)=> {
+          let obj = {};
+          if (arrkeys.includes(ele)) {
+            const removed = existingValues[ele]
+                .filter((x) => !formik.values[ele].includes(x));
+            const added = formik.values[ele]
+                .filter((x) => !existingValues[ele].includes(x));
+            obj = {
+              [ele]: {
+                added,
+                removed
+              }
+            };
+          } else if (ele==='franchise') {
+            obj = {
+              [ele]: {
+                'current': existingValues[ele],
+                'new': formik.values[ele]
+              }
+            };
+          } else {
+            obj = {
+              [ele]: formik.values[ele]
+            };
+          }
+          request = { ...request, ...obj };
+        });
+      } else {
+        apiURL = ADD_NEW_MOVIE_URL;
+        request = {
+          name: formik.values.name,
+          language: formik.values.language,
+          director: formik.values.director,
+          imdb: formik.values.imdb,
+          rottenTomatoes: formik.values.rottenTomatoes,
+          year: formik.values.year,
+          url: formik.values.url,
+          genre: formik.values.genre,
+          franchise: formik.values.franchise
+        };
+      }
+      axios.post(apiURL, request)
           .then(function(response) {
             resetForm();
           })

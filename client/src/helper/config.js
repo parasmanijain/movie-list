@@ -7,6 +7,7 @@ export const ADD_NEW_GENRE_URL = API_URL + '/genre';
 export const ADD_NEW_FRANCHISE_URL = API_URL + '/franchise';
 export const ADD_NEW_UNIVERSE_URL = API_URL + '/universe';
 export const ADD_NEW_MOVIE_URL = API_URL + '/movie';
+export const UPDATE_EXISTING_MOVIE_URL = API_URL + '/updateMovie';
 
 export const GET_MOVIES_URL = API_URL + '/movies';
 export const GET_COUNTRIES_URL = API_URL + '/countries';
