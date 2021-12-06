@@ -118,6 +118,7 @@ export const AddNewMovie = (props: AddMovieAttributes) => {
                 .filter((x) => !existingValues[ele].includes(x));
             obj = {
               [ele]: {
+                'value': formik.values[ele],
                 added,
                 removed
               }
@@ -134,7 +135,7 @@ export const AddNewMovie = (props: AddMovieAttributes) => {
               [ele]: formik.values[ele]
             };
           }
-          request = { ...request, ...obj };
+          request = { ...request, ...obj, 'id': selectedMovie };
         });
       } else {
         apiURL = ADD_NEW_MOVIE_URL;
