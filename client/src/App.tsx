@@ -164,7 +164,7 @@ export const App = () => {
           <ProtectedRoute path="/add-new-universe" component={AddNewUniverse} />
           <ProtectedRoute path="/add-new-movie" render={() => <AddNewMovie selectedMovie = {selectedMovie} />} />
           <ProtectedRoute path="/add-new-country" component={AddNewCountry} />
-          <ProtectedRoute path="/" render={() => <Home handleMovieUpdateSelection = {handleMovieUpdateSelection} />} />
+          <Route path="/" render={() => <Home handleMovieUpdateSelection = {handleMovieUpdateSelection} />} />
         </Switch>
       </Box>
     </BrowserRouter>

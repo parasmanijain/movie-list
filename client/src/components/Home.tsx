@@ -5,6 +5,7 @@ import { makeStyles } from '@mui/styles';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { GET_MOVIES_URL, GET_TOP_DIRECTOR_URL, GET_TOP_GENRE_URL, GET_TOP_LANGUAGE_URL, GET_TOP_YEAR_URL } from '../helper/config';
 import { Box, Button, Typography, Progress, Pagination, Grid, Accordion, AccordionSummary, AccordionDetails } from '../lib';
+import { useWindowDimensions } from '../hooks/useWindowDimensions';
 
 const summaryStyles = makeStyles({
   root: {
@@ -22,11 +23,15 @@ interface HomeProps {
 }
 
 export const Home = (props:HomeProps) => {
+  const [width, height] = useWindowDimensions();
   const { handleMovieUpdateSelection } = props;
+  let limit = 0;
+  const space = 0;
   const summaryClass = summaryStyles();
   const [page, setPage] = useState(1);
   const [count, setCount] = useState(1);
   const [total, setTotal] = useState(0);
+  const [environment] = useState((process.env.NODE_ENV));
   const [movieData, setMovieData] = useState([]);
   const [topDirectorData, setTopDirectorData] = useState([]);
   const [topLanguageData, setTopLanguageData] = useState([]);
@@ -34,9 +39,42 @@ export const Home = (props:HomeProps) => {
   const [topYearData, setTopYearData] = useState([]);
   const [filterLoading, setFilterLoading] = useState(false);
   const [dataLoading, setDataLoading] = useState(false);
-  const limit = 36;
+  if (width>=1536) {
+    if (height>=1000) {
+      limit = 36;
+    } else if (height>=900) {
+      limit = 32;
+    } else {
+      limit = 28;
+    }
+  } else if (width>=1200) {
+    if (height>=800) {
+      limit = 28;
+    } else {
+      limit = 24;
+    }
+  } else if (width>=900) {
+    if (height>=800) {
+      limit = 28;
+    } else if (height>=700) {
+      limit = 24;
+    } else {
+      limit = 20;
+    }
+  } else if (width>=600) {
+    if (height>=700) {
+      limit = 18;
+    } else {
+      limit = 12;
+    }
+  } else {
+    if (height>=700) {
+      limit = 12;
+    } else {
+      limit = 8;
+    }
+  }
   const history = useHistory();
-
   const fetchData = () => {
     const moviesUrl = axios.get(`${GET_MOVIES_URL}`, { params: { page, limit } });
     setDataLoading(true);
@@ -115,7 +153,7 @@ export const Home = (props:HomeProps) => {
   const directorName = (director, index, length) => directorURL(director.url, director.name, director._id, index, length);
 
   const movieList = movieData?.map((movie) => (
-    <Grid item xs = {3} key={movie._id} sx={{ padding: '0px' }}>
+    <Grid item xs = {6} sm = {4} md = {3} lg = {3} xl={3} key={movie._id} sx={{ padding: '0px' }}>
       <Accordion sx = {{ padding: '0px', backgroundColor: movie.franchise ?
       movie.franchise.universe ? '#b2dfdb' : '#c8e4fb' : '#ffffed' }} classes={summaryClass}>
         <AccordionSummary
@@ -180,7 +218,7 @@ export const Home = (props:HomeProps) => {
                </Typography>}
             </React.Fragment>
             }
-            <Typography component="div">
+            { environment.toLowerCase() === 'development' && <Typography component="div">
               <Button
                 variant="text"
                 sx={{ padding: '4px 0px' }}
@@ -191,7 +229,7 @@ export const Home = (props:HomeProps) => {
               >
                 Edit Movie Details
               </Button>
-            </Typography>
+            </Typography> }
             <Typography component="div">
               <Button href={movie.url} target="_blank" rel="noreferrer" sx={{ padding: '4px 0px' }}>
               More Details
