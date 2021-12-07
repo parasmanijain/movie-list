@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Bar } from 'react-chartjs-2';
 import { chartColors } from '../helper/colors';
 import { useWindowDimensions } from '../hooks/useWindowDimensions';
+import { Bar } from '../lib';
 
 const createChunks = (array, chunk) => {
   const temp = [];
