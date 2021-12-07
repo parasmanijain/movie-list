@@ -25,9 +25,11 @@ import { Universe } from './components/Universe';
 import { AddNewGenre } from './components/AddNewGenre';
 import { AddNewFranchise } from './components/AddNewFranchise';
 import { AddNewUniverse } from './components/AddNewUniverse';
+import ProtectedRoute from './components/ProtectedRoute';
 
 export const App = () => {
   const [selectedMovie, setSelectedMovie] = useState(null);
+  const [environment] = useState((process.env.NODE_ENV));
 
   const handleMovieUpdateSelection = (movie) => {
     setSelectedMovie(movie);
@@ -97,48 +99,48 @@ export const App = () => {
                 component={Link}
                 to="/top-rated-movies"
               />
-              <Tab
+              { environment.toLowerCase() === 'development' && <Tab
                 value="/add-new-country"
                 label="Add New Country"
                 component={Link}
                 to="/add-new-country"
-              />
-              <Tab
+              /> }
+              { environment.toLowerCase() === 'development' && <Tab
                 value="/add-new-director"
                 label="Add New Director"
                 component={Link}
                 to="/add-new-director"
-              />
-              <Tab
+              />}
+              { environment.toLowerCase() === 'development' && <Tab
                 value="/add-new-language"
                 label="Add New Language"
                 component={Link}
                 to="/add-new-language"
-              />
-              <Tab
+              /> }
+              { environment.toLowerCase() === 'development' && <Tab
                 value="/add-new-genre"
                 label="Add New Genre"
                 component={Link}
                 to="/add-new-genre"
-              />
-              <Tab
+              /> }
+              { environment.toLowerCase() === 'development' && <Tab
                 value="/add-new-franchise"
                 label="Add New Franchise"
                 component={Link}
                 to="/add-new-franchise"
-              />
-              <Tab
+              /> }
+              { environment.toLowerCase() === 'development' && <Tab
                 value="/add-new-universe"
                 label="Add New Universe"
                 component={Link}
                 to="/add-new-universe"
-              />
-              <Tab
+              /> }
+              { environment.toLowerCase() === 'development' && <Tab
                 value="/add-new-movie"
                 label="Add New Movie"
                 component={Link}
                 to="/add-new-movie"
-              />
+              /> }
             </Tabs>
           </AppBar>
         )}
@@ -155,14 +157,14 @@ export const App = () => {
           <Route path="/franchise" component={Franchise} />
           <Route path="/universe" component={Universe} />
           <Route path="/top-rated-movies" component={TopRatedMovies} />
-          <Route path="/add-new-director" component={AddNewDirector} />
-          <Route path="/add-new-language" component={AddNewLanguage} />
-          <Route path="/add-new-genre" component={AddNewGenre} />
-          <Route path="/add-new-franchise" component={AddNewFranchise} />
-          <Route path="/add-new-universe" component={AddNewUniverse} />
-          <Route path="/add-new-movie" render={() => <AddNewMovie selectedMovie = {selectedMovie} />} />
-          <Route path="/add-new-country" component={AddNewCountry} />
-          <Route path="/" render={() => <Home handleMovieUpdateSelection = {handleMovieUpdateSelection} />} />
+          <ProtectedRoute path="/add-new-director" component={AddNewDirector} />
+          <ProtectedRoute path="/add-new-language" component={AddNewLanguage} />
+          <ProtectedRoute path="/add-new-genre" component={AddNewGenre} />
+          <ProtectedRoute path="/add-new-franchise" component={AddNewFranchise} />
+          <ProtectedRoute path="/add-new-universe" component={AddNewUniverse} />
+          <ProtectedRoute path="/add-new-movie" render={() => <AddNewMovie selectedMovie = {selectedMovie} />} />
+          <ProtectedRoute path="/add-new-country" component={AddNewCountry} />
+          <ProtectedRoute path="/" render={() => <Home handleMovieUpdateSelection = {handleMovieUpdateSelection} />} />
         </Switch>
       </Box>
     </BrowserRouter>
