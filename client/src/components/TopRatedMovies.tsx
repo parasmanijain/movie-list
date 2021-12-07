@@ -1,14 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-
 import PropTypes from 'prop-types';
-import {
-  FormControlLabel, Paper, Switch, Table, TableBody, TableCell, TableContainer,
-  TableHead, TablePagination, TableRow, TableSortLabel
-} from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { GET_TOP_RATED_MOVIE_URL } from '../helper/config';
-import { Toolbar, Typography } from '../lib';
+import { FormControlLabel, Paper, Switch, Table, TableBody, TableCell, TableContainer, TableHead,
+  TablePagination, TableRow, TableSortLabel, Toolbar, Typography } from '../lib';
 
 const descendingComparator = (a, b, orderBy) => {
   if (b[orderBy] < a[orderBy]) {
