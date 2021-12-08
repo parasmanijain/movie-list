@@ -7,7 +7,6 @@ import {
 } from 'react-router-dom';
 import './App.css';
 import ProtectedRoute from './components/ProtectedRoute';
-import { AddNewMovie, Home } from './components';
 import { AppBar, Box, Tab, Tabs } from './lib';
 import { routes } from './helper/routes';
 
@@ -19,35 +18,32 @@ interface PublicRouteProps extends RouteProps {
 export const App = () => {
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [environment] = useState((process.env.NODE_ENV));
-  const tabs = [{
-    'value': '/',
-    'label': 'Home'
-  }];
-
-  const devTabs = [
-    {
-      'value': '/add-new-movie',
-      'label': 'Add New Movie'
-    }];
-
 
   const renderTabs = (label, value, index) => <Tab key={index} value={value} label={label} component={Link} to={value}/>;
-
-  const renderRoutes = (index, production, props:PublicRouteProps ) => {
-    // eslint-disable-next-line react/prop-types
-    const { component: Component, path } = props;
-    if (!production) {
-      return (<ProtectedRoute key = {index} exact = {true} path={path}
-        render={() => <Component />} />);
-    } else {
-      return (<Route key = {index} exact = {true} path={path}
-        render={() => <Component />} />);
-    }
-  };
 
   const handleMovieUpdateSelection = (movie) => {
     setSelectedMovie(movie);
   };
+
+  const renderRoutes = (index, production, props:PublicRouteProps ) => {
+    // eslint-disable-next-line react/prop-types
+    const { component: Component, path } = props;
+    let componentProps = {};
+    if (!production) {
+      if (path === '/add-new-movie') {
+        componentProps = { selectedMovie: selectedMovie };
+      }
+      return (<ProtectedRoute key = {index} exact = {true} path={path}
+        render={() => <Component {...componentProps}/>} />);
+    } else {
+      if (path === '/') {
+        componentProps = { handleMovieUpdateSelection: handleMovieUpdateSelection };
+      }
+      return (<Route key = {index} exact = {true} path={path}
+        render={() => <Component {...componentProps}/>} />);
+    }
+  };
+
   return (
     <BrowserRouter>
       <Route
@@ -64,16 +60,10 @@ export const App = () => {
                   history.location.pathname :
                   false
               }
-            >
-              {
-                tabs.map((ele, index) => renderTabs(ele.label, ele.value, index))
-              }
-              {
+            >{
                 routes.map((ele, index) => environment.toLowerCase() !== 'development' && !ele.production? null :
                 renderTabs(ele.label, ele.path, index))
               }
-              { environment.toLowerCase() === 'development' &&
-              devTabs.map((ele, index)=> renderTabs(ele.label, ele.value, index))}
             </Tabs>
           </AppBar>
         )}
@@ -89,12 +79,8 @@ export const App = () => {
             };
             return renderRoutes(index, ele.production, routeProps);
           })}
-          <Route exact = {true} path="/" render={() => <Home handleMovieUpdateSelection = {handleMovieUpdateSelection} />} />
-          <ProtectedRoute path="/add-new-movie" render={() => <AddNewMovie selectedMovie = {selectedMovie} />} />
         </Switch>
       </Box>
     </BrowserRouter>
   );
 };
-
-
