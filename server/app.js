@@ -1,3 +1,9 @@
+require('dotenv').config();
+const express = require('express');
+const app = express();
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }));
+
 const country_controller = require('./controllers/country');
 const language_controller = require('./controllers/language');
 const director_controller = require('./controllers/director');
@@ -5,12 +11,6 @@ const genre_controller = require('./controllers/genre');
 const franchise_controller = require('./controllers/franchise');
 const universe_controller = require('./controllers/universe');
 const movie_controller = require('./controllers/movie');
-
-const express = require('express');
-const app = express();
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }));
-const { API_PORT } = require('./config');
 
 app.get('/languages', language_controller.getLanguageList);
 app.get('/topLanguage', language_controller.getTopLanguage);
@@ -59,6 +59,6 @@ function setupCORS(req, res, next) {
 }
 
 app.all('/*', setupCORS);
-app.listen(API_PORT, () => {
-    console.log("Server has started!")
+app.listen(process.env.API_PORT, () => {
+    console.log(`Server has started at ${process.env.API_PORT}`)
 });
