@@ -1,6 +1,6 @@
 import React from 'react';
-import axios from 'axios';
 import { useFormik } from 'formik';
+import axiosConfig from '../helper/axiosConfig';
 import { languageValidationSchema as validationSchema } from '../helper/validationScehmas';
 import { ADD_NEW_LANGUAGE_URL } from '../helper/config';
 import { Box, Button, TextField, FormControl } from '../lib';
@@ -14,7 +14,7 @@ export const AddNewLanguage = () => {
     validationSchema,
     onSubmit: (values, { resetForm }) => {
       console.log(formik.values);
-      axios.post(`${ADD_NEW_LANGUAGE_URL}`, {
+      axiosConfig.post(`${ADD_NEW_LANGUAGE_URL}`, {
         name: formik.values.name,
         code: formik.values.code,
         movies: []

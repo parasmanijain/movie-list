@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import axios from 'axios';
 import { makeStyles } from '@mui/styles';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import axiosConfig from '../helper/axiosConfig';
 import { GET_MOVIES_URL, GET_TOP_DIRECTOR_URL, GET_TOP_GENRE_URL, GET_TOP_LANGUAGE_URL, GET_TOP_YEAR_URL } from '../helper/config';
 import { Box, Button, Typography, Progress, Pagination, Grid, Accordion, AccordionSummary, AccordionDetails } from '../lib';
 import { useWindowDimensions } from '../hooks/useWindowDimensions';
@@ -76,33 +76,33 @@ export const Home = (props:HomeProps) => {
   }
   const history = useHistory();
   const fetchData = () => {
-    const moviesUrl = axios.get(`${GET_MOVIES_URL}`, { params: { page, limit } });
+    const moviesUrl = axiosConfig.get(`${GET_MOVIES_URL}`, { params: { page, limit } });
     setDataLoading(true);
-    axios.all([moviesUrl]).then(axios.spread((...responses) => {
+    Promise.all([moviesUrl]).then((responses) => {
       const { total, page, movies } = responses[0].data;
       setMovieData(movies);
       setTotal(total);
       setPage(page);
       setCount(Math.ceil(total / limit));
       setDataLoading(false);
-    })).catch((errors) => {
+    }).catch((errors) => {
       setDataLoading(false);
     });
   };
 
   const fetchTopFilters = () => {
-    const topDirectors = axios.get(`${GET_TOP_DIRECTOR_URL}`);
-    const topLanguages = axios.get(`${GET_TOP_LANGUAGE_URL}`);
-    const topYear = axios.get(`${GET_TOP_YEAR_URL}`);
-    const topGenre = axios.get(`${GET_TOP_GENRE_URL}`);
+    const topDirectors = axiosConfig.get(`${GET_TOP_DIRECTOR_URL}`);
+    const topLanguages = axiosConfig.get(`${GET_TOP_LANGUAGE_URL}`);
+    const topYear = axiosConfig.get(`${GET_TOP_YEAR_URL}`);
+    const topGenre = axiosConfig.get(`${GET_TOP_GENRE_URL}`);
     setFilterLoading(true);
-    axios.all([topDirectors, topLanguages, topYear, topGenre]).then(axios.spread((...responses) => {
+    Promise.all([topDirectors, topLanguages, topYear, topGenre]).then((responses) => {
       setTopDirectorData(responses[0].data.slice(0, 1));
       setTopLanguageData(responses[1].data.slice(0, 1));
       setTopYearData(responses[2].data.slice(0, 1));
       setTopGenreData(responses[3].data.slice(0, 1));
       setFilterLoading(false);
-    })).catch((errors) => {
+    }).catch((errors) => {
       setFilterLoading(false);
     });
   };

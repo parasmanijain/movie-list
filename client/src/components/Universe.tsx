@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axiosConfig from '../helper/axiosConfig';
 import { GET_UNIVERSES_COUNT_URL } from '../helper/config';
 import { chartColors } from '../helper/colors';
 import { Bar } from '../lib';
@@ -37,8 +37,8 @@ export const Universe = () => {
   const [otherUniverseChartData, setOtherUniverseChartData] = useState([]);
   const [marvelsUniverseChartData, setMarvelsUniverseChartData] = useState([]);
   const fetchData = () => {
-    const universes = axios.get(`${GET_UNIVERSES_COUNT_URL}`);
-    axios.all([universes]).then(axios.spread((...responses) => {
+    const universes = axiosConfig.get(`${GET_UNIVERSES_COUNT_URL}`);
+    Promise.all([universes]).then((responses) => {
       const universeData = responses[0].data;
       const marvelUniverseData = universeData.filter((ele)=> (ele.name).toLowerCase().includes('marvel'));
       const otherUniverseData = universeData.filter((ele)=> !(ele.name).toLowerCase().includes('marvel'));
@@ -92,7 +92,7 @@ export const Universe = () => {
         datasets.push(obj);
       });
       setMarvelsUniverseChartData(datasets);
-    })).catch((errors) => {
+    }).catch((errors) => {
       // react on errors.
     });
   };

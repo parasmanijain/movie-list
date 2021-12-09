@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@mui/styles';
+import axiosConfig from '../helper/axiosConfig';
 import { GET_TOP_RATED_MOVIE_URL } from '../helper/config';
 import { FormControlLabel, Paper, Switch, Table, TableBody, TableCell, TableContainer, TableHead,
   TablePagination, TableRow, TableSortLabel, Toolbar, Typography } from '../lib';
@@ -168,10 +168,10 @@ export const TopRatedMovies = () => {
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, topMovieList.length - page * rowsPerPage);
 
   useEffect(() => {
-    const topMovieUrl = axios.get(`${GET_TOP_RATED_MOVIE_URL}`);
-    axios.all([topMovieUrl]).then(axios.spread((...responses) => {
+    const topMovieUrl = axiosConfig.get(`${GET_TOP_RATED_MOVIE_URL}`);
+    Promise.all([topMovieUrl]).then((responses) => {
       setTopMovieList(responses[0].data);
-    })).catch((errors) => {
+    }).catch((errors) => {
       // react on errors.
     });
     return () => {

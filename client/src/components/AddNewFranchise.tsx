@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useFormik } from 'formik';
-import axios from 'axios';
+import axiosConfig from '../helper/axiosConfig';
 import { ADD_NEW_FRANCHISE_URL, GET_UNIVERSES_URL, MenuProps } from '../helper/config';
 import { franchiseValidationSchema as validationSchema } from '../helper/validationScehmas';
 import { Box, Button, TextField, Select, InputLabel, ListItemText, FormControl, MenuItem,
@@ -15,7 +15,7 @@ export const AddNewFranchise = () => {
     },
     validationSchema,
     onSubmit: (values, { resetForm }) => {
-      axios.post(`${ADD_NEW_FRANCHISE_URL}`, {
+      axiosConfig.post(`${ADD_NEW_FRANCHISE_URL}`, {
         name: formik.values.name,
         universe: formik.values.universe ? formik.values.universe : null,
         movies: []
@@ -29,7 +29,7 @@ export const AddNewFranchise = () => {
     }
   });
   useEffect(() => {
-    axios.get(`${GET_UNIVERSES_URL}`, {
+    axiosConfig.get(`${GET_UNIVERSES_URL}`, {
     })
         .then(function(response) {
           setUniverseData(response.data);

@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axiosConfig from '../helper/axiosConfig';
 import React, { useEffect, useState } from 'react';
 import { Box, Progress } from '../lib';
 export const getData = (WrappedComponent, { apiUrl, label }) => {
@@ -6,12 +6,12 @@ export const getData = (WrappedComponent, { apiUrl, label }) => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(false);
     const fetchData = () => {
-      const list = axios.get(apiUrl);
+      const list = axiosConfig.get(apiUrl);
       setLoading(true);
-      axios.all([list]).then(axios.spread((...responses) => {
+      Promise.all([list]).then((responses) => {
         setLoading(false);
         setData(responses[0].data);
-      })).catch((errors) => {
+      }).catch((errors) => {
         setLoading(false);
         console.log(errors);
       });

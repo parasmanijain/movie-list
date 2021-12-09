@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useFormik } from 'formik';
 import * as _ from 'lodash';
+import axiosConfig from '../helper/axiosConfig';
 import {
   ADD_NEW_MOVIE_URL, currentYear, GET_DIRECTORS_URL, GET_FRANCHISES_URL,
   GET_GENRES_URL, GET_LANGUAGES_URL, GET_MOVIE_DETAILS_URL, GET_UNIVERSES_URL, MenuProps, UPDATE_EXISTING_MOVIE_URL
@@ -38,26 +38,26 @@ export const AddNewMovie = (props: AddMovieAttributes) => {
   const [, setSelectedMovieData] = useState(null);
 
   const fetchData = () => {
-    const languages = axios.get(`${GET_LANGUAGES_URL}`);
-    const directors = axios.get(`${GET_DIRECTORS_URL}`);
-    const genres = axios.get(`${GET_GENRES_URL}`);
-    const franchises = axios.get(`${GET_FRANCHISES_URL}`);
-    const universes = axios.get(`${GET_UNIVERSES_URL}`);
-    axios.all([languages, directors, genres, universes, franchises]).then(axios.spread((...responses) => {
+    const languages = axiosConfig.get(`${GET_LANGUAGES_URL}`);
+    const directors = axiosConfig.get(`${GET_DIRECTORS_URL}`);
+    const genres = axiosConfig.get(`${GET_GENRES_URL}`);
+    const franchises = axiosConfig.get(`${GET_FRANCHISES_URL}`);
+    const universes = axiosConfig.get(`${GET_UNIVERSES_URL}`);
+    Promise.all([languages, directors, genres, universes, franchises]).then((responses) => {
       setLanguageData(responses[0].data);
       setDirectorData(responses[1].data);
       setGenreData(responses[2].data);
       const arr = [...responses[3].data, ...responses[4].data];
       setFranchiseData(arr);
       fetchSelectedMovieDetails(arr);
-    })).catch((errors) => {
+    }).catch((errors) => {
       console.log(errors);
     });
   };
 
   const fetchSelectedMovieDetails = (arr) => {
-    const selectedMovieDetails = axios.get(`${GET_MOVIE_DETAILS_URL}`, { params: { movieID: selectedMovie } });
-    axios.all([selectedMovieDetails]).then(axios.spread((...responses) => {
+    const selectedMovieDetails = axiosConfig.get(`${GET_MOVIE_DETAILS_URL}`, { params: { movieID: selectedMovie } });
+    Promise.all([selectedMovieDetails]).then((responses) => {
       if (responses[0].data) {
         setSelectedMovieData(responses[0].data);
         const { name, language, director, imdb, rottenTomatoes, url, year, genre, franchise } = responses[0].data;
@@ -82,7 +82,7 @@ export const AddNewMovie = (props: AddMovieAttributes) => {
         formik.setValues(obj, true);
         setExistingValues(obj);
       }
-    })).catch((errors) => {
+    }).catch((errors) => {
       console.log(errors);
     });
   };
@@ -150,7 +150,7 @@ export const AddNewMovie = (props: AddMovieAttributes) => {
           franchise: formik.values.franchise
         };
       }
-      axios.post(apiURL, request)
+      axiosConfig.post(apiURL, request)
           .then(function(response) {
             resetForm();
           })

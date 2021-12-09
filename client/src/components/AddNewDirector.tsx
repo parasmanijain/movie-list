@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axiosConfig from '../helper/axiosConfig';
 import { useFormik } from 'formik';
 import { ADD_NEW_DIRECTOR_URL, GET_COUNTRIES_URL, MenuProps } from '../helper/config';
 import { directorValidationSchema as validationSchema } from '../helper/validationScehmas';
@@ -18,7 +18,7 @@ export const AddNewDirector = () => {
     },
     validationSchema,
     onSubmit: (values, { resetForm }) => {
-      axios.post(`${ADD_NEW_DIRECTOR_URL}`, {
+      axiosConfig.post(`${ADD_NEW_DIRECTOR_URL}`, {
         name: formik.values.name,
         url: formik.values.url,
         country: formik.values.country
@@ -32,7 +32,7 @@ export const AddNewDirector = () => {
     }
   });
   useEffect(() => {
-    axios.get(`${GET_COUNTRIES_URL}`, {
+    axiosConfig.get(`${GET_COUNTRIES_URL}`, {
     })
         .then(function(response) {
           setCountryData(response.data);

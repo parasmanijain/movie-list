@@ -1,6 +1,6 @@
 import React from 'react';
 import { useFormik } from 'formik';
-import axios from 'axios';
+import axiosConfig from '../helper/axiosConfig';
 import { ADD_NEW_UNIVERSE_URL } from '../helper/config';
 import { universeValidationSchema as validationSchema } from '../helper/validationScehmas';
 import { Box, Button, TextField, FormControl } from '../lib';
@@ -12,7 +12,7 @@ export const AddNewUniverse = () => {
     },
     validationSchema,
     onSubmit: (values, { resetForm }) => {
-      axios.post(`${ADD_NEW_UNIVERSE_URL}`, {
+      axiosConfig.post(`${ADD_NEW_UNIVERSE_URL}`, {
         name: formik.values.name,
         franchises: []
       })
