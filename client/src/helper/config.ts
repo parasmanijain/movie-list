@@ -1,5 +1,3 @@
-export const API_URL = 'http://localhost:4100';
-
 export const ADD_NEW_COUNTRY_URL = '/country';
 export const ADD_NEW_DIRECTOR_URL = '/director';
 export const ADD_NEW_LANGUAGE_URL = '/language';
