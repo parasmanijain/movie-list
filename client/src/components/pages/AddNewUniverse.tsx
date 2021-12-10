@@ -1,20 +1,20 @@
 import React from 'react';
 import { useFormik } from 'formik';
-import axiosConfig from '../helper/axiosConfig';
-import { ADD_NEW_GENRE_URL } from '../helper/config';
-import { genreValidationSchema as validationSchema } from '../helper/validationScehmas';
-import { Box, Button, TextField, FormControl } from '../lib';
+import axiosConfig from '../../helper/axiosConfig';
+import { ADD_NEW_UNIVERSE_URL } from '../../helper/config';
+import { universeValidationSchema as validationSchema } from '../../helper/validationScehmas';
+import { Box, Button, TextField, FormControl } from '../../lib';
 
-export const AddNewGenre = () => {
+export const AddNewUniverse = () => {
   const formik = useFormik({
     initialValues: {
       name: ''
     },
     validationSchema,
     onSubmit: (values, { resetForm }) => {
-      axiosConfig.post(`${ADD_NEW_GENRE_URL}`, {
+      axiosConfig.post(`${ADD_NEW_UNIVERSE_URL}`, {
         name: formik.values.name,
-        movies: []
+        franchises: []
       })
           .then(function(response) {
             resetForm();
@@ -31,7 +31,7 @@ export const AddNewGenre = () => {
           <TextField
             id="name"
             name="name"
-            label="Genre"
+            label="Universe"
             value={formik.values.name}
             onChange={formik.handleChange}
             error={formik.touched.name && Boolean(formik.errors.name)}

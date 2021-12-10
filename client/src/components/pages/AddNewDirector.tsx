@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import axiosConfig from '../helper/axiosConfig';
+import axiosConfig from '../../helper/axiosConfig';
 import { useFormik } from 'formik';
-import { ADD_NEW_DIRECTOR_URL, GET_COUNTRIES_URL, MenuProps } from '../helper/config';
-import { directorValidationSchema as validationSchema } from '../helper/validationScehmas';
+import { ADD_NEW_DIRECTOR_URL, GET_COUNTRIES_URL, MenuProps } from '../../helper/config';
+import { directorValidationSchema as validationSchema } from '../../helper/validationScehmas';
 import { Box, Button, TextField, Select, CheckBox, InputLabel, ListItemText, MenuItem,
   FormControl,
   OutlinedInput,
-  FormHelperText } from '../lib';
+  FormHelperText } from '../../lib';
 
 export const AddNewDirector = () => {
   const [countryData, setCountryData] = useState([]);

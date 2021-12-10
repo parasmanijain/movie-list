@@ -1,6 +1,6 @@
-import axiosConfig from '../helper/axiosConfig';
+import { axiosConfig } from '../../helper';
 import React, { useEffect, useState } from 'react';
-import { Box, Progress } from '../lib';
+import { Box, Progress } from '../../lib';
 export const getData = (WrappedComponent, { apiUrl, title }) => {
   const Component = (props) => {
     const [data, setData] = useState([]);

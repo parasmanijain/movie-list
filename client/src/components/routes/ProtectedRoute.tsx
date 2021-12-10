@@ -7,7 +7,7 @@ interface ProtectedRouteProps extends RouteProps {
 }
 
 
-const ProtectedRoute = (props: ProtectedRouteProps) => {
+export const ProtectedRoute = (props: ProtectedRouteProps) => {
   const { component: Component, render, ...restOfProps } = props;
   const isDev = (process.env.NODE_ENV).toLowerCase().includes('development');
 
@@ -20,5 +20,3 @@ const ProtectedRoute = (props: ProtectedRouteProps) => {
     /> : isDev ? <Route {...restOfProps} render={render}/> : <Redirect to="/" />
   );
 };
-
-export default ProtectedRoute;

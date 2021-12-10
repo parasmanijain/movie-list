@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useWindowDimensions } from '../../hooks/useWindowDimensions';
-import { chartColors } from '../../helper/colors';
+import { chartColors } from '../../helper';
 import { RenderChart } from './RenderChart';
 import { Box } from '../../lib';
 

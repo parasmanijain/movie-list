@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useFormik } from 'formik';
 import * as _ from 'lodash';
-import axiosConfig from '../helper/axiosConfig';
+import axiosConfig from '../../helper/axiosConfig';
 import {
   ADD_NEW_MOVIE_URL, currentYear, GET_DIRECTORS_URL, GET_FRANCHISES_URL,
   GET_GENRES_URL, GET_LANGUAGES_URL, GET_MOVIE_DETAILS_URL, GET_UNIVERSES_URL, MenuProps, UPDATE_EXISTING_MOVIE_URL
-} from '../helper/config';
+} from '../../helper/config';
 import { LocalizationProvider, DatePicker } from '@mui/lab';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
-import { movieValidationSchema as validationSchema } from '../helper/validationScehmas';
+import { movieValidationSchema as validationSchema } from '../../helper/validationScehmas';
 import { Box, Button, TextField, Select, CheckBox, FormControl, InputLabel, MenuItem, ListItemText,
-  Divider, OutlinedInput, ListSubheader, FormHelperText } from '../lib';
+  Divider, OutlinedInput, ListSubheader, FormHelperText } from '../../lib';
 
 interface AddMovieAttributes {
   selectedMovie?: string;
