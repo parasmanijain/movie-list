@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useWindowDimensions } from '../hooks/useWindowDimensions';
-import { chartColors } from '../helper/colors';
+import { useWindowDimensions } from '../../hooks/useWindowDimensions';
+import { chartColors } from '../../helper/colors';
 import { RenderChart } from './RenderChart';
+import { Box } from '../../lib';
 
 const createChunks = (array, chunk) => {
   const temp = [];
@@ -99,10 +100,10 @@ export const ChartContainer = (props:any) => {
     };
   }, [apiData]);
   return (
-    <div className="main-container">
+    <Box>
       {[...chartData].length && [...chartData].map((data, index) =>
         <RenderChart key = {index} title = {title} width = {data.width? data.width : width-50} data = {data} index = {index}
           canvasHeight = {(!fullHeight ? chartData.length> 1 ? height>450? height/2: height : height: height/2)-50}/>)}
-    </div>
+    </Box>
   );
 };
