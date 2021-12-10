@@ -4,7 +4,7 @@ import Genre from './Genre';
 import Director from './Director';
 import Year from './Year';
 import Franchise from './Franchise';
-import { Universe } from './Universe';
+import Universe from './Universe';
 import { TopRatedMovies } from './TopRatedMovies';
 import { AddNewCountry } from './AddNewCountry';
 import { AddNewLanguage } from './AddNewLanguage';

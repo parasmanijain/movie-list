@@ -1,7 +1,7 @@
 import axiosConfig from '../helper/axiosConfig';
 import React, { useEffect, useState } from 'react';
 import { Box, Progress } from '../lib';
-export const getData = (WrappedComponent, { apiUrl, label }) => {
+export const getData = (WrappedComponent, { apiUrl, title }) => {
   const Component = (props) => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -25,7 +25,7 @@ export const getData = (WrappedComponent, { apiUrl, label }) => {
     return (
       loading ? <Box sx={{ height: '100vh', width: '100vw', display: 'flex',
         justifyContent: 'center', alignItems: 'center' }}><Progress/></Box> :
-      <WrappedComponent apiData={data} label={label} {...props} />
+      <WrappedComponent apiData={data} title={title} {...props} />
     );
   };
   Component.displayName = 'test';

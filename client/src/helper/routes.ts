@@ -1,5 +1,5 @@
 import { AddNewCountry, AddNewDirector, AddNewFranchise, AddNewGenre, AddNewLanguage, AddNewMovie, AddNewUniverse, Director,
-  Franchise, Genre, Home, Language, TopRatedMovies, Universe, Year } from '../components';
+  Franchise, Genre, Home, Language, TopRatedMovies, Year, Universe } from '../components';
 
 export const routes = [
   {
