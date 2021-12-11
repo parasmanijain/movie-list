@@ -151,13 +151,15 @@ export const Home = (props:HomeProps) => {
   );
 
   const renderAwards = (category) => {
-    const awards = category.map((ele)=> ele.award._id);
-    const unique = awards.filter((v, i, a) => a.indexOf(v) === i);
+    const awards = category.map((ele)=> {
+      return { id: ele.award._id,
+        name: ele.award.name };
+    });
+    const unique = awards.filter((v, i, a) => a.findIndex((t)=>(t.id===v.id))===i);
     return unique.map((element, index) => {
-      const categories = category.filter((ele)=> ele.award._id === element);
-      const award = categories[0].award.name;
+      const categories = category.filter((ele)=> ele.award._id === element.id);
       return (<Typography key= {index} component="div" sx={{ padding: '4px 0px' }}>
-        {award}
+        {element.name} - {categories.length}
         {
           categories.map((ele, i) => {
             return (<Typography key= {i} variant="button" display="block" sx={{ padding: '2px 0px' }}>{ele.name}</Typography>);
