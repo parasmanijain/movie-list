@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@mui/styles';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import axiosConfig from '../../helper/axiosConfig';
 import { GET_MOVIES_URL, GET_TOP_DIRECTOR_URL, GET_TOP_GENRE_URL, GET_TOP_LANGUAGE_URL, GET_TOP_YEAR_URL } from '../../helper/config';
 import { Box, Button, Typography, Progress, Pagination, Grid, Accordion, AccordionSummary, AccordionDetails } from '../../lib';
@@ -152,9 +153,6 @@ export const Home = (props:HomeProps) => {
   const renderAwards = (category) => {
     const awards = category.map((ele)=> ele.award._id);
     const unique = awards.filter((v, i, a) => a.indexOf(v) === i);
-    console.log(category);
-    console.log(awards);
-    console.log(unique);
     return unique.map((element, index) => {
       const categories = category.filter((ele)=> ele.award._id === element);
       const award = categories[0].award.name;
@@ -184,8 +182,8 @@ export const Home = (props:HomeProps) => {
           id="panel1a-header"
           sx={{ margin: '0', padding: '0px 8px' }}
         >
-          <Typography variant="button" display="block" sx={{ margin: '0px' }}>
-            {movie.name} ({movie.year})
+          <Typography variant="button" sx={{ margin: '0px', width: '100%', display: 'flex' }}>
+            {movie.name} ({movie.year}) {movie.category.length? <EmojiEventsIcon style={{ color: 'gold', marginLeft: '5px' }}/> : null}
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
