@@ -68,6 +68,30 @@ export const ChartContainer = (props:any) => {
           ] };
         chartDetails = [...chartDetails, obj];
       });
+    } else if (apiData.length && title.toLowerCase().includes('awards')) {
+      let data = [];
+      let labels = [];
+      apiData.forEach((element)=> {
+        data= [];
+        labels = [];
+        element.category.forEach((e)=> {
+          labels.push(e.name);
+          data.push(e.length);
+        });
+        const obj = {
+          subtitle: element.name,
+          width: width-50,
+          labels,
+          datasets: [
+            {
+              label: 'Movies',
+              backgroundColor: chartColors,
+              hoverBackgroundColor: chartColors,
+              data: data
+            }
+          ] };
+        chartDetails = [...chartDetails, obj];
+      });
     } else {
       const sets = createChunks(apiData, apiData.length> chunkSize ? Math.min(Math.ceil((apiData.length)/2), chunkSize): apiData.length);
       sets.forEach((e)=> {
