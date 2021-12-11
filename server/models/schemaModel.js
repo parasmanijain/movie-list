@@ -12,6 +12,22 @@ const franchiseSchema = new mongoose.Schema({
     movies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Movie' }]
 });
 
+const universeSchema = new mongoose.Schema({
+    name: { type: String, unique: true },
+    franchises: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Franchise' }]
+});
+
+const categorySchema = new mongoose.Schema({
+    name:{ type: String },
+    award: { type: mongoose.Schema.Types.ObjectId, ref: 'Award', required: true },
+    movies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Movie' }]
+});
+
+const awardSchema = new mongoose.Schema({
+    name: { type: String, unique: true },
+    categories: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Category' }]
+});
+
 const genreSchema = new mongoose.Schema({
     name: { type: String, unique: true },
     movies: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Movie' }]
@@ -28,11 +44,6 @@ const countrySchema = new mongoose.Schema({
     name: { type: String, unique: true },
 });
 
-const universeSchema = new mongoose.Schema({
-    name: { type: String, unique: true },
-    franchises: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Franchise' }]
-});
-
 const movieSchema = new mongoose.Schema({
     name: { type: String},
     language: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Language' }],
@@ -43,6 +54,7 @@ const movieSchema = new mongoose.Schema({
     rottenTomatoes: { type: String, required: false },
     franchise: { type: mongoose.Schema.Types.ObjectId, ref: 'Franchise', required: false },
     genre: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Genre' }],
+    category: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Category', required: false }],
 });
 
 languageSchema.index({ name: 1, code: 1 }, { unique: true });
@@ -54,7 +66,9 @@ module.exports = {
     Country : mongoose.model('Country', countrySchema),
     Director : mongoose.model('Director', directorSchema),
     Movie : mongoose.model('Movie', movieSchema),
-    Franchise : mongoose.model('Franchise', franchiseSchema),
     Genre : mongoose.model('Genre', genreSchema),
-    Universe: mongoose.model('Universe', universeSchema)
+    Franchise : mongoose.model('Franchise', franchiseSchema),
+    Universe: mongoose.model('Universe', universeSchema),
+    Category : mongoose.model('Category', categorySchema),
+    Award: mongoose.model('Award', awardSchema)
 }

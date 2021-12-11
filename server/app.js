@@ -10,6 +10,8 @@ const director_controller = require('./controllers/director');
 const genre_controller = require('./controllers/genre');
 const franchise_controller = require('./controllers/franchise');
 const universe_controller = require('./controllers/universe');
+const category_controller = require('./controllers/category');
+const award_controller = require('./controllers/award');
 const movie_controller = require('./controllers/movie');
 
 app.get('/languages', language_controller.getLanguageList);
@@ -46,6 +48,16 @@ app.post('/movie',movie_controller.addNewMovie);
 app.post('/updateMovie', movie_controller.updateExistingMovie);
 app.get('/topYear', movie_controller.getTopYear);
 app.get('/yearsCount', movie_controller.getYearCount);
+
+
+app.get('/categories', category_controller.getCategoryList);
+app.get('/topCategory', category_controller.getTopCategory);
+app.get('/categoriesCount', category_controller.getCategoryCount);
+app.post('/category', category_controller.addNewCategory);
+
+app.get('/awards', award_controller.getAwardList);
+app.get('/awardsCount', award_controller.getAwardCount);
+app.post('/award', award_controller.addNewAward);
 
 function setupCORS(req, res, next) {
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');

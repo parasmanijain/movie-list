@@ -3,7 +3,7 @@ import { useFormik } from 'formik';
 import * as _ from 'lodash';
 import axiosConfig from '../../helper/axiosConfig';
 import {
-  ADD_NEW_MOVIE_URL, currentYear, GET_DIRECTORS_URL, GET_FRANCHISES_URL,
+  ADD_NEW_MOVIE_URL, currentYear, GET_AWARDS_URL, GET_CATEGORIES_URL, GET_DIRECTORS_URL, GET_FRANCHISES_URL,
   GET_GENRES_URL, GET_LANGUAGES_URL, GET_MOVIE_DETAILS_URL, GET_UNIVERSES_URL, MenuProps, UPDATE_EXISTING_MOVIE_URL
 } from '../../helper/config';
 import { LocalizationProvider, DatePicker } from '@mui/lab';
@@ -25,7 +25,8 @@ const initialValues = {
   year: currentYear,
   url: '',
   genre: [],
-  franchise: ''
+  franchise: '',
+  category: []
 };
 
 export const AddNewMovie = (props: AddMovieAttributes) => {
@@ -33,6 +34,7 @@ export const AddNewMovie = (props: AddMovieAttributes) => {
   const [languageData, setLanguageData] = useState([]);
   const [genreData, setGenreData] = useState([]);
   const [franchiseData, setFranchiseData] = useState([]);
+  const [categoryData, setCategoryData] = useState([]);
   const [directorData, setDirectorData] = useState([]);
   const [existingValues, setExistingValues] = useState({});
   const [, setSelectedMovieData] = useState(null);
@@ -43,30 +45,35 @@ export const AddNewMovie = (props: AddMovieAttributes) => {
     const genres = axiosConfig.get(`${GET_GENRES_URL}`);
     const franchises = axiosConfig.get(`${GET_FRANCHISES_URL}`);
     const universes = axiosConfig.get(`${GET_UNIVERSES_URL}`);
-    Promise.all([languages, directors, genres, universes, franchises]).then((responses) => {
+    const categories = axiosConfig.get(`${GET_CATEGORIES_URL}`);
+    const awards = axiosConfig.get(`${GET_AWARDS_URL}`);
+    Promise.all([languages, directors, genres, universes, franchises, awards, categories]).then((responses) => {
       setLanguageData(responses[0].data);
       setDirectorData(responses[1].data);
       setGenreData(responses[2].data);
-      const arr = [...responses[3].data, ...responses[4].data];
-      setFranchiseData(arr);
-      fetchSelectedMovieDetails(arr);
+      const franchiseList = [...responses[3].data, ...responses[4].data];
+      const categoryList = [...responses[5].data, ...responses[6].data];
+      setFranchiseData(franchiseList);
+      setCategoryData(categoryList);
+      fetchSelectedMovieDetails(franchiseList, categoryList);
     }).catch((errors) => {
       console.log(errors);
     });
   };
 
-  const fetchSelectedMovieDetails = (arr) => {
+  const fetchSelectedMovieDetails = (franchiseList, categoryList) => {
     const selectedMovieDetails = axiosConfig.get(`${GET_MOVIE_DETAILS_URL}`, { params: { movieID: selectedMovie } });
     Promise.all([selectedMovieDetails]).then((responses) => {
       if (responses[0].data) {
         setSelectedMovieData(responses[0].data);
-        const { name, language, director, imdb, rottenTomatoes, url, year, genre, franchise } = responses[0].data;
+        const { name, language, director, imdb, rottenTomatoes, url, year, genre, franchise, category } = responses[0].data;
         const languageValues = language.map((element) => element._id);
         const directorValues = director.map((element) => element._id);
         const genreValues = genre.map((element) => element._id);
+        const categoryValues = category.map((element) => element._id);
         let franchiseValue;
         if (franchise.universe) {
-          franchiseValue = (arr.find((ele)=> ele._id === franchise.universe)).franchises.filter((x)=> x._id=== franchise._id);
+          franchiseValue = (franchiseList.find((ele)=> ele._id === franchise.universe)).franchises.filter((x)=> x._id=== franchise._id);
         }
         const obj = {
           name,
@@ -77,7 +84,8 @@ export const AddNewMovie = (props: AddMovieAttributes) => {
           url,
           year,
           genre: genreValues,
-          franchise: franchise? franchiseValue[0]._id: ''
+          franchise: franchise? franchiseValue[0]._id: '',
+          category: categoryValues
         };
         formik.setValues(obj, true);
         setExistingValues(obj);
@@ -107,7 +115,7 @@ export const AddNewMovie = (props: AddMovieAttributes) => {
         apiURL = UPDATE_EXISTING_MOVIE_URL;
         const diff = _.reduce(existingValues, (result, value, key) =>
          _.isEqual(value, formik.values[key]) ? result : result.concat(key), []);
-        const arrkeys= ['language', 'director', 'genre'];
+        const arrkeys= ['language', 'director', 'genre', 'category'];
         diff.forEach((ele)=> {
           let obj = {};
           if (arrkeys.includes(ele)) {
@@ -147,7 +155,8 @@ export const AddNewMovie = (props: AddMovieAttributes) => {
           year: formik.values.year,
           url: formik.values.url,
           genre: formik.values.genre,
-          franchise: formik.values.franchise
+          franchise: formik.values.franchise,
+          category: formik.values.category
         };
       }
       axiosConfig.post(apiURL, request)

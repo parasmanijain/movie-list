@@ -149,6 +149,26 @@ export const Home = (props:HomeProps) => {
     </React.Fragment>
   );
 
+  const renderAwards = (category) => {
+    const awards = category.map((ele)=> ele.award._id);
+    const unique = awards.filter((v, i, a) => a.indexOf(v) === i);
+    console.log(category);
+    console.log(awards);
+    console.log(unique);
+    return unique.map((element, index) => {
+      const categories = category.filter((ele)=> ele.award._id === element);
+      const award = categories[0].award.name;
+      return (<Typography key= {index} component="div" sx={{ padding: '4px 0px' }}>
+        {award}
+        {
+          categories.map((ele, i) => {
+            return (<Typography key= {i} variant="button" display="block" sx={{ padding: '2px 0px' }}>{ele.name}</Typography>);
+          } )
+        }
+      </Typography>);
+    });
+  };
+
 
   const directorName = (director, index, length) => directorURL(director.url, director.name, director._id, index, length);
 
@@ -171,11 +191,10 @@ export const Home = (props:HomeProps) => {
         <AccordionDetails>
           <Typography component="div" sx={{ padding: '0px' }}>
             {
-              movie.language.map(
-                  (element, index, arr)=>
-                    <Typography key={element._id} variant="button" display="span" sx={{ padding: '4px 0px' }}>
-                      {element.name} {index !== arr.length-1 ? ', ' : null}
-                    </Typography>)
+              movie.language.map((element, index, arr)=>
+                <Typography key={element._id} variant="button" display="span" sx={{ padding: '4px 0px' }}>
+                  {element.name} {index !== arr.length-1 ? ', ' : null}
+                </Typography>)
             }
 
             <Typography component="div">
@@ -198,25 +217,32 @@ export const Home = (props:HomeProps) => {
                 Rotten Tomatoes:
               {movie.rottenTomatoes ? movie.rottenTomatoes + '%' : 'Not Rated'}
             </Typography>
-            { movie.franchise && <React.Fragment>
-              <Typography component="div" sx={{ padding: '0px' }}>
-                <Typography component="span" sx={{ padding: '4px 0px' }}>
+            {
+              movie.franchise &&
+              <React.Fragment>
+                <Typography component="div" sx={{ padding: '0px' }}>
+                  <Typography component="span" sx={{ padding: '4px 0px' }}>
                 Franchise:
+                  </Typography>
+                  <Typography variant="button" display="span" sx={{ padding: '4px 0px' }}>
+                    {movie.franchise.name}
+                  </Typography>
                 </Typography>
-                <Typography variant="button" display="span" sx={{ padding: '4px 0px' }}>
-                  {movie.franchise.name}
-                </Typography>
-              </Typography>
-              { movie.franchise.universe &&
-               <Typography component="div" sx={{ padding: '0px' }}>
-                 <Typography component="span" sx={{ padding: '4px 0px' }}>
-                Universe:
-                   <Typography variant="button" display="span" sx={{ padding: '4px 0px' }}>
-                     {movie.franchise.universe.name}
-                   </Typography>
-                 </Typography>
-               </Typography>}
-            </React.Fragment>
+                {
+                  movie.franchise.universe &&
+                  <Typography component="div" sx={{ padding: '0px' }}>
+                    <Typography component="span" sx={{ padding: '4px 0px' }}>
+                      Universe:
+                      <Typography variant="button" display="span" sx={{ padding: '4px 0px' }}>
+                        {movie.franchise.universe.name}
+                      </Typography>
+                    </Typography>
+                  </Typography>
+                }
+              </React.Fragment>
+            }
+            {
+              movie.category.length && renderAwards(movie.category)
             }
             { environment.toLowerCase() === 'development' && <Typography component="div">
               <Button

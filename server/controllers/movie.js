@@ -1,4 +1,4 @@
-const { Movie, Director, Language, Genre, Franchise } = require('../models/schemaModel');
+const { Movie, Director, Language, Genre, Franchise, Category } = require('../models/schemaModel');
 
 const getMovieList = (req, res) => {
     let page = parseInt(req.query.page) || 1;
@@ -6,10 +6,16 @@ const getMovieList = (req, res) => {
     // get data from the view and add it to mongodb
     Movie.find({}, null, { sort: { name: 1 } })
         .skip((page - 1) * limit)
-        .limit(limit).populate('language').populate('genre')
+        .limit(limit)
+        .populate('language')
+        .populate('genre')
         .populate({
             path: 'franchise',
             populate: [{ path: 'universe' }]
+        })
+        .populate({
+            path: 'category',
+            populate: [{ path: 'award' }]
         })
         .populate({
             path: 'director',
@@ -32,7 +38,12 @@ const getMovieList = (req, res) => {
 };
 
 const getMovieDetails = (req, res) => {
-    Movie.findById(req.query.movieID).populate('language').populate('director').populate('genre').populate('franchise').exec(function (err, movie) {
+    Movie.findById(req.query.movieID)
+    .populate('language')
+    .populate('director')
+    .populate('genre')
+    .populate('franchise')
+    .populate('category').exec(function (err, movie) {
         if (err) return res.send(500, { error: err });
         return res.send(movie);
     }
@@ -61,7 +72,7 @@ const getTopMovie = (req, res) => {
 
 const addNewMovie = async (req, res) => {
     try {
-        const { name, language, director, imdb, rottenTomatoes, year, url, genre, franchise } = req.body;
+        const { name, language, director, imdb, rottenTomatoes, year, url, genre, franchise, category } = req.body;
         // get data from the view and add it to mongodb
         let query = {
             'name': name, 'language': language, 'director': director,
@@ -69,6 +80,9 @@ const addNewMovie = async (req, res) => {
         };
         if (franchise) {
             query = { ...query, ...{ 'franchise': franchise } }
+        }
+        if (category) {
+            query = { ...query, ...{ 'category': category } }
         }
         const newMovie = await Movie.create(query);
         if (!newMovie) throw err;
@@ -120,6 +134,20 @@ const addNewMovie = async (req, res) => {
                 .then(bulkWriteOpResult => console.log('Franchise BULK update OK:', bulkWriteOpResult))
                 .catch(console.error.bind(console, 'Franchise BULK update error:'));
             operations = { ...operations, franchiseOperation };
+        }
+        if (newMovie.category) {
+            const bulkCategoryOps = newMovie.category.map(doc => ({
+                updateOne: {
+                    filter: { _id: doc },
+                    update: { "$push": { "movies": newMovie._id } },
+                    upsert: true,
+                    useFindAndModify: false
+                }
+            }));
+            const categoryOperation = Category.bulkWrite(bulkCategoryOps)
+                .then(bulkWriteOpResult => console.log('Category BULK update OK:', bulkWriteOpResult))
+                .catch(console.error.bind(console, 'Category BULK update error:'));
+            operations = { ...operations, categoryOperation };
         }
         let [someResult, anotherResult] = await Promise.all(operations
         )

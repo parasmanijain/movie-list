@@ -81,4 +81,18 @@ export const directorValidationSchema = yup.object({
       .required('Country is required')
 });
 
+export const categoryValidationSchema = yup.object({
+  name: yup
+      .string()
+      .required('Category is required'),
+  award: yup
+      .string()
+});
+
+export const awardValidationSchema = yup.object({
+  name: yup
+      .string()
+      .required('Award is required')
+});
+
 

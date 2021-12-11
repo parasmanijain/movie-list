@@ -1,5 +1,5 @@
 import { AddNewCountry, AddNewDirector, AddNewFranchise, AddNewGenre, AddNewLanguage, AddNewMovie, AddNewUniverse, Director,
-  Franchise, Genre, Home, Language, TopRatedMovies, Year, Universe } from '../pages';
+  Franchise, Genre, Home, Language, TopRatedMovies, Year, Universe, AddNewAward, AddNewCategory, Award } from '../pages';
 
 export const routes = [
   {
@@ -44,6 +44,12 @@ export const routes = [
     'component': Universe
   },
   {
+    'path': '/award',
+    'label': 'Award',
+    'production': true,
+    'component': Award
+  },
+  {
     'path': '/top-rated-movies',
     'label': 'Top Rated Movies',
     'production': true,
@@ -54,22 +60,32 @@ export const routes = [
     'label': 'Add New Country',
     'production': false,
     'component': AddNewCountry
-  }, {
+  },
+  {
     'path': '/add-new-language',
     'label': 'Add New Language',
     'production': false,
     'component': AddNewLanguage
-  }, {
+  },
+  {
     'path': '/add-new-genre',
     'label': 'Add New Genre',
     'production': false,
     'component': AddNewGenre
-  }, {
+  },
+  {
     'path': '/add-new-universe',
     'label': 'Add New Universe',
     'production': false,
     'component': AddNewUniverse
-  }, {
+  },
+  {
+    'path': '/add-new-award',
+    'label': 'Add New Award',
+    'production': false,
+    'component': AddNewAward
+  },
+  {
     'path': '/add-new-director',
     'label': 'Add New Director',
     'production': false,
@@ -80,6 +96,12 @@ export const routes = [
     'label': 'Add New Franchise',
     'production': false,
     'component': AddNewFranchise
+  },
+  {
+    'path': '/add-new-category',
+    'label': 'Add New Category',
+    'production': false,
+    'component': AddNewCategory
   },
   {
     'path': '/add-new-movie',
