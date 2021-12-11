@@ -35,6 +35,7 @@ export const ChartContainer = (props:any) => {
         });
         const obj = {
           title: element.name,
+          width: width-50,
           labels,
           datasets: [
             {
@@ -55,7 +56,7 @@ export const ChartContainer = (props:any) => {
         });
         const obj = {
           title: element.name,
-          width: width/arr.length - (50/arr.length),
+          width: (width-50)/arr.length,
           labels,
           datasets: [
             {
@@ -78,6 +79,7 @@ export const ChartContainer = (props:any) => {
         });
         const obj = {
           labels,
+          width: width-50,
           datasets: [
             {
               label: 'Movies',
@@ -102,7 +104,7 @@ export const ChartContainer = (props:any) => {
   return (
     <Box>
       {[...chartData].length && [...chartData].map((data, index) =>
-        <RenderChart key = {index} title = {title} width = {data.width? data.width : width-50} data = {data} index = {index}
+        <RenderChart key = {index} title = {title} width = {data.width} data = {data} index = {index}
           canvasHeight = {(!fullHeight ? chartData.length> 1 ? height>450? height/2: height : height: height/2)-50}/>)}
     </Box>
   );
