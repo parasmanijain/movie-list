@@ -4,7 +4,7 @@ import axiosConfig from '../../helper/axiosConfig';
 import { ADD_NEW_FRANCHISE_URL, GET_UNIVERSES_URL, MenuProps } from '../../helper/config';
 import { franchiseValidationSchema as validationSchema } from '../../helper/validationScehmas';
 import { Box, Button, TextField, Select, InputLabel, ListItemText, FormControl, MenuItem,
-  OutlinedInput, FormHelperText } from '../../lib';
+  OutlinedInput, FormHelperText } from '../lib';
 
 export const AddNewFranchise = () => {
   const [universeData, setUniverseData] = useState([]);

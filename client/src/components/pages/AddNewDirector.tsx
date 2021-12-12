@@ -6,7 +6,7 @@ import { directorValidationSchema as validationSchema } from '../../helper/valid
 import { Box, Button, TextField, Select, CheckBox, InputLabel, ListItemText, MenuItem,
   FormControl,
   OutlinedInput,
-  FormHelperText } from '../../lib';
+  FormHelperText } from '../lib';
 
 export const AddNewDirector = () => {
   const [countryData, setCountryData] = useState([]);

@@ -6,7 +6,7 @@ import {
   Link, RouteProps
 } from 'react-router-dom';
 import './App.css';
-import { AppBar, Box, Tab, Tabs } from './lib';
+import { AppBar, Box, Tab, Tabs } from './components/lib';
 import { routes, ProtectedRoute } from './components';
 
 interface PublicRouteProps extends RouteProps {

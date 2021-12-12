@@ -5,7 +5,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import axiosConfig from '../../helper/axiosConfig';
 import { GET_MOVIES_URL, GET_TOP_DIRECTOR_URL, GET_TOP_GENRE_URL, GET_TOP_LANGUAGE_URL, GET_TOP_YEAR_URL } from '../../helper/config';
-import { Box, Button, Typography, Progress, Pagination, Grid, Accordion, AccordionSummary, AccordionDetails, Badge } from '../../lib';
+import { Box, Button, Typography, Progress, Pagination, Grid, Accordion, AccordionSummary, AccordionDetails, Badge } from '../lib';
 import { useWindowDimensions } from '../../hooks/useWindowDimensions';
 
 const summaryStyles = makeStyles({

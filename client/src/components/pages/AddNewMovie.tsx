@@ -10,7 +10,7 @@ import { LocalizationProvider, DatePicker } from '@mui/lab';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import { movieValidationSchema as validationSchema } from '../../helper/validationScehmas';
 import { Box, Button, TextField, Select, CheckBox, FormControl, InputLabel, MenuItem, ListItemText,
-  Divider, OutlinedInput, ListSubheader, FormHelperText } from '../../lib';
+  Divider, OutlinedInput, ListSubheader, FormHelperText } from '../lib';
 
 interface AddMovieAttributes {
   selectedMovie?: string;

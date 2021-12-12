@@ -3,7 +3,7 @@ import { useFormik } from 'formik';
 import axiosConfig from '../../helper/axiosConfig';
 import { ADD_NEW_GENRE_URL } from '../../helper/config';
 import { genreValidationSchema as validationSchema } from '../../helper/validationScehmas';
-import { Box, Button, TextField, FormControl } from '../../lib';
+import { Box, Button, TextField, FormControl } from '../lib';
 
 export const AddNewGenre = () => {
   const formik = useFormik({

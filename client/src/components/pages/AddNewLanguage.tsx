@@ -3,7 +3,7 @@ import { useFormik } from 'formik';
 import axiosConfig from '../../helper/axiosConfig';
 import { languageValidationSchema as validationSchema } from '../../helper/validationScehmas';
 import { ADD_NEW_LANGUAGE_URL } from '../../helper/config';
-import { Box, Button, TextField, FormControl } from '../../lib';
+import { Box, Button, TextField, FormControl } from '../lib';
 
 export const AddNewLanguage = () => {
   const formik = useFormik({

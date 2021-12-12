@@ -4,7 +4,7 @@ import axiosConfig from '../../helper/axiosConfig';
 import { ADD_NEW_CATEGORY_URL, GET_AWARDS_URL, MenuProps } from '../../helper/config';
 import { categoryValidationSchema as validationSchema } from '../../helper/validationScehmas';
 import { Box, Button, TextField, Select, InputLabel, ListItemText, FormControl, MenuItem,
-  OutlinedInput, FormHelperText } from '../../lib';
+  OutlinedInput, FormHelperText } from '../lib';
 
 export const AddNewCategory = () => {
   const [awardData, setAwardData] = useState([]);

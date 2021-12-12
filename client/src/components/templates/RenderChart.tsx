@@ -1,5 +1,5 @@
 import React from 'react';
-import { Bar, Box } from '../../lib';
+import { Bar, Box } from '../lib';
 
 const renderOptions = (title, subtitle?) => {
   return (
@@ -22,6 +22,15 @@ const renderOptions = (title, subtitle?) => {
           weight: 500
         }
       }
+      // tooltip: {
+      //   callbacks: {
+      //     label: function(context) {
+      //       console.log(context);
+      //       const label = context.formattedValue;
+      //       return label;
+      //     }
+      //   }
+      // }
     }
     }
   );
