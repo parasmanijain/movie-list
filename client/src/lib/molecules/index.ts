@@ -8,7 +8,9 @@ import { TableBody } from './TableBody';
 import { TableHead } from './TableHead';
 import { TablePagination } from './TablePagination';
 import { Tabs } from './Tabs';
+import { Badge } from './Badge';
 
 export {
-  FormControl, MenuItem, AccordionSummary, AccordionDetails, Toolbar, TableRow, TableBody, TableHead, TablePagination, Tabs
+  FormControl, MenuItem, AccordionSummary, AccordionDetails, Toolbar, TableRow, TableBody, TableHead, TablePagination,
+  Tabs, Badge
 };

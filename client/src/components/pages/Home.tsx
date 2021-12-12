@@ -5,7 +5,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import axiosConfig from '../../helper/axiosConfig';
 import { GET_MOVIES_URL, GET_TOP_DIRECTOR_URL, GET_TOP_GENRE_URL, GET_TOP_LANGUAGE_URL, GET_TOP_YEAR_URL } from '../../helper/config';
-import { Box, Button, Typography, Progress, Pagination, Grid, Accordion, AccordionSummary, AccordionDetails } from '../../lib';
+import { Box, Button, Typography, Progress, Pagination, Grid, Accordion, AccordionSummary, AccordionDetails, Badge } from '../../lib';
 import { useWindowDimensions } from '../../hooks/useWindowDimensions';
 
 const summaryStyles = makeStyles({
@@ -159,10 +159,14 @@ export const Home = (props:HomeProps) => {
     return unique.map((element, index) => {
       const categories = category.filter((ele)=> ele.award._id === element.id);
       return (<Typography key= {index} component="div" sx={{ padding: '4px 0px' }}>
-        {element.name} - {categories.length}
+        <Typography variant="button" sx={{ display: 'flex', alignItems: 'center' }}>
+          {element.name}<Badge badgeContent={categories.length} color="primary">
+            <EmojiEventsIcon style={{ color: 'gold', marginLeft: '10px', fontSize: '32px' }}/>
+          </Badge>
+        </Typography>
         {
           categories.map((ele, i) => {
-            return (<Typography key= {i} variant="button" display="block" sx={{ padding: '2px 0px' }}>{ele.name}</Typography>);
+            return (<Typography key= {i} display="block" sx={{ padding: '2px 0px' }}>{ele.name}</Typography>);
           } )
         }
       </Typography>);
@@ -184,8 +188,11 @@ export const Home = (props:HomeProps) => {
           id="panel1a-header"
           sx={{ margin: '0', padding: '0px 8px' }}
         >
-          <Typography variant="button" sx={{ margin: '0px', width: '100%', display: 'flex' }}>
-            {movie.name} ({movie.year}) {movie.category.length? <EmojiEventsIcon style={{ color: 'gold', marginLeft: '5px' }}/> : null}
+          <Typography variant="button" sx={{ margin: '0px', width: '100%', display: 'flex', alignItems: 'center' }}>
+            {movie.name} ({movie.year}) {movie.category.length?
+            <Badge badgeContent={movie.category.length} color="primary">
+              <EmojiEventsIcon style={{ color: 'gold', marginLeft: '10px', fontSize: '32px' }}/>
+            </Badge>: null}
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
