@@ -225,7 +225,7 @@ export const Home = (props:HomeProps) => {
               {movie.rottenTomatoes ? movie.rottenTomatoes + '%' : 'Not Rated'}
             </Typography>
             {
-              movie.franchise &&
+              movie.franchise ?
               <React.Fragment>
                 <Typography component="div" sx={{ padding: '0px' }}>
                   <Typography component="span" sx={{ padding: '4px 0px' }}>
@@ -246,10 +246,10 @@ export const Home = (props:HomeProps) => {
                     </Typography>
                   </Typography>
                 }
-              </React.Fragment>
+              </React.Fragment> : null
             }
             {
-              movie.category.length && renderAwards(movie.category)
+              movie.category.length ? renderAwards(movie.category) : null
             }
             { environment.toLowerCase() === 'development' && <Typography component="div">
               <Button

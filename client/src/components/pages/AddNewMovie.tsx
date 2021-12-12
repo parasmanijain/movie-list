@@ -55,7 +55,9 @@ export const AddNewMovie = (props: AddMovieAttributes) => {
       const categoryList = [...responses[5].data, ...responses[6].data];
       setFranchiseData(franchiseList);
       setCategoryData(categoryList);
-      fetchSelectedMovieDetails(franchiseList, categoryList);
+      if (selectedMovie) {
+        fetchSelectedMovieDetails(franchiseList, categoryList);
+      }
     }).catch((errors) => {
       console.log(errors);
     });
@@ -70,9 +72,12 @@ export const AddNewMovie = (props: AddMovieAttributes) => {
         const languageValues = language.map((element) => element._id);
         const directorValues = director.map((element) => element._id);
         const genreValues = genre.map((element) => element._id);
-        const categoryValues = category.map((element) => element._id);
+        let categoryValues;
+        if (category) {
+          categoryValues = category.map((element) => element._id);
+        }
         let franchiseValue;
-        if (franchise.universe) {
+        if (franchise && franchise.universe) {
           franchiseValue = (franchiseList.find((ele)=> ele._id === franchise.universe)).franchises.filter((x)=> x._id=== franchise._id);
         }
         const obj = {
@@ -85,7 +90,7 @@ export const AddNewMovie = (props: AddMovieAttributes) => {
           year,
           genre: genreValues,
           franchise: franchise? franchiseValue[0]._id: '',
-          category: categoryValues
+          category: categoryValues ? categoryValues : ''
         };
         formik.setValues(obj, true);
         setExistingValues(obj);
@@ -169,15 +174,15 @@ export const AddNewMovie = (props: AddMovieAttributes) => {
     }
   });
 
-  const makeItems = (data) => {
+  const makeSingleOptionItems = (data, key) => {
     const items = [];
     data.forEach((element, index)=> {
-      if (element.franchises) {
+      if (element[key]) {
         items.push(<ListSubheader key={element._id + index}>{element.name}</ListSubheader>);
-        element.franchises.forEach((franchise)=> {
+        element[key].forEach((el)=> {
           items.push(
-              <MenuItem key={franchise._id} value={franchise._id}>
-                {franchise.name}
+              <MenuItem key={el._id} value={el._id}>
+                {el.name}
               </MenuItem>
           );
         });
@@ -188,6 +193,25 @@ export const AddNewMovie = (props: AddMovieAttributes) => {
               {element.name}
             </MenuItem>
         );
+      }
+    });
+    return items;
+  };
+
+  const makeMultiOptionItems = (data, list, key) => {
+    const items = [];
+    data.forEach((element, index)=> {
+      if (element[list]) {
+        items.push(<ListSubheader key={element._id + index}>{element.name}</ListSubheader>);
+        element[list].forEach((el)=> {
+          items.push(
+              <MenuItem key={el._id} value={el._id}>
+                <CheckBox checked={formik.values[key].indexOf(el._id) > -1} />
+                <ListItemText primary={el.name} />
+              </MenuItem>
+          );
+        });
+        items.push(<Divider key={index} />);
       }
     });
     return items;
@@ -328,9 +352,33 @@ export const AddNewMovie = (props: AddMovieAttributes) => {
             input={<OutlinedInput label="Franchise" />}
             MenuProps={MenuProps}
           >
-            {makeItems([...franchiseData])}
+            {makeSingleOptionItems([...franchiseData], 'franchises')}
           </Select>
           <FormHelperText>{formik.touched.franchise && formik.errors.franchise}</FormHelperText>
+        </FormControl>
+        <FormControl sx={{ m: 2, width: 300 }}>
+          <InputLabel id="category-label">Award</InputLabel>
+          <Select
+            labelId="category-label"
+            id="category"
+            name="category"
+            multiple
+            value={formik.values.category}
+            onChange={formik.handleChange}
+            error={formik.touched.category && Boolean(formik.errors.category)}
+            input={<OutlinedInput label="Award" />}
+            renderValue={(selected: string[]) => {
+              const awards = [...categoryData].map((ele)=> ele.categories).flat();
+              const selectedAwards = (awards.filter(
+                  (award) => selected.includes(award._id))).map((element) => element.name);
+              return selectedAwards.join(', ');
+            }
+            }
+            MenuProps={MenuProps}
+          >
+            {makeMultiOptionItems([...categoryData], 'categories', 'category')}
+          </Select>
+          <FormHelperText>{formik.touched.category && formik.errors.category}</FormHelperText>
         </FormControl>
         <FormControl sx={{ m: 2, width: 300 }}>
           <TextField
