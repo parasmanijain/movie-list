@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { makeStyles } from '@mui/styles';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
@@ -75,7 +75,7 @@ export const Home = (props:HomeProps) => {
       limit = 8;
     }
   }
-  const history = useHistory();
+  const navigate = useNavigate();
   const fetchData = () => {
     const moviesUrl = axiosConfig.get(`${GET_MOVIES_URL}`, { params: { page, limit } });
     setDataLoading(true);
@@ -257,7 +257,7 @@ export const Home = (props:HomeProps) => {
                 sx={{ padding: '4px 0px' }}
                 onClick={() => {
                   handleMovieUpdateSelection(movie._id);
-                  history.push('/add-new-movie');
+                  navigate('/add-new-movie');
                 }}
               >
                 Edit Movie Details
