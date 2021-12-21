@@ -43,10 +43,11 @@ export const App = () => {
       return (<Route key = {index} path={path} element = {<Component { ...componentProps}/>}/>);
     }
   };
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
-    // navigate(newValue);
   };
+
   return (
     <BrowserRouter>
       <AppBar sx={{ height: '40px' }}>
@@ -63,8 +64,6 @@ export const App = () => {
           }
         </Tabs>
       </AppBar>
-      {/* A <Switch> looks through its children <Route>s and
-          renders the first one that matches the current URL. */}
       <Box sx={{ marginTop: '40px', padding: '8px', boxSizing: 'border-box', height: '100%', width: '100%' }}>
         <Routes>
           { routes.map((ele, index) => {
