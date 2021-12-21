@@ -37,7 +37,7 @@ export const GET_TOP_FRANCHISE_URL = '/topFranchise';
 export const GET_TOP_CATEGORY_URL = '/topCategory';
 export const GET_TOP_YEAR_URL = '/topYear';
 
-export const ITEM_HEIGHT = 48;
+export const ITEM_HEIGHT = 72;
 export const ITEM_PADDING_TOP = 8;
 export const MenuProps = {
   PaperProps: {
