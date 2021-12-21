@@ -178,7 +178,7 @@ export const AddNewMovie = (props: AddMovieAttributes) => {
     const items = [];
     data.forEach((element, index)=> {
       if (element[key]) {
-        items.push(<ListSubheader key={element._id + index}>{element.name}</ListSubheader>);
+        items.push(<ListSubheader sx={{ fontSize: '16px', fontWeight: '700' }} key={element._id + index}>{element.name}</ListSubheader>);
         element[key].forEach((el)=> {
           items.push(
               <MenuItem key={el._id} value={el._id}>
@@ -202,7 +202,7 @@ export const AddNewMovie = (props: AddMovieAttributes) => {
     const items = [];
     data.forEach((element, index)=> {
       if (element[list]) {
-        items.push(<ListSubheader key={element._id + index}>{element.name}</ListSubheader>);
+        items.push(<ListSubheader sx={{ fontSize: '16px', fontWeight: '700' }} key={element._id + index}>{element.name}</ListSubheader>);
         element[list].forEach((el)=> {
           items.push(
               <MenuItem key={el._id} value={el._id}>

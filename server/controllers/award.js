@@ -2,7 +2,7 @@ const { Award } = require('../models/schemaModel');
 
 const getAwardList =  (req, res) => {
     // get data from the view and add it to mongodb
-    Award.find({}, null, { sort: { name: 1 } }).populate('categories').exec(function (err, results) {
+    Award.find({}, null, { sort: { name: 1 } }).populate({path: 'categories', options: { sort: { 'name': 1 } } }).exec(function (err, results) {
         if (err) return res.send(500, { error: err });
         return res.send(results);
     });

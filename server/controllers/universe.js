@@ -2,7 +2,7 @@ const { Universe } = require('../models/schemaModel');
 
 const getUniverseList =  (req, res) => {
     // get data from the view and add it to mongodb
-    Universe.find({}, null, { sort: { name: 1 } }).populate('franchises').exec(function (err, results) {
+    Universe.find({}, null, { sort: { name: 1 } }).populate({path: 'franchises', options: { sort: { 'name': 1 } } }).exec(function (err, results) {
         if (err) return res.send(500, { error: err });
         return res.send(results);
     });
