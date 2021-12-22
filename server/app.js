@@ -30,6 +30,7 @@ app.get('/franchisesCount', franchise_controller.getFranchiseCount);
 app.post('/franchise', franchise_controller.addNewFranchise);
 
 app.get('/universes', universe_controller.getUniverseList);
+app.get('/universeFranchises', universe_controller.getUniverseFranchiseList);
 app.get('/universesCount', universe_controller.getUniverseCount);
 app.post('/universe', universe_controller.addNewUniverse);
 
@@ -56,6 +57,7 @@ app.get('/categoriesCount', category_controller.getCategoryCount);
 app.post('/category', category_controller.addNewCategory);
 
 app.get('/awards', award_controller.getAwardList);
+app.get('/awardCategories', award_controller.getAwardCategoryList);
 app.get('/awardsCount', award_controller.getAwardCount);
 app.post('/award', award_controller.addNewAward);
 

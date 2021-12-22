@@ -16,8 +16,10 @@ export const GET_DIRECTORS_URL = '/directors';
 export const GET_GENRES_URL = '/genres';
 export const GET_FRANCHISES_URL = '/franchises';
 export const GET_UNIVERSES_URL = '/universes';
+export const GET_UNIVERSE_FRANCHISES_URL = '/universeFranchises';
 export const GET_CATEGORIES_URL = '/categories';
 export const GET_AWARDS_URL = '/awards';
+export const GET_AWARD_CATEGORIES_URL = '/awardCategories';
 export const GET_MOVIE_DETAILS_URL = '/movieDetails';
 
 export const GET_DIRECTORS_COUNT_URL = '/directorsCount';

@@ -2,7 +2,18 @@ const { Universe } = require('../models/schemaModel');
 
 const getUniverseList =  (req, res) => {
     // get data from the view and add it to mongodb
-    Universe.find({}, null, { sort: { name: 1 } }).populate({path: 'franchises', options: { sort: { 'name': 1 } } }).exec(function (err, results) {
+    Universe.find({}, null, { sort: { name: 1 } })
+    .exec(function (err, results) {
+        if (err) return res.send(500, { error: err });
+        return res.send(results);
+    });
+};
+
+const getUniverseFranchiseList =  (req, res) => {
+    // get data from the view and add it to mongodb
+    Universe.find({}, null, { sort: { name: 1 } })
+    .populate({path: 'franchises', options: { sort: { 'name': 1 } } })
+    .exec(function (err, results) {
         if (err) return res.send(500, { error: err });
         return res.send(results);
     });
@@ -58,6 +69,7 @@ const addNewUniverse = (req, res) => {
 
 module.exports = {
     getUniverseList,
+    getUniverseFranchiseList,
     getUniverseCount,
     addNewUniverse
 };

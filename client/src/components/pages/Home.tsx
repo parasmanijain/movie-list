@@ -322,7 +322,8 @@ export const Home = (props:HomeProps) => {
         <Box sx={{ margin: '0px ', boxSizing: 'border-box',
           display: 'flex', justifyContent: 'center', alignItems: 'center', alignContent: 'flex-end'
         }}>
-          <Pagination count={count} color="primary" onChange={handleChange} page={page} showFirstButton showLastButton />
+          <Pagination count={count} color="primary" onChange={handleChange} page={page}
+            showFirstButton showLastButton />
         </Box>
       </React.Fragment> }
 
