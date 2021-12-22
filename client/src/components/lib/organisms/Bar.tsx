@@ -6,7 +6,8 @@ import {
   BarElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  SubTitle
 } from 'chart.js';
 
 ChartJS.register(
@@ -15,7 +16,8 @@ ChartJS.register(
     BarElement,
     Title,
     Tooltip,
-    Legend
+    Legend,
+    SubTitle
 );
 import { Bar as ChartJSBar } from 'react-chartjs-2';
 export const Bar = (props) => <ChartJSBar {...props}/>;
