@@ -1,5 +1,5 @@
 import { AddNewCountry, AddNewDirector, AddNewFranchise, AddNewGenre, AddNewLanguage, AddNewMovie, AddNewUniverse, Director,
-  Franchise, Genre, Home, Language, TopRatedMovies, Year, Universe, AddNewAward, AddNewCategory, Award } from '../pages';
+  Franchise, Genre, Home, Language, TopRatedMovies, Year, Universe, AddNewAward, AddNewCategory, Category, Award } from '../pages';
 
 export const routes = [
   {
@@ -42,6 +42,12 @@ export const routes = [
     'label': 'Universe',
     'production': true,
     'component': Universe
+  },
+  {
+    'path': '/category',
+    'label': 'Category',
+    'production': true,
+    'component': Category
   },
   {
     'path': '/award',

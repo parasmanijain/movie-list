@@ -13,7 +13,7 @@ const createChunks = (array, chunk) => {
 };
 
 export const ChartContainer = (props:any) => {
-  const { title, fullHeight, apiData } = props;
+  const { title, fullHeight, apiData, stacked } = props;
   const [chartData, setChartData] = useState([]);
   const [width, height] = useWindowDimensions();
   const chunkSize = width>= 1536 ? 50 : width>= 1200 ? 40 : width>= 900 ? 30 : width>=600 ? 20 : 10;
@@ -68,7 +68,7 @@ export const ChartContainer = (props:any) => {
           ] };
         chartDetails = [...chartDetails, obj];
       });
-    } else if (apiData.length && title.toLowerCase().includes('awards')) {
+    } else if (apiData.length && title.toLowerCase().includes('categories')) {
       let data = [];
       let labels = [];
       apiData.forEach((element)=> {
@@ -79,7 +79,7 @@ export const ChartContainer = (props:any) => {
           data.push(e.length);
         });
         const obj = {
-          subtitle: element.name,
+          title: element.name,
           width: width-50,
           labels,
           datasets: [
@@ -128,7 +128,9 @@ export const ChartContainer = (props:any) => {
   return (
     <Box>
       {[...chartData].length && [...chartData].map((data, index) =>
-        <RenderChart key = {index} title = {title} width = {data.width} data = {data} subtitle = {data.subtitle}index = {index}
+        <RenderChart
+          key = {index} title = {data.title? data.title : title} width = {data.width} data = {data}
+          subtitle = {data.title? title: data.title}index = {index} stacked={stacked}
           canvasHeight = {(!fullHeight ? chartData.length> 1 ? height>500? height/2: height : height: height/2)-50}/>)}
     </Box>
   );
