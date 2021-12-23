@@ -311,6 +311,28 @@ const getYearCount = (req, res) => {
     )
 }
 
+const getMovieAwards = (req,res) => {
+    Movie.aggregate(
+        [
+           { "$match": {"category": {"$ne": null}} },
+           
+            {
+                "$project": {
+                    "name": 1,
+                    "year": 1,
+                    "length": { "$size": "$category" }
+                }
+            },
+            { "$sort": { "name": 1 } },
+
+        ],
+        function (err, results) {
+            if (err) return res.send(500, { error: err });
+            return res.send(results);
+        }
+    )
+}
+
 // Movie.find({"franchise":{ $type: 7 }}).exec(function(err,results) {
 //     results.forEach( function(x) {
 //         Movie.updateOne({"_id": x._id}, {"$set": {"franchise": [ x.director ] }}).exec(function (err, res) {
@@ -338,6 +360,7 @@ module.exports = {
     getMovieList,
     getMovieDetails,
     getTopMovie,
+    getMovieAwards,
     addNewMovie,
     updateExistingMovie,
     getTopYear,

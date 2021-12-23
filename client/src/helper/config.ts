@@ -21,6 +21,7 @@ export const GET_CATEGORIES_URL = '/categories';
 export const GET_AWARDS_URL = '/awards';
 export const GET_AWARD_CATEGORIES_URL = '/awardCategories';
 export const GET_MOVIE_DETAILS_URL = '/movieDetails';
+export const GET_MOVIE_AWARDS_URL = '/movieAwards';
 
 export const GET_DIRECTORS_COUNT_URL = '/directorsCount';
 export const GET_LANGUAGES_COUNT_URL = '/languagesCount';

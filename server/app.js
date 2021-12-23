@@ -45,6 +45,7 @@ app.post('/director', director_controller.addNewDirector);
 app.get('/movies', movie_controller.getMovieList);
 app.get('/movieDetails', movie_controller.getMovieDetails);
 app.get('/topMovie', movie_controller.getTopMovie);
+app.get('/movieAwards', movie_controller.getMovieAwards);
 app.post('/movie',movie_controller.addNewMovie);
 app.post('/updateMovie', movie_controller.updateExistingMovie);
 app.get('/topYear', movie_controller.getTopYear);

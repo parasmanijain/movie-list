@@ -98,7 +98,8 @@ export const ChartContainer = (props:any) => {
         const data = [];
         const labels = [];
         e.forEach((e1)=> {
-          labels.push(e1.name);
+          const label = e1.name + (title.toLowerCase().includes('movies') ? ' (' + e1.year + ')' : '');
+          labels.push(label);
           data.push(e1.length);
         });
         const obj = {
@@ -106,7 +107,7 @@ export const ChartContainer = (props:any) => {
           width: width-50,
           datasets: [
             {
-              label: 'Movies',
+              label: title.toLowerCase().includes('movies') ? 'Awards' : 'Movies',
               backgroundColor: chartColors,
               hoverBackgroundColor: chartColors,
               data: data
