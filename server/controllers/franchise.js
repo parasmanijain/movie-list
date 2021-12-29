@@ -1,11 +1,24 @@
 const { Franchise, Universe } = require('../models/schemaModel');
 
-const getFranchiseList =  (req, res) => {
-    // get data from the view and add it to mongodb
-    Franchise.find({"universe": { "$exists": false }}, null, { sort: { name: 1 } }).populate('movies').populate('universe').exec(function (err, results) {
-        if (err) return res.send(500, { error: err });
-        return res.send(results);
-    });
+const getFranchiseList = (req, res) => {
+    Franchise.aggregate(
+        [
+            {
+                "$match": {
+                    "universe": { "$exists": false }
+                }
+            },
+            {
+                "$project": {
+                    "name": 1
+                }
+            },
+            { "$sort": { "name": 1 } }
+        ],
+        function (err, results) {
+            if (err) return res.send(500, { error: err });
+            return res.send(results);
+        })
 };
 
 const getTopFranchise = (req, res) => {
@@ -78,7 +91,7 @@ const addNewFranchise = async (req, res) => {
                 .then(bulkWriteOpResult => console.log('Universe BULK update OK:', bulkWriteOpResult))
                 .catch(console.error.bind(console, 'Universe BULK update error:'));
         }
-        return res.status(200).json({"message": 'Records updated succesfully'});
+        return res.status(200).json({ "message": 'Records updated succesfully' });
     }
 
     catch (err) {

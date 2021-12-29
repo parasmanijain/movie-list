@@ -1,11 +1,19 @@
 const { Language } = require('../models/schemaModel');
 
 const getLanguageList = (req, res) => {
-    // get data from the view and add it to mongodb
-    Language.find({}, null, { sort: { name: 1 } }).populate('movies').exec(function (err, results) {
-        if (err) return res.send(500, { error: err });
-        return res.send(results);
-    });
+    Language.aggregate(
+        [
+            {
+                "$project": {
+                    "name": 1
+                }
+            },
+            { "$sort": { "name": 1 } }
+        ],
+        function (err, results) {
+            if (err) return res.send(500, { error: err });
+            return res.send(results);
+        })
 };
 
 const getTopLanguage = (req, res) => {

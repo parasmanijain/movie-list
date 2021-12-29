@@ -1,11 +1,19 @@
 const { Director } = require('../models/schemaModel');
 
 const getDirectorList =  (req, res) => {
-    // get data from the view and add it to mongodb
-    Director.find({}, null, { sort: { name: 1 } }).populate('country movies').exec(function (err, results) {
-        if (err) return res.send(500, { error: err });
-        return res.send(results);
-    });
+    Director.aggregate(
+        [
+            {
+                "$project": {
+                    "name": 1
+                }
+            },
+            { "$sort": { "name": 1 } }
+        ],
+        function (err, results) {
+            if (err) return res.send(500, { error: err });
+            return res.send(results);
+        })
 };
 
 const getTopDirector = (req, res) => {

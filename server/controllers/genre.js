@@ -1,11 +1,19 @@
 const { Genre } = require('../models/schemaModel');
 
 const getGenreList = (req, res) => {
-    // get data from the view and add it to mongodb
-    Genre.find({}, null, { sort: { name: 1 } }).populate('movies').exec(function (err, results) {
-        if (err) return res.send(500, { error: err });
-        return res.send(results);
-    });
+    Genre.aggregate(
+        [
+            {
+                "$project": {
+                    "name": 1
+                }
+            },
+            { "$sort": { "name": 1 } }
+        ],
+        function (err, results) {
+            if (err) return res.send(500, { error: err });
+            return res.send(results);
+        })
 };
 
 const getTopGenre =  (req, res) => {

@@ -1,22 +1,58 @@
 const { Award } = require('../models/schemaModel');
 
 const getAwardList =  (req, res) => {
-    // get data from the view and add it to mongodb
-    Award.find({}, null, { sort: { name: 1 } })
-    .exec(function (err, results) {
-        if (err) return res.send(500, { error: err });
-        return res.send(results);
-    });
+    Award.aggregate(
+        [
+            {
+                "$project": {
+                    "name": 1
+                }
+            },
+            { "$sort": { "name": 1 } }
+        ],
+        function (err, results) {
+            if (err) return res.send(500, { error: err });
+            return res.send(results);
+        })
 };
 
 const getAwardCategoryList =  (req, res) => {
-    // get data from the view and add it to mongodb
-    Award.find({}, null, { sort: { name: 1 } })
-    .populate({path: 'categories', options: { sort: { 'name': 1 } } })
-    .exec(function (err, results) {
-        if (err) return res.send(500, { error: err });
-        return res.send(results);
-    });
+    Award.aggregate(
+        [
+            {
+                "$lookup": {
+                    "from": 'categories',
+                    "let": { "categories": "$categories" },
+                    "as": 'categories',
+                    "pipeline": [
+                        {
+                            "$match": { "$expr": { "$in": ["$_id", "$$categories"] } }
+
+                        },
+                        { "$sort": { "name": 1 } }
+                    ]
+                }
+            }, {
+                "$project": {
+                    "name": 1,
+                    "categories": {
+                        "$map": {
+                            "input": "$categories",
+                            "as": "c",
+                            "in": {
+                                "name": "$$c.name",
+                                "_id": "$$c._id"
+                            }
+                        }
+                    }
+                }
+            },
+            { "$sort": { "name": 1 } }
+        ],
+        function (err, results) {
+            if (err) return res.send(500, { error: err });
+            return res.send(results);
+        })
 };
 
 const getAwardCount = (req, res) => {

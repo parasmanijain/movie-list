@@ -3,7 +3,7 @@ import { useFormik } from 'formik';
 import * as _ from 'lodash';
 import axiosConfig from '../../helper/axiosConfig';
 import {
-  ADD_NEW_MOVIE_URL, currentYear, GET_AWARD_CATEGORIES_URL, GET_CATEGORIES_URL, GET_DIRECTORS_URL, GET_FRANCHISES_URL,
+  ADD_NEW_MOVIE_URL, currentYear, GET_AWARD_CATEGORIES_URL, GET_DIRECTORS_URL, GET_FRANCHISES_URL,
   GET_GENRES_URL, GET_LANGUAGES_URL, GET_MOVIE_DETAILS_URL, GET_UNIVERSE_FRANCHISES_URL, MenuProps, UPDATE_EXISTING_MOVIE_URL
 } from '../../helper/config';
 import { LocalizationProvider, DatePicker } from '@mui/lab';
@@ -45,18 +45,16 @@ export const AddNewMovie = (props: AddMovieAttributes) => {
     const genres = axiosConfig.get(`${GET_GENRES_URL}`);
     const franchises = axiosConfig.get(`${GET_FRANCHISES_URL}`);
     const universes = axiosConfig.get(`${GET_UNIVERSE_FRANCHISES_URL}`);
-    const categories = axiosConfig.get(`${GET_CATEGORIES_URL}`);
     const awards = axiosConfig.get(`${GET_AWARD_CATEGORIES_URL}`);
-    Promise.all([languages, directors, genres, universes, franchises, awards, categories]).then((responses) => {
+    Promise.all([languages, directors, genres, universes, franchises, awards]).then((responses) => {
       setLanguageData(responses[0].data);
       setDirectorData(responses[1].data);
       setGenreData(responses[2].data);
       const franchiseList = [...responses[3].data, ...responses[4].data];
-      const categoryList = [...responses[5].data, ...responses[6].data];
       setFranchiseData(franchiseList);
-      setCategoryData(categoryList);
+      setCategoryData(responses[5].data);
       if (selectedMovie) {
-        fetchSelectedMovieDetails(franchiseList, categoryList);
+        fetchSelectedMovieDetails(franchiseList, responses[5].data);
       }
     }).catch((errors) => {
       console.log(errors);
