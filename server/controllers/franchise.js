@@ -73,17 +73,12 @@ const addNewFranchise = async (req, res) => {
                     useFindAndModify: false
                 }
             }];
-            let [someResult, anotherResult] = await Promise.all(Universe.bulkWrite(bulkUniverseOps)
+
+            let operation = await Universe.bulkWrite(bulkUniverseOps)
                 .then(bulkWriteOpResult => console.log('Universe BULK update OK:', bulkWriteOpResult))
-                .catch(console.error.bind(console, 'Universe BULK update error:'))
-            )
-
-            return res.status(200).json({ someResult, anotherResult });
-        } else {
-            return res.send(200, "Franchise Successfully Added");
+                .catch(console.error.bind(console, 'Universe BULK update error:'));
         }
-
-
+        return res.status(200).json({"message": 'Records updated succesfully'});
     }
 
     catch (err) {

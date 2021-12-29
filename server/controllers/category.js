@@ -1,8 +1,8 @@
 const { Category, Award } = require('../models/schemaModel');
 
-const getCategoryList =  (req, res) => {
+const getCategoryList = (req, res) => {
     // get data from the view and add it to mongodb
-    Category.find({"award": { "$exists": false }}, null, { sort: { name: 1 } }).populate('movies').populate('award').exec(function (err, results) {
+    Category.find({ "award": { "$exists": false } }, null, { sort: { name: 1 } }).populate('movies').populate('award').exec(function (err, results) {
         if (err) return res.send(500, { error: err });
         return res.send(results);
     });
@@ -73,12 +73,10 @@ const addNewCategory = async (req, res) => {
                     useFindAndModify: false
                 }
             }];
-            let [someResult, anotherResult] = await Promise.all(Award.bulkWrite(bulkAwardOps)
+            let operation = await Award.bulkWrite(bulkAwardOps)
                 .then(bulkWriteOpResult => console.log('Award BULK update OK:', bulkWriteOpResult))
                 .catch(console.error.bind(console, 'Award BULK update error:'))
-            )
-
-            return res.status(200).json({ someResult, anotherResult });
+            return res.status(200).json({ "message": "Record updated successfully" });
         } else {
             return res.send(200, "Category Successfully Added");
         }

@@ -111,16 +111,15 @@ const addNewMovie = async (req, res) => {
             }
         }));
         let operations = {};
-        const directorOption = Director.bulkWrite(bulkDirectorOps)
+        const directorOption = await Director.bulkWrite(bulkDirectorOps)
             .then(bulkWriteOpResult => console.log('Director BULK update OK:', bulkWriteOpResult))
             .catch(console.error.bind(console, 'Director BULK update error:'));
-        const languageOperation = Language.bulkWrite(bulkLanguageOps)
+        const languageOperation = await Language.bulkWrite(bulkLanguageOps)
             .then(bulkWriteOpResult => console.log('Language BULK update OK:', bulkWriteOpResult))
             .catch(console.error.bind(console, 'Language BULK update error:'));
-        const genreOperation = Genre.bulkWrite(bulkGenreOps)
+        const genreOperation = await Genre.bulkWrite(bulkGenreOps)
             .then(bulkWriteOpResult => console.log('Genre BULK update OK:', bulkWriteOpResult))
             .catch(console.error.bind(console, 'Genre BULK update error:'));
-        operations = { ...directorOption, ...languageOperation, ...genreOperation };
         if (newMovie.franchise) {
             const bulkFranchiseOps = [{
                 updateOne: {
@@ -130,10 +129,9 @@ const addNewMovie = async (req, res) => {
                     useFindAndModify: false
                 }
             }];
-            const franchiseOperation = Franchise.bulkWrite(bulkFranchiseOps)
+            const franchiseOperation = await Franchise.bulkWrite(bulkFranchiseOps)
                 .then(bulkWriteOpResult => console.log('Franchise BULK update OK:', bulkWriteOpResult))
                 .catch(console.error.bind(console, 'Franchise BULK update error:'));
-            operations = { ...operations, franchiseOperation };
         }
         if (newMovie.category) {
             const bulkCategoryOps = newMovie.category.map(doc => ({
@@ -144,14 +142,11 @@ const addNewMovie = async (req, res) => {
                     useFindAndModify: false
                 }
             }));
-            const categoryOperation = Category.bulkWrite(bulkCategoryOps)
+            const categoryOperation = await Category.bulkWrite(bulkCategoryOps)
                 .then(bulkWriteOpResult => console.log('Category BULK update OK:', bulkWriteOpResult))
                 .catch(console.error.bind(console, 'Category BULK update error:'));
-            operations = { ...operations, categoryOperation };
         }
-        let [someResult, anotherResult] = await Promise.all(operations
-        )
-        return res.status(200).json({ someResult, anotherResult });
+        return res.status(200).json({"message": 'Records updated succesfully'});
     } catch (err) {
         return res.status(400).json(err);
     }
@@ -174,7 +169,6 @@ const updateExistingMovie = async (req, res) => {
     try {
         const existingMovieUpdated = await Movie.findByIdAndUpdate(id, req.body, { new: true });
         if (!existingMovieUpdated) throw err;
-        let operations = {};
             if(language) {
                 let languageOperations = [];
                 const languageAddOperations = language.added.map(doc => ({
@@ -193,10 +187,9 @@ const updateExistingMovie = async (req, res) => {
                     }
                 }));
                 languageOperations = [...languageAddOperations, ...languageRemoveOperations];
-            const languageOperation = Language.bulkWrite(languageOperations)
+            const languageOperation = await Language.bulkWrite(languageOperations)
             .then(bulkWriteOpResult => console.log('Language BULK update OK:', bulkWriteOpResult))
             .catch(console.error.bind(console, 'Language BULK update error:'));
-                operations = {...operations, ...languageOperation}
             }
             if(director) {
                 let directorOperations = [];
@@ -216,10 +209,9 @@ const updateExistingMovie = async (req, res) => {
                     }
                 }));
                 directorOperations = [...directorAddOperations, ...directorRemoveOperations];
-                const directorOperation = Director.bulkWrite(directorOperations)
+                const directorOperation = await Director.bulkWrite(directorOperations)
                 .then(bulkWriteOpResult => console.log('Director BULK update OK:', bulkWriteOpResult))
                 .catch(console.error.bind(console, 'Director BULK update error:'));
-                operations = {...operations, ...directorOperation}
             }
             if(genre) {
                 let genreOperations = [];
@@ -239,10 +231,9 @@ const updateExistingMovie = async (req, res) => {
                     }
                 }));
                 genreOperations = [...genreAddOperations, ...genreRemoveOperations];
-                const genreOperation = Genre.bulkWrite(genreOperations)
+                const genreOperation = await Genre.bulkWrite(genreOperations)
                 .then(bulkWriteOpResult => console.log('Genre BULK update OK:', bulkWriteOpResult))
                 .catch(console.error.bind(console, 'Genre BULK update error:'));
-                operations = {...operations, ...genreOperation}
             }
             if(franchise) {
                 let franchiseOperations = [];
@@ -262,14 +253,11 @@ const updateExistingMovie = async (req, res) => {
                     }
                 }];
                 franchiseOperations = [...franchiseAddOperations, ...franchiseRemoveOperations];
-                const franchiseOperation = Franchise.bulkWrite(franchiseOperations)
+                const franchiseOperation = await Franchise.bulkWrite(franchiseOperations)
                 .then(bulkWriteOpResult => console.log('Franchise BULK update OK:', bulkWriteOpResult))
                 .catch(console.error.bind(console, 'Franchise BULK update error:'));
-                operations = {...operations, ...franchiseOperation}
             }
-        let [someResult, anotherResult] = await Promise.all(operations
-        )
-        return res.status(200).json({ someResult, anotherResult });
+            return res.status(200).json({"message": 'Records updated succesfully'});
     } catch (err) {
         return res.status(400).json(err);
     }
