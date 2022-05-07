@@ -130,8 +130,8 @@ export const ChartContainer = (props:any) => {
     <Box>
       {[...chartData].length && [...chartData].map((data, index) =>
         <RenderChart
-          key = {index} title = {data.title? data.title : title} width = {data.width} data = {data}
-          subtitle = {data.title? title: data.title}index = {index} stacked={stacked}
+          key = {index} title = {title.toLowerCase().includes('universes')? data.subtitle : title} width = {data.width} data = {data}
+          index = {index} stacked={stacked}
           canvasHeight = {(!fullHeight ? chartData.length> 1 ? height>500? height/2: height : height: height/2)-50}/>)}
     </Box>
   );
