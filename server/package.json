@@ -7,7 +7,8 @@
     "start": "nodemon ./app",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky install",
-    "lint": "eslint --fix"
+    "prettier": "prettier '**/*.{js,jsx,ts,tsx}' --write",
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx src --color"
   },
   "author": "",
   "license": "ISC",
@@ -23,7 +24,7 @@
     "eslint-plugin-prettier": "^4.0.0",
     "husky": "^4.3.8",
     "lint-staged": "^12.4.2",
-    "nodemon": "^2.0.15",
+    "nodemon": "^2.0.16",
     "prettier": "^2.6.2"
   },
   "eslintConfig": {
@@ -37,11 +38,13 @@
     }
   },
   "lint-staged": {
-    "*.+(js|jsx)": [
-      "eslint --fix"
+    "src/**/*.{ts,tsx,js,jsx}": [
+      "eslint --fix",
+      "git add"
     ],
     "*.+(json|css|md)": [
-      "prettier --write"
+      "prettier --write",
+      "git add"
     ]
   },
   "prettier": {
