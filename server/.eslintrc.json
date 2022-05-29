@@ -1,0 +1,29 @@
+{
+  "env": {
+    "commonjs": true,
+    "es6": true,
+    "node": true,
+    "browser": true,
+    "jest": true
+  },
+  "extends": ["eslint:recommended", "plugin:react/recommended"],
+  "parserOptions": {
+    "sourceType": "module",
+    "ecmaVersion": 2020,
+    "ecmaFeatures": {
+      "jsx": true,
+      "experimentalObjectRestSpread": true
+    }
+  },
+  "plugins": ["import"],
+  "globals": {
+    "localStorage": true
+  },
+  "rules": {
+    "no-control-regex": 0,
+    "no-unused-vars": "warn",
+    "no-console": "warn",
+    "no-eval": "error",
+    "import/first": "error"
+  }
+}
