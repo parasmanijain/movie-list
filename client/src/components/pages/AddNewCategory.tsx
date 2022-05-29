@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import axiosConfig from '../../helper/axiosConfig';
 import { ADD_NEW_CATEGORY_URL, GET_AWARDS_URL, MenuProps } from '../../helper/config';
@@ -20,11 +20,10 @@ export const AddNewCategory = () => {
         award: formik.values.award ? formik.values.award : null,
         movies: []
       })
-          .then(function(response) {
+          .then(function() {
             resetForm();
           })
-          .catch(function(response) {
-            console.log(response);
+          .catch(function() {
           });
     }
   });

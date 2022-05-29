@@ -1,4 +1,3 @@
-import React from 'react';
 import { useFormik } from 'formik';
 import axiosConfig from '../../helper/axiosConfig';
 import { ADD_NEW_AWARD_URL } from '../../helper/config';
@@ -16,11 +15,10 @@ export const AddNewAward = () => {
         name: formik.values.name,
         categories: []
       })
-          .then(function(response) {
+          .then(function() {
             resetForm();
           })
-          .catch(function(response) {
-            console.log(response);
+          .catch(function() {
           });
     }
   });
