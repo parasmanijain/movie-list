@@ -91,7 +91,7 @@ export const ChartContainer = (props:any) => {
           ] };
         chartDetails = [...chartDetails, obj];
       });
-    } else if (apiData.length && title.toLowerCase().includes('movies')) {
+    } else if (apiData.length && title.toLowerCase().includes('director movies')) {
       const sets = createChunks(apiData, apiData.length> chunkSize ? Math.min(Math.ceil((apiData.length)/2), chunkSize): apiData.length);
     
       sets.forEach((e)=> {
