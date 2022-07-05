@@ -18,7 +18,6 @@ export const ChartContainer = (props:any) => {
   const [width, height] = useWindowDimensions();
   const chunkSize = width>= 1536 ? 50 : width>= 1200 ? 40 : width>= 900 ? 30 : width>=600 ? 20 : 10;
 
-
   const fetchData = () => {
     let chartDetails = [];
     if (apiData.length && title.toLowerCase().includes('universes')) {
@@ -92,6 +91,31 @@ export const ChartContainer = (props:any) => {
           ] };
         chartDetails = [...chartDetails, obj];
       });
+    } else if (apiData.length && title.toLowerCase().includes('movies')) {
+      const sets = createChunks(apiData, apiData.length> chunkSize ? Math.min(Math.ceil((apiData.length)/2), chunkSize): apiData.length);
+    
+      sets.forEach((e)=> {
+        const data = [];
+        const labels = [];
+        e.forEach((el)=> {
+          labels.push(el.movie_count);
+          data.push(el.director_count)
+        })
+        
+        const obj = {
+          labels,
+          width: width-50,
+          datasets: [
+            {
+              label: "No of Directors",
+              backgroundColor: chartColors,
+              hoverBackgroundColor: chartColors,
+              data: data
+            }
+          ]
+        };
+        chartDetails = [...chartDetails, obj];
+      });
     } else {
       const sets = createChunks(apiData, apiData.length> chunkSize ? Math.min(Math.ceil((apiData.length)/2), chunkSize): apiData.length);
       sets.forEach((e)=> {
@@ -132,7 +156,7 @@ export const ChartContainer = (props:any) => {
         <RenderChart
           key = {index} title = {title.toLowerCase().includes('universes')? data.subtitle : title} width = {data.width} data = {data}
           index = {index} stacked={stacked}
-          canvasHeight = {(!fullHeight ? chartData.length> 1 ? height>500? height/2: height : height: height/2)-50}/>)}
+          canvasHeight = {(!fullHeight ? (chartData.length> 1 ? (height>500? height/2: height) : height): height/2)-50}/>)}
     </Box>
   );
 };

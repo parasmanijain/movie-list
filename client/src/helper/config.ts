@@ -24,6 +24,7 @@ export const GET_MOVIE_DETAILS_URL = '/movieDetails';
 export const GET_MOVIE_AWARDS_URL = '/movieAwards';
 
 export const GET_DIRECTORS_COUNT_URL = '/directorsCount';
+export const GET_MOVIES_COUNT_URL = '/moviesCount';
 export const GET_LANGUAGES_COUNT_URL = '/languagesCount';
 export const GET_GENRES_COUNT_URL = '/genresCount';
 export const GET_FRANCHISES_COUNT_URL = '/franchisesCount';

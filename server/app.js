@@ -4,7 +4,7 @@ const app = express();
 const cors = require('cors');
 
 app.use(cors());
-app.use(express.json())
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const country_controller = require('./controllers/country');
@@ -44,16 +44,16 @@ app.get('/directors', director_controller.getDirectorList);
 app.get('/topDirector', director_controller.getTopDirector);
 app.get('/directorsCount', director_controller.getDirectorCount);
 app.post('/director', director_controller.addNewDirector);
+app.get('/moviesCount', director_controller.getMovieCount);
 
 app.get('/movies', movie_controller.getMovieList);
 app.get('/movieDetails', movie_controller.getMovieDetails);
 app.get('/topMovie', movie_controller.getTopMovie);
 app.get('/movieAwards', movie_controller.getMovieAwards);
-app.post('/movie',movie_controller.addNewMovie);
+app.post('/movie', movie_controller.addNewMovie);
 app.post('/updateMovie', movie_controller.updateExistingMovie);
 app.get('/topYear', movie_controller.getTopYear);
 app.get('/yearsCount', movie_controller.getYearCount);
-
 
 app.get('/categories', category_controller.getCategoryList);
 app.get('/topCategory', category_controller.getTopCategory);
@@ -66,17 +66,20 @@ app.get('/awardsCount', award_controller.getAwardCount);
 app.post('/award', award_controller.addNewAward);
 
 function setupCORS(req, res, next) {
-    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'X-Requested-With, Content-type,Accept,X-Access-Token,X-Key');
-    res.header('Access-Control-Allow-Origin', '*');
-    if (req.method === 'OPTIONS') {
-        res.status(200).end();
-    } else {
-        next();
-    }
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+  res.header(
+    'Access-Control-Allow-Headers',
+    'X-Requested-With, Content-type,Accept,X-Access-Token,X-Key'
+  );
+  res.header('Access-Control-Allow-Origin', '*');
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+  } else {
+    next();
+  }
 }
 
 app.all('/*', setupCORS);
 app.listen(process.env.API_PORT, () => {
-    console.log(`Server has started at ${process.env.API_PORT}`)
+  console.log(`Server has started at ${process.env.API_PORT}`);
 });

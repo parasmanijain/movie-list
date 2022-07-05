@@ -1,5 +1,6 @@
 import { AddNewCountry, AddNewDirector, AddNewFranchise, AddNewGenre, AddNewLanguage, AddNewMovie, AddNewUniverse, Director,
   Franchise, Genre, Home, Language, TopRatedMovies, Year, Universe, AddNewAward, AddNewCategory, Category, Award } from '../pages';
+import DirectorMovies from '../pages/DirectorMovies';
 
 export const routes = [
   {
@@ -18,6 +19,12 @@ export const routes = [
     'label': 'Director',
     'production': true,
     'component': Director
+  },
+  {
+    'path': '/directorMovies',
+    'label': 'Movies',
+    'production': true,
+    'component': DirectorMovies
   },
   {
     'path': '/genre',
