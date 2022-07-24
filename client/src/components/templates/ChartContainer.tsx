@@ -175,7 +175,7 @@ export const ChartContainer = (props: any) => {
             key={index}
             title={title.toLowerCase().includes('universes') ? data.subtitle : title}
             width={data.width}
-            subtitle = {title.toLowerCase().includes('categories') ? data.subtitle : null}
+            subtitle = {title.toLowerCase().includes('categories') ? data.subtitle : ""}
             data={data}
             index={index}
             stacked={stacked}
