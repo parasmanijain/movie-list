@@ -6,15 +6,12 @@ import {
   ADD_NEW_MOVIE_URL, currentYear, GET_AWARD_CATEGORIES_URL, GET_DIRECTORS_URL, GET_FRANCHISES_URL,
   GET_GENRES_URL, GET_LANGUAGES_URL, GET_MOVIE_DETAILS_URL, GET_UNIVERSE_FRANCHISES_URL, MenuProps, UPDATE_EXISTING_MOVIE_URL
 } from '../../helper/config';
-import { LocalizationProvider, DatePicker } from '@mui/lab';
-import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import { movieValidationSchema as validationSchema } from '../../helper/validationScehmas';
 import { Box, Button, TextField, Select, CheckBox, FormControl, InputLabel, MenuItem, ListItemText,
   Divider, OutlinedInput, ListSubheader, FormHelperText } from '../lib';
-
-interface AddMovieAttributes {
-  selectedMovie?: string;
-}
 
 const initialValues = {
   name: '',
@@ -29,7 +26,7 @@ const initialValues = {
   category: []
 };
 
-export const AddNewMovie = (props: AddMovieAttributes) => {
+export const AddNewMovie = (props: { selectedMovie?: string}) => {
   const { selectedMovie } = props;
   const [languageData, setLanguageData] = useState([]);
   const [genreData, setGenreData] = useState([]);
@@ -402,7 +399,7 @@ export const AddNewMovie = (props: AddMovieAttributes) => {
         </FormControl>
         <FormControl sx={{ m: 2, width: 300 }}>
           <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <DatePicker
+          <DesktopDatePicker
               label="Year"
               value={formik.values.year}
               views={['year']}
