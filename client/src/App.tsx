@@ -3,16 +3,12 @@ import {
   BrowserRouter,
   Routes,
   Route,
-  Link, RouteProps
+  Link
 } from 'react-router-dom';
 import './App.css';
 import { AppBar, Box, Tab, Tabs } from './components/lib';
 import { ProtectedRoute, routes } from './components';
 
-interface PublicRouteProps extends RouteProps {
-  component: any;
-  path:any;
-}
 
 const currentTab = () => {
   if (process.env.NODE_ENV === 'production') {
@@ -35,7 +31,7 @@ export const App = () => {
     setSelectedMovie(movie);
   };
 
-  const renderRoutes = (index, production, props:PublicRouteProps ) => {
+  const renderRoutes = (index, production, props ) => {
     // eslint-disable-next-line react/prop-types
     const { component: Component, path } = props;
     let componentProps = {};
@@ -77,7 +73,7 @@ export const App = () => {
       <Box sx={{ marginTop: '40px', padding: '8px', boxSizing: 'border-box', height: '100%', width: '100%' }}>
         <Routes>
           { routes.map((ele, index) => {
-            const routeProps:PublicRouteProps = {
+            const routeProps = {
               path: ele.path,
               component: ele.component
             };
