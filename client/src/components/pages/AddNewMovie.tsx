@@ -51,14 +51,14 @@ export const AddNewMovie = (props: { selectedMovie?: string}) => {
       setFranchiseData(franchiseList);
       setCategoryData(responses[5].data);
       if (selectedMovie) {
-        fetchSelectedMovieDetails(franchiseList, responses[5].data);
+        fetchSelectedMovieDetails(franchiseList);
       }
     }).catch((errors) => {
       console.log(errors);
     });
   };
 
-  const fetchSelectedMovieDetails = (franchiseList, categoryList) => {
+  const fetchSelectedMovieDetails = (franchiseList) => {
     const selectedMovieDetails = axiosConfig.get(`${GET_MOVIE_DETAILS_URL}`, { params: { movieID: selectedMovie } });
     Promise.all([selectedMovieDetails]).then((responses) => {
       if (responses[0].data) {
@@ -98,11 +98,6 @@ export const AddNewMovie = (props: { selectedMovie?: string}) => {
 
   useEffect(() => {
     fetchData();
-    if (selectedMovie) {
-
-    }
-    return () => {
-    };
   }, []);
 
   const formik = useFormik({
@@ -160,7 +155,7 @@ export const AddNewMovie = (props: { selectedMovie?: string}) => {
         };
       }
       axiosConfig.post(apiURL, request)
-          .then(function(response) {
+          .then(function() {
             resetForm();
           })
           .catch(function(response) {
