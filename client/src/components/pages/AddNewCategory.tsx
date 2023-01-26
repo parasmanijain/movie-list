@@ -3,8 +3,18 @@ import { useFormik } from 'formik';
 import axiosConfig from '../../helper/axiosConfig';
 import { ADD_NEW_CATEGORY_URL, GET_AWARDS_URL, MenuProps } from '../../helper/config';
 import { categoryValidationSchema as validationSchema } from '../../helper/validationScehmas';
-import { Box, Button, TextField, Select, InputLabel, ListItemText, FormControl, MenuItem,
-  OutlinedInput, FormHelperText } from '../lib';
+import {
+  Box,
+  Button,
+  TextField,
+  Select,
+  InputLabel,
+  ListItemText,
+  FormControl,
+  MenuItem,
+  OutlinedInput,
+  FormHelperText
+} from '../lib';
 
 export const AddNewCategory = () => {
   const [awardData, setAwardData] = useState([]);
@@ -15,27 +25,29 @@ export const AddNewCategory = () => {
     },
     validationSchema,
     onSubmit: (values, { resetForm }) => {
-      axiosConfig.post(`${ADD_NEW_CATEGORY_URL}`, {
-        name: formik.values.name,
-        award: formik.values.award ? formik.values.award : null,
-        movies: []
-      })
-          .then(function() {
-            resetForm();
-          })
-          .catch(function() {
-          });
+      axiosConfig
+        .post(`${ADD_NEW_CATEGORY_URL}`, {
+          name: formik.values.name,
+          award: formik.values.award ? formik.values.award : null,
+          movies: []
+        })
+        .then(() => {
+          resetForm();
+        })
+        .catch((errors) => {
+          console.log(errors);
+        });
     }
   });
   useEffect(() => {
-    axiosConfig.get(`${GET_AWARDS_URL}`, {
-    })
-        .then(function(response) {
-          setAwardData(response.data);
-        })
-        .catch(function(response) {
-          console.log(response);
-        });
+    axiosConfig
+      .get(`${GET_AWARDS_URL}`, {})
+      .then((response) => {
+        setAwardData(response.data);
+      })
+      .catch((errors) => {
+        console.log(errors);
+      });
     return () => {
       setAwardData([]);
     };
@@ -77,7 +89,6 @@ export const AddNewCategory = () => {
         <Button color="primary" variant="contained" type="submit">
           Submit
         </Button>
-
       </Box>
     </form>
   );

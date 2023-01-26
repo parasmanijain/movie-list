@@ -11,15 +11,17 @@ export const AddNewAward = () => {
     },
     validationSchema,
     onSubmit: (values, { resetForm }) => {
-      axiosConfig.post(`${ADD_NEW_AWARD_URL}`, {
-        name: formik.values.name,
-        categories: []
-      })
-          .then(function() {
-            resetForm();
-          })
-          .catch(function() {
-          });
+      axiosConfig
+        .post(`${ADD_NEW_AWARD_URL}`, {
+          name: formik.values.name,
+          categories: []
+        })
+        .then(() => {
+          resetForm();
+        })
+        .catch((errors) => {
+          console.log(errors);
+        });
     }
   });
   return (
@@ -39,7 +41,6 @@ export const AddNewAward = () => {
         <Button color="primary" variant="contained" type="submit">
           Submit
         </Button>
-
       </Box>
     </form>
   );

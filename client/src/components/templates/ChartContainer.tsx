@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useWindowDimensions } from '../../hooks/useWindowDimensions';
 import { chartColors } from '../../helper';
 import { RenderChart } from './RenderChart';
@@ -175,7 +175,7 @@ export const ChartContainer = (props: any) => {
             key={index}
             title={title.toLowerCase().includes('universes') ? data.subtitle : title}
             width={data.width}
-            subtitle = {title.toLowerCase().includes('categories') ? data.subtitle : ""}
+            subtitle={title.toLowerCase().includes('categories') ? data.subtitle : ''}
             data={data}
             index={index}
             stacked={stacked}

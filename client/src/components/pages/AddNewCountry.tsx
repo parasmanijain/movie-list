@@ -12,15 +12,16 @@ export const AddNewCountry = () => {
     },
     validationSchema,
     onSubmit: (values, { resetForm }) => {
-      axiosConfig.post(`${ADD_NEW_COUNTRY_URL}`, {
-        name: formik.values.name
-      })
-          .then(function(response) {
-            resetForm();
-          })
-          .catch(function(response) {
-            console.log(response);
-          });
+      axiosConfig
+        .post(`${ADD_NEW_COUNTRY_URL}`, {
+          name: formik.values.name
+        })
+        .then(() => {
+          resetForm();
+        })
+        .catch((errors) => {
+          console.log(errors);
+        });
     }
   });
   return (
@@ -40,7 +41,6 @@ export const AddNewCountry = () => {
         <Button color="primary" variant="contained" type="submit">
           Submit
         </Button>
-
       </Box>
     </form>
   );

@@ -1,10 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import axiosConfig from '../../helper/axiosConfig';
 import { ADD_NEW_FRANCHISE_URL, GET_UNIVERSES_URL, MenuProps } from '../../helper/config';
 import { franchiseValidationSchema as validationSchema } from '../../helper/validationScehmas';
-import { Box, Button, TextField, Select, InputLabel, ListItemText, FormControl, MenuItem,
-  OutlinedInput, FormHelperText } from '../lib';
+import {
+  Box,
+  Button,
+  TextField,
+  Select,
+  InputLabel,
+  ListItemText,
+  FormControl,
+  MenuItem,
+  OutlinedInput,
+  FormHelperText
+} from '../lib';
 
 export const AddNewFranchise = () => {
   const [universeData, setUniverseData] = useState([]);
@@ -15,28 +25,29 @@ export const AddNewFranchise = () => {
     },
     validationSchema,
     onSubmit: (values, { resetForm }) => {
-      axiosConfig.post(`${ADD_NEW_FRANCHISE_URL}`, {
-        name: formik.values.name,
-        universe: formik.values.universe ? formik.values.universe : null,
-        movies: []
-      })
-          .then(function(response) {
-            resetForm();
-          })
-          .catch(function(response) {
-            console.log(response);
-          });
+      axiosConfig
+        .post(`${ADD_NEW_FRANCHISE_URL}`, {
+          name: formik.values.name,
+          universe: formik.values.universe ? formik.values.universe : null,
+          movies: []
+        })
+        .then(() => {
+          resetForm();
+        })
+        .catch((errors) => {
+          console.log(errors);
+        });
     }
   });
   useEffect(() => {
-    axiosConfig.get(`${GET_UNIVERSES_URL}`, {
-    })
-        .then(function(response) {
-          setUniverseData(response.data);
-        })
-        .catch(function(response) {
-          console.log(response);
-        });
+    axiosConfig
+      .get(`${GET_UNIVERSES_URL}`, {})
+      .then((response) => {
+        setUniverseData(response.data);
+      })
+      .catch((errors) => {
+        console.log(errors);
+      });
     return () => {
       setUniverseData([]);
     };
@@ -78,7 +89,6 @@ export const AddNewFranchise = () => {
         <Button color="primary" variant="contained" type="submit">
           Submit
         </Button>
-
       </Box>
     </form>
   );

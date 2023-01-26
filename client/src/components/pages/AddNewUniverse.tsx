@@ -12,16 +12,17 @@ export const AddNewUniverse = () => {
     },
     validationSchema,
     onSubmit: (values, { resetForm }) => {
-      axiosConfig.post(`${ADD_NEW_UNIVERSE_URL}`, {
-        name: formik.values.name,
-        franchises: []
-      })
-          .then(function(response) {
-            resetForm();
-          })
-          .catch(function(response) {
-            console.log(response);
-          });
+      axiosConfig
+        .post(`${ADD_NEW_UNIVERSE_URL}`, {
+          name: formik.values.name,
+          franchises: []
+        })
+        .then(() => {
+          resetForm();
+        })
+        .catch((errors) => {
+          console.log(errors);
+        });
     }
   });
   return (
@@ -41,7 +42,6 @@ export const AddNewUniverse = () => {
         <Button color="primary" variant="contained" type="submit">
           Submit
         </Button>
-
       </Box>
     </form>
   );

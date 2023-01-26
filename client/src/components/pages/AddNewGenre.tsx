@@ -1,4 +1,3 @@
-import React from 'react';
 import { useFormik } from 'formik';
 import axiosConfig from '../../helper/axiosConfig';
 import { ADD_NEW_GENRE_URL } from '../../helper/config';
@@ -12,16 +11,17 @@ export const AddNewGenre = () => {
     },
     validationSchema,
     onSubmit: (values, { resetForm }) => {
-      axiosConfig.post(`${ADD_NEW_GENRE_URL}`, {
-        name: formik.values.name,
-        movies: []
-      })
-          .then(function(response) {
-            resetForm();
-          })
-          .catch(function(response) {
-            console.log(response);
-          });
+      axiosConfig
+        .post(`${ADD_NEW_GENRE_URL}`, {
+          name: formik.values.name,
+          movies: []
+        })
+        .then(() => {
+          resetForm();
+        })
+        .catch((errors) => {
+          console.log(errors);
+        });
     }
   });
   return (
@@ -41,7 +41,6 @@ export const AddNewGenre = () => {
         <Button color="primary" variant="contained" type="submit">
           Submit
         </Button>
-
       </Box>
     </form>
   );

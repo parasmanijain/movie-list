@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, Fragment } from 'react';
+import { styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
-import { makeStyles } from '@mui/styles';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import axiosConfig from '../../helper/axiosConfig';
@@ -25,22 +25,16 @@ import {
 } from '../lib';
 import { useWindowDimensions } from '../../hooks/useWindowDimensions';
 
-const summaryStyles = makeStyles({
-  root: {
-    minHeight: 80,
-    padding: '0px',
-    boxSizing: 'border-box'
-  },
-  content: {
-    margin: '0px'
-  }
-});
+const StyledAccordion = styled(Accordion)(() => ({
+  minHeight: 80,
+  padding: 0,
+  boxSizing: 'border-box'
+}));
 
 export const Home = (props: { handleMovieUpdateSelection: any }) => {
   const [width, height] = useWindowDimensions();
   const { handleMovieUpdateSelection } = props;
   let limit = 0;
-  const summaryClass = summaryStyles();
   const [page, setPage] = useState(1);
   const [count, setCount] = useState(1);
   const [total, setTotal] = useState(0);
@@ -135,12 +129,12 @@ export const Home = (props: { handleMovieUpdateSelection: any }) => {
 
   const otherMovies = (movies, name, arr) => {
     return arr.length > 1 ? (
-      <React.Fragment key={name}>
+      <Fragment key={name}>
         <Typography variant="button" display="block">
           {name}
         </Typography>
         {displayOtherMovies(movies)}
-      </React.Fragment>
+      </Fragment>
     ) : (
       displayOtherMovies(movies)
     );
@@ -153,16 +147,16 @@ export const Home = (props: { handleMovieUpdateSelection: any }) => {
 
   const otherMovieLinks = (otherMovie) => {
     return (
-      <Typography component="div" key={otherMovie._id}>
+      <Box key={otherMovie._id}>
         <Button href={otherMovie.url} target="_blank" rel="noreferrer" sx={{ padding: '4px 0px' }}>
           {otherMovie.name} ({otherMovie.year})
         </Button>
-      </Typography>
+      </Box>
     );
   };
 
   const directorURL = (url, name, id, index, length) => (
-    <React.Fragment key={id}>
+    <Fragment key={id}>
       <Button
         href={url}
         target="_blank"
@@ -173,7 +167,7 @@ export const Home = (props: { handleMovieUpdateSelection: any }) => {
         {name}
       </Button>
       {index !== length - 1 ? ' , ' : null}
-    </React.Fragment>
+    </Fragment>
   );
 
   const renderAwards = (category) => {
@@ -208,7 +202,7 @@ export const Home = (props: { handleMovieUpdateSelection: any }) => {
 
   const movieList = movieData?.map((movie) => (
     <Grid item xs={6} sm={4} md={3} lg={3} xl={3} key={movie._id} sx={{ padding: '0px' }}>
-      <Accordion
+      <StyledAccordion
         sx={{
           padding: '0px',
           backgroundColor: movie.franchise
@@ -217,7 +211,6 @@ export const Home = (props: { handleMovieUpdateSelection: any }) => {
               : '#c8e4fb'
             : '#ffffed'
         }}
-        classes={summaryClass}
       >
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
@@ -238,7 +231,7 @@ export const Home = (props: { handleMovieUpdateSelection: any }) => {
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Typography component="div" sx={{ padding: '0px' }}>
+          <Box sx={{ padding: '0px' }}>
             {movie.language.map((element, index, arr) => (
               <Typography
                 key={element._id}
@@ -250,11 +243,11 @@ export const Home = (props: { handleMovieUpdateSelection: any }) => {
               </Typography>
             ))}
 
-            <Typography component="div">
+            <Box>
               {movie.director.map((element, index, arr) =>
                 directorName(element, index, arr.length)
               )}
-            </Typography>
+            </Box>
             {movie.genre.map((element, index, arr) => (
               <Typography
                 key={element._id}
@@ -274,30 +267,30 @@ export const Home = (props: { handleMovieUpdateSelection: any }) => {
               {movie.rottenTomatoes ? movie.rottenTomatoes + '%' : 'Not Rated'}
             </Typography>
             {movie.franchise ? (
-              <React.Fragment>
-                <Typography component="div" sx={{ padding: '0px' }}>
+              <Fragment>
+                <Box sx={{ padding: '0px' }}>
                   <Typography component="span" sx={{ padding: '4px 0px' }}>
                     Franchise:
                   </Typography>
                   <Typography variant="button" display="span" sx={{ padding: '4px 0px' }}>
                     {movie.franchise.name}
                   </Typography>
-                </Typography>
+                </Box>
                 {movie.franchise.universe && (
-                  <Typography component="div" sx={{ padding: '0px' }}>
+                  <Box sx={{ padding: '0px' }}>
                     <Typography component="span" sx={{ padding: '4px 0px' }}>
                       Universe:
                       <Typography variant="button" display="span" sx={{ padding: '4px 0px' }}>
                         {movie.franchise.universe.name}
                       </Typography>
                     </Typography>
-                  </Typography>
+                  </Box>
                 )}
-              </React.Fragment>
+              </Fragment>
             ) : null}
             {movie.category.length ? renderAwards(movie.category) : null}
             {environment.toLowerCase() === 'development' && (
-              <Typography component="div">
+              <Box>
                 <Button
                   variant="text"
                   sx={{ padding: '4px 0px' }}
@@ -308,13 +301,13 @@ export const Home = (props: { handleMovieUpdateSelection: any }) => {
                 >
                   Edit Movie Details
                 </Button>
-              </Typography>
+              </Box>
             )}
-            <Typography component="div">
+            <Box>
               <Button href={movie.url} target="_blank" rel="noreferrer" sx={{ padding: '4px 0px' }}>
                 More Details
               </Button>
-            </Typography>
+            </Box>
             <Typography component="h6" sx={{ padding: '4px 0px' }}>
               Other Movies from Same Director:
             </Typography>
@@ -323,9 +316,9 @@ export const Home = (props: { handleMovieUpdateSelection: any }) => {
               const otherMovieList = movies.filter((otherMovie) => otherMovie._id !== movie._id);
               return otherMovies(otherMovieList, name, arr);
             })}
-          </Typography>
+          </Box>
         </AccordionDetails>
-      </Accordion>
+      </StyledAccordion>
     </Grid>
   ));
 
@@ -380,7 +373,7 @@ export const Home = (props: { handleMovieUpdateSelection: any }) => {
           <Progress />
         </Box>
       ) : (
-        <React.Fragment>
+        <Fragment>
           <Box
             sx={{
               display: 'flex',
@@ -424,7 +417,7 @@ export const Home = (props: { handleMovieUpdateSelection: any }) => {
               showLastButton
             />
           </Box>
-        </React.Fragment>
+        </Fragment>
       )}
     </Box>
   );
