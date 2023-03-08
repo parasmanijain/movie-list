@@ -1,6 +1,7 @@
-const { Director } = require('../models/schemaModel');
+import { Request, Response } from 'express';
+import { Director } from '../models/schemaModel';
 
-const getDirectorList = (req, res) => {
+export const getDirectorList = (req: Request, res: Response) => {
   Director.aggregate(
     [
       {
@@ -10,14 +11,14 @@ const getDirectorList = (req, res) => {
       },
       { $sort: { name: 1 } }
     ],
-    function (err, results) {
-      if (err) return res.send(500, { error: err });
+    function (err: any, results: any) {
+      if (err) return res.status(500).send({ error: err });
       return res.send(results);
     }
   );
 };
 
-const getTopDirector = (req, res) => {
+export const getTopDirector = (req: Request, res: Response) => {
   // get data from the view and add it to mongodb
   Director.aggregate(
     [
@@ -30,14 +31,14 @@ const getTopDirector = (req, res) => {
       { $sort: { length: -1 } },
       { $limit: 1 }
     ],
-    function (err, results) {
-      if (err) return res.send(500, { error: err });
+    function (err: any, results: any) {
+      if (err) return res.status(500).send({ error: err });
       return res.send(results);
     }
   );
 };
 
-const getDirectorCount = (req, res) => {
+export const getDirectorCount = (req: Request, res: Response) => {
   // get data from the view and add it to mongodb
   Director.aggregate(
     [
@@ -49,14 +50,14 @@ const getDirectorCount = (req, res) => {
       },
       { $sort: { name: 1 } }
     ],
-    function (err, results) {
-      if (err) return res.send(500, { error: err });
+    function (err: any, results: any) {
+      if (err) return res.status(500).send({ error: err });
       return res.send(results);
     }
   );
 };
 
-const getMovieCount = (req, res) => {
+export const getMovieCount = (req: Request, res: Response) => {
   Director.aggregate(
     [
       {
@@ -78,32 +79,18 @@ const getMovieCount = (req, res) => {
       },
       { $sort: { movie_count: 1 } }
     ],
-    function (err, results) {
-      if (err) return res.send(500, { error: err });
+    function (err: any, results: any) {
+      if (err) return res.status(500).send({ error: err });
       return res.send(results);
     }
   );
 };
 
-const addNewDirector = async (req, res) => {
+export const addNewDirector = async (req: Request, res: Response) => {
   try {
     const newDirector = await Director.create(req.body);
     return res.status(200).json(newDirector);
   } catch (err) {
     return res.status(400).json(err);
   }
-};
-
-// Director.updateOne({'_id':'618acee6c5f642268fc6c6fe'}, {"$pull": {movies: null}}).exec(function (err, results) {
-//     console.log(results);
-//     if (err) return err;
-//     return results;
-// });
-
-module.exports = {
-  getDirectorList,
-  getTopDirector,
-  getDirectorCount,
-  addNewDirector,
-  getMovieCount
 };
