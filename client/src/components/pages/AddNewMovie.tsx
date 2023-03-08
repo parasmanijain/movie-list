@@ -322,25 +322,6 @@ export const AddNewMovie = (props: { selectedMovie?: string }) => {
             error={formik.touched.director && Boolean(formik.errors.director)}
             helperText={formik.touched.director && formik.errors.director}
           >
-            {/* <Select
-            labelId="director-multiple-checkbox-label"
-            id="director-multiple-checkbox"
-            multiple
-            name="director"
-            value={formik.values.director}
-            onChange={formik.handleChange}
-            error={formik.touched.director && Boolean(formik.errors.director)}
-            isSearchable={true}
-
-            input={<OutlinedInput label="Director" />}
-            renderValue={(selected:string[]) => {
-              const selectedDirectors = (directorData.filter((director)=> selected.includes(director._id))).map((element)=> element.name);
-              return selectedDirectors.join(', ');
-            }
-            }
-            MenuProps={MenuProps}
-          > */}
-
             {[...directorData].map((director) => (
               <MenuItem key={director._id} value={director._id}>
                 <CheckBox checked={formik.values.director.indexOf(director._id) > -1} />
@@ -452,9 +433,6 @@ export const AddNewMovie = (props: { selectedMovie?: string }) => {
                   ...formik.values,
                   year: new Date(newValue).getFullYear().toString()
                 });
-              }}
-              renderInput={(params) => {
-                return <TextField {...params} />;
               }}
             />
           </LocalizationProvider>

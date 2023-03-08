@@ -1,8 +1,13 @@
 import { useState } from 'react';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { styled } from '@mui/material';
 import './App.css';
 import { AppBar, Box, Tab, Tabs } from './components/lib';
 import { ProtectedRoute, routes } from './components';
+
+const StyledTab = styled(Tab)(({ theme }) => ({
+  padding: '0px !important'
+}));
 
 const currentTab = () => {
   if (process.env.NODE_ENV === 'production') {
@@ -20,7 +25,7 @@ export const App = () => {
   const [value, setValue] = useState(currentTab());
 
   const renderTabs = (label, value, index) => (
-    <Tab key={index} value={value} label={label} component={Link} to={value} />
+    <StyledTab key={index} value={value} label={label} component={Link} to={value} />
   );
 
   const handleMovieUpdateSelection = (movie) => {
@@ -62,6 +67,7 @@ export const App = () => {
           scrollButtons="auto"
           onChange={handleChange}
           value={value}
+          sx={{ minHeight: '40px' }}
         >
           {routes.map((ele, index) =>
             environment.toLowerCase() !== 'development' && !ele.production
@@ -72,8 +78,8 @@ export const App = () => {
       </AppBar>
       <Box
         sx={{
-          marginTop: '40px',
-          padding: '8px',
+          position: 'absolute',
+          top: '40px',
           boxSizing: 'border-box',
           height: '100%',
           width: '100%'
