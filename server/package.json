@@ -3,7 +3,8 @@
   "version": "1.1.0",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon ./app",
+    "dev": "kill -9 $(lsof -t -i:4100) && node app.js",
+"start": "nodemon --exec npm run dev",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "[ -d '.husky' ] && (husky install && shx rm -rf .git/hooks && shx ln -s ../.husky .git/hooks) || true",
     "prettier": "prettier '**/*.{js,jsx,ts,tsx}' --write",

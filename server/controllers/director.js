@@ -1,26 +1,25 @@
 const { Director } = require('../models/schemaModel');
 
-const getDirectorList = (req, res) => {
-  Director.aggregate(
-    [
+const getDirectorList = async (req, res) => {
+  try {
+    const results = await Director.aggregate([
       {
         $project: {
           name: 1
         }
       },
       { $sort: { name: 1 } }
-    ],
-    function (err, results) {
-      if (err) return res.send(500, { error: err });
-      return res.send(results);
-    }
-  );
+    ]);
+    return res.send(results);
+  } catch (err) {
+    return res.send(500, { error: err });
+  }
 };
 
-const getTopDirector = (req, res) => {
+const getTopDirector = async (req, res) => {
   // get data from the view and add it to mongodb
-  Director.aggregate(
-    [
+  try {
+    const results = await Director.aggregate([
       {
         $project: {
           name: 1,
@@ -29,18 +28,17 @@ const getTopDirector = (req, res) => {
       },
       { $sort: { length: -1 } },
       { $limit: 1 }
-    ],
-    function (err, results) {
-      if (err) return res.send(500, { error: err });
-      return res.send(results);
-    }
-  );
+    ]);
+    return res.send(results);
+  } catch (err) {
+    return res.send(500, { error: err });
+  }
 };
 
-const getDirectorCount = (req, res) => {
+const getDirectorCount = async (req, res) => {
   // get data from the view and add it to mongodb
-  Director.aggregate(
-    [
+  try {
+    const results = await Director.aggregate([
       {
         $project: {
           name: 1,
@@ -48,17 +46,16 @@ const getDirectorCount = (req, res) => {
         }
       },
       { $sort: { name: 1 } }
-    ],
-    function (err, results) {
-      if (err) return res.send(500, { error: err });
-      return res.send(results);
-    }
-  );
+    ]);
+    return res.send(results);
+  } catch (err) {
+    return res.send(500, { error: err });
+  }
 };
 
-const getMovieCount = (req, res) => {
-  Director.aggregate(
-    [
+const getMovieCount = async (req, res) => {
+  try {
+    const results = await Director.aggregate([
       {
         $project: {
           total: { $size: '$movies' }
@@ -77,12 +74,11 @@ const getMovieCount = (req, res) => {
         }
       },
       { $sort: { movie_count: 1 } }
-    ],
-    function (err, results) {
-      if (err) return res.send(500, { error: err });
-      return res.send(results);
-    }
-  );
+    ]);
+    return res.send(results);
+  } catch (err) {
+    return res.send(500, { error: err });
+  }
 };
 
 const addNewDirector = async (req, res) => {
