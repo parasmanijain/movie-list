@@ -4,7 +4,6 @@ import * as _ from 'lodash';
 import axiosConfig from '../../helper/axiosConfig';
 import {
   ADD_NEW_MOVIE_URL,
-  currentYear,
   GET_AWARD_CATEGORIES_URL,
   GET_DIRECTORS_URL,
   GET_FRANCHISES_URL,
@@ -17,7 +16,7 @@ import {
 } from '../../helper/config';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { movieValidationSchema as validationSchema } from '../../helper/validationScehmas';
 import {
   Box,
@@ -41,7 +40,7 @@ const initialValues = {
   director: [],
   imdb: '',
   rottenTomatoes: '',
-  year: currentYear,
+  year: new Date().getUTCFullYear(),
   url: '',
   genre: [],
   franchise: '',
@@ -82,7 +81,7 @@ export const AddNewMovie = (props: { selectedMovie?: string }) => {
       });
   };
 
-  const fetchSelectedMovieDetails = (franchiseList) => {
+  const fetchSelectedMovieDetails = (franchiseList: any[]) => {
     const selectedMovieDetails = axiosConfig.get(`${GET_MOVIE_DETAILS_URL}`, {
       params: { movieID: selectedMovie }
     });
@@ -102,18 +101,18 @@ export const AddNewMovie = (props: { selectedMovie?: string }) => {
             franchise,
             category
           } = responses[0].data;
-          const languageValues = language.map((element) => element._id);
-          const directorValues = director.map((element) => element._id);
-          const genreValues = genre.map((element) => element._id);
-          let categoryValues;
+          const languageValues = language.map((element: { _id: any }) => element._id);
+          const directorValues = director.map((element: { _id: any }) => element._id);
+          const genreValues = genre.map((element: { _id: any }) => element._id);
+          let categoryValues: any;
           if (category) {
-            categoryValues = category.map((element) => element._id);
+            categoryValues = category.map((element: { _id: any }) => element._id);
           }
-          let franchiseValue;
+          let franchiseValue: { _id: any }[];
           if (franchise && franchise.universe) {
             franchiseValue = franchiseList
-              .find((ele) => ele._id === franchise.universe)
-              .franchises.filter((x) => x._id === franchise._id);
+              .find((ele: { _id: any }) => ele._id === franchise.universe)
+              .franchises.filter((x: { _id: any }) => x._id === franchise._id);
           }
           const obj = {
             name,
@@ -150,16 +149,16 @@ export const AddNewMovie = (props: { selectedMovie?: string }) => {
         apiURL = UPDATE_EXISTING_MOVIE_URL;
         const diff = _.reduce(
           existingValues,
-          (result, value, key) =>
-            _.isEqual(value, formik.values[key]) ? result : result.concat(key),
+          (result: string | any[], value: any, key: string | number) =>
+            _.isEqual(value, formik.values[key]) ? result : result.concat(key.toString()),
           []
         );
         const arrkeys = ['language', 'director', 'genre', 'category'];
-        diff.forEach((ele) => {
+        diff.forEach((ele: string) => {
           let obj = {};
           if (arrkeys.includes(ele)) {
-            const removed = existingValues[ele].filter((x) => !formik.values[ele].includes(x));
-            const added = formik.values[ele].filter((x) => !existingValues[ele].includes(x));
+            const removed = existingValues[ele].filter((x: any) => !formik.values[ele].includes(x));
+            const added = formik.values[ele].filter((x: any) => !existingValues[ele].includes(x));
             obj = {
               [ele]: {
                 value: formik.values[ele],
@@ -207,16 +206,16 @@ export const AddNewMovie = (props: { selectedMovie?: string }) => {
     }
   });
 
-  const makeSingleOptionItems = (data, key) => {
+  const makeSingleOptionItems = (data: any[], key: string) => {
     const items = [];
-    data.forEach((element, index) => {
+    data.forEach((element: { [x: string]: any[]; _id: any; name: any }, index: any) => {
       if (element[key]) {
         items.push(
           <ListSubheader sx={{ fontSize: '16px', fontWeight: '700' }} key={element._id + index}>
             {element.name}
           </ListSubheader>
         );
-        element[key].forEach((el) => {
+        element[key].forEach((el: { _id: any; name: any }) => {
           items.push(
             <MenuItem key={el._id} value={el._id}>
               {el.name}
@@ -235,16 +234,16 @@ export const AddNewMovie = (props: { selectedMovie?: string }) => {
     return items;
   };
 
-  const makeMultiOptionItems = (data, list, key) => {
+  const makeMultiOptionItems = (data: any[], list: string, key: string) => {
     const items = [];
-    data.forEach((element, index) => {
+    data.forEach((element: { [x: string]: any[]; _id: any; name: any }, index: any) => {
       if (element[list]) {
         items.push(
           <ListSubheader sx={{ fontSize: '16px', fontWeight: '700' }} key={element._id + index}>
             {element.name}
           </ListSubheader>
         );
-        element[list].forEach((el) => {
+        element[list].forEach((el: { _id: any; name: any }) => {
           items.push(
             <MenuItem key={el._id} value={el._id}>
               <CheckBox checked={formik.values[key].indexOf(el._id) > -1} />
@@ -424,14 +423,15 @@ export const AddNewMovie = (props: { selectedMovie?: string }) => {
         </FormControl>
         <FormControl sx={{ m: 2, width: 300 }}>
           <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <DesktopDatePicker
+            <DatePicker
               label="Year"
-              value={formik.values.year}
+              value={new Date().setUTCFullYear(formik.values.year)}
+              view={'year'}
               views={['year']}
               onChange={(newValue) => {
                 formik.setValues({
                   ...formik.values,
-                  year: new Date(newValue).getFullYear().toString()
+                  year: new Date(newValue).getFullYear()
                 });
               }}
             />

@@ -1,13 +1,8 @@
 import { useState } from 'react';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
-import { styled } from '@mui/material';
 import './App.css';
 import { AppBar, Box, Tab, Tabs } from './components/lib';
 import { ProtectedRoute, routes } from './components';
-
-const StyledTab = styled(Tab)(({ theme }) => ({
-  padding: '0px !important'
-}));
 
 const currentTab = () => {
   if (process.env.NODE_ENV === 'production') {
@@ -25,7 +20,14 @@ export const App = () => {
   const [value, setValue] = useState(currentTab());
 
   const renderTabs = (label, value, index) => (
-    <StyledTab key={index} value={value} label={label} component={Link} to={value} />
+    <Tab
+      key={index}
+      value={value}
+      label={label}
+      component={Link}
+      to={value}
+      sx={{ px: 1, py: `0px !important` }}
+    />
   );
 
   const handleMovieUpdateSelection = (movie) => {

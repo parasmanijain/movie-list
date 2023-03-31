@@ -1,64 +1,61 @@
 const { Movie, Director, Language, Genre, Franchise, Category } = require('../models/schemaModel');
 
-const getMovieList = (req, res) => {
+const getMovieList = async (req, res) => {
   let page = parseInt(req.query.page) || 1;
   let limit = parseInt(req.query.limit) || 36;
   // get data from the view and add it to mongodb
-  Movie.find({}, null, { sort: { name: 1 } })
-    .skip((page - 1) * limit)
-    .limit(limit)
-    .populate('language')
-    .populate('genre')
-    .populate({
-      path: 'franchise',
-      populate: [{ path: 'universe' }]
-    })
-    .populate({
-      path: 'category',
-      populate: [{ path: 'award' }]
-    })
-    .populate({
-      path: 'director',
-      populate: [{ path: 'country' }, { path: 'movies', options: { sort: { year: 1 } } }]
-    })
-    .then(() => {
-      return Movie.countDocuments({})
-        .then(() => {
-          return res.json({
-            total: count,
-            page: page,
-            pageSize: results.length,
-            movies: results
-          });
-        })
-        .catch((count_error) => {
-          return res.json(count_error);
+  try {
+    const results = await Movie.find({}, null, { sort: { name: 1 } })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .populate('language')
+      .populate('genre')
+      .populate({
+        path: 'franchise',
+        populate: [{ path: 'universe' }]
+      })
+      .populate({
+        path: 'category',
+        populate: [{ path: 'award' }]
+      })
+      .populate({
+        path: 'director',
+        populate: [{ path: 'country' }, { path: 'movies', options: { sort: { year: 1 } } }]
+      });
+    if (results) {
+      const count = await Movie.countDocuments({});
+      if (count) {
+        return res.json({
+          total: count,
+          page: page,
+          pageSize: results.length,
+          movies: results
         });
-    })
-    .catch((err) => {
-      return res.send(500, { error: err });
-    });
+      }
+    }
+  } catch (err) {
+    return res.send(500, { error: err });
+  }
 };
 
-const getMovieDetails = (req, res) => {
-  Movie.findById(req.query.movieID)
-    .populate('language')
-    .populate('director')
-    .populate('genre')
-    .populate('franchise')
-    .populate('category')
-    .then((movie) => {
-      res.send(movie);
-    })
-    .catch((err) => {
-      return res.send(500, { error: err });
-    });
+const getMovieDetails = async (req, res) => {
+  try {
+    const results = await Movie.findById(req.query.movieID)
+      .populate('language')
+      .populate('director')
+      .populate('genre')
+      .populate('franchise')
+      .populate('category');
+    return res.send(results);
+  } catch (err) {
+    return res.send(500, { error: err });
+  }
 };
 
-const getTopMovie = (req, res) => {
+const getTopMovie = async (req, res) => {
   // get data from the view and add it to mongodb
-  Movie.aggregate(
-    [
+  try {
+    const results = await Movie.aggregate([
       {
         $project: {
           name: 1,
@@ -67,12 +64,11 @@ const getTopMovie = (req, res) => {
           rottenTomatoes: 1
         }
       }
-    ],
-    function (err, results) {
-      if (err) return res.send(500, { error: err });
-      return res.send(results);
-    }
-  );
+    ]);
+    return res.send(results);
+  } catch (err) {
+    return res.send(500, { error: err });
+  }
 };
 
 const addNewMovie = async (req, res) => {
@@ -291,21 +287,24 @@ const updateExistingMovie = async (req, res) => {
   }
 };
 
-const getTopYear = (req, res) => {
+const getTopYear = async (req, res) => {
   // get data from the view and add it to mongodb
-  Movie.aggregate(
-    [{ $group: { _id: '$year', count: { $sum: 1 } } }, { $sort: { count: -1 } }, { $limit: 1 }],
-    function (err, results) {
-      if (err) return res.send(500, { error: err });
-      return res.send(results);
-    }
-  );
+  try {
+    const results = await Movie.aggregate([
+      { $group: { _id: '$year', count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+      { $limit: 1 }
+    ]);
+    return res.send(results);
+  } catch (err) {
+    return res.send(500, { error: err });
+  }
 };
 
-const getYearCount = (req, res) => {
+const getYearCount = async (req, res) => {
   // get data from the view and add it to mongodb
-  Movie.aggregate(
-    [
+  try {
+    const results = await Movie.aggregate([
       { $group: { _id: '$year', length: { $sum: 1 } } },
       {
         $project: {
@@ -314,17 +313,16 @@ const getYearCount = (req, res) => {
         }
       },
       { $sort: { _id: 1 } }
-    ],
-    function (err, results) {
-      if (err) return res.send(500, { error: err });
-      return res.send(results);
-    }
-  );
+    ]);
+    return res.send(results);
+  } catch (err) {
+    return res.send(500, { error: err });
+  }
 };
 
-const getMovieAwards = (req, res) => {
-  Movie.aggregate(
-    [
+const getMovieAwards = async (req, res) => {
+  try {
+    const results = await Movie.aggregate([
       { $match: { category: { $ne: null } } },
       {
         $project: {
@@ -349,12 +347,11 @@ const getMovieAwards = (req, res) => {
         }
       },
       { $sort: { name: 1 } }
-    ],
-    function (err, results) {
-      if (err) return res.send(500, { error: err });
-      return res.send(results);
-    }
-  );
+    ]);
+    return res.send(results);
+  } catch (err) {
+    return res.send(500, { error: err });
+  }
 };
 
 // Movie.find({"franchise":{ $type: 7 }}).exec(function(err,results) {

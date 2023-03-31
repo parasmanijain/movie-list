@@ -51,6 +51,3 @@ export const MenuProps = {
     }
   }
 };
-
-export const currentYear = ((new Date()).getUTCFullYear()).toString();
-

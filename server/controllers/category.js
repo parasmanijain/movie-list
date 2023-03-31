@@ -1,22 +1,22 @@
 const { Category, Award } = require('../models/schemaModel');
 
-const getCategoryList = (req, res) => {
+const getCategoryList = async (req, res) => {
   // get data from the view and add it to mongodb
-  Category.find({ award: { $exists: false } }, null, { sort: { name: 1 } })
-    .populate('movies')
-    .populate('award')
-    .then((results) => {
-      return res.send(results);
-    })
-    .catch((err) => {
-      return res.send(500, { error: err });
-    });
+  try {
+    const results = await Category.find({ award: { $exists: false } }, null, { sort: { name: 1 } })
+      .populate('movies')
+      .populate('award');
+
+    return res.send(results);
+  } catch (err) {
+    return res.send(500, { error: err });
+  }
 };
 
-const getTopCategory = (req, res) => {
+const getTopCategory = async (req, res) => {
   // get data from the view and add it to mongodb
-  Category.aggregate(
-    [
+  try {
+    const results = await Category.aggregate([
       {
         $project: {
           name: 1,
@@ -25,18 +25,17 @@ const getTopCategory = (req, res) => {
       },
       { $sort: { length: -1 } },
       { $limit: 1 }
-    ],
-    function (err, results) {
-      if (err) return res.send(500, { error: err });
-      return res.send(results);
-    }
-  );
+    ]);
+    return res.send(results);
+  } catch (err) {
+    return res.send(500, { error: err });
+  }
 };
 
-const getCategoryCount = (req, res) => {
+const getCategoryCount = async (req, res) => {
   // get data from the view and add it to mongodb
-  Category.aggregate(
-    [
+  try {
+    const results = await Category.aggregate([
       { $match: { award: { $exists: false } } },
       {
         $project: {
@@ -45,12 +44,11 @@ const getCategoryCount = (req, res) => {
         }
       },
       { $sort: { name: 1 } }
-    ],
-    function (err, results) {
-      if (err) return res.send(500, { error: err });
-      return res.send(results);
-    }
-  );
+    ]);
+    return res.send(results);
+  } catch (err) {
+    return res.send(500, { error: err });
+  }
 };
 
 const addNewCategory = async (req, res) => {

@@ -1,35 +1,39 @@
 const { Country } = require('../models/schemaModel');
 
-const getCountryList = (req, res) => {
-    Country.aggregate(
-        [
-            {
-                "$project": {
-                    "name": 1
-                }
-            },
-            { "$sort": { "name": 1 } }
-        ],
-        function (err, results) {
-            if (err) return res.send(500, { error: err });
-            return res.send(results);
-        })
+const getCountryList = async (req, res) => {
+  try {
+    const results = await Country.aggregate([
+      {
+        $project: {
+          name: 1
+        }
+      },
+      { $sort: { name: 1 } }
+    ]);
+    return res.send(results);
+  } catch (err) {
+    return res.send(500, { error: err });
+  }
 };
 
-const addNewCountry = (req, res) => {
-    // get data from the view and add it to mongodb
-    var query = { 'name': req.body.name };
-    const existing = req.body;
-    Country.findOneAndUpdate(query, existing, {
-        upsert: true,
-        useFindAndModify: false
-    }, (err, doc) => {
-        if (err) return res.send(500, { error: err });
-        return res.send('New Country Succesfully added.');
+const addNewCountry = async (req, res) => {
+  // get data from the view and add it to mongodb
+  var query = { name: req.body.name };
+  const existing = req.body;
+  try {
+    const doc = await Country.findOneAndUpdate(query, existing, {
+      upsert: true,
+      useFindAndModify: false
     });
-}
+    if (doc) {
+      return res.send('New Country Succesfully added.');
+    }
+  } catch (err) {
+    return res.send(500, { error: err });
+  }
+};
 
 module.exports = {
-    getCountryList,
-    addNewCountry
+  getCountryList,
+  addNewCountry
 };
