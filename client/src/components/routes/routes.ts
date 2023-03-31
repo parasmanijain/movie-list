@@ -1,124 +1,153 @@
-import { AddNewCountry, AddNewDirector, AddNewFranchise, AddNewGenre, AddNewLanguage, AddNewMovie, AddNewUniverse, Director,
-  Franchise, Genre, Home, Language, TopRatedMovies, Year, Universe, AddNewAward, AddNewCategory, Category, Award } from '../pages';
+import { FC } from 'react';
+import {
+  AddNewCountry,
+  AddNewDirector,
+  AddNewFranchise,
+  AddNewGenre,
+  AddNewLanguage,
+  AddNewMovie,
+  AddNewUniverse,
+  Director,
+  Franchise,
+  Genre,
+  Home,
+  Language,
+  TopRatedMovies,
+  Year,
+  Universe,
+  AddNewAward,
+  AddNewCategory,
+  Category,
+  Award
+} from '../pages';
 import DirectorMovies from '../pages/DirectorMovies';
 
-export const routes = [
+export interface routeProps {
+  path: string;
+  component: FC;
+  label: string;
+  production: boolean;
+}
+
+export const routes: routeProps[] = [
   {
-    'path': '/',
-    'label': 'Home',
-    'production': true,
-    'component': Home
-  }, {
-    'path': '/language',
-    'label': 'Language',
-    'production': true,
-    'component': Language
+    path: '/home',
+    label: 'Home',
+    production: true,
+    component: Home
   },
   {
-    'path': '/director',
-    'label': 'Director',
-    'production': true,
-    'component': Director
+    path: '/language',
+    label: 'Language',
+    production: true,
+    component: Language
   },
   {
-    'path': '/directorMovies',
-    'label': 'Movies',
-    'production': true,
-    'component': DirectorMovies
+    path: '/director',
+    label: 'Director',
+    production: true,
+    component: Director
   },
   {
-    'path': '/genre',
-    'label': 'Genre',
-    'production': true,
-    'component': Genre
+    path: '/directorMovies',
+    label: 'Movies',
+    production: true,
+    component: DirectorMovies
   },
   {
-    'path': '/year',
-    'label': 'Year',
-    'production': true,
-    'component': Year
+    path: '/genre',
+    label: 'Genre',
+    production: true,
+    component: Genre
   },
   {
-    'path': '/franchise',
-    'label': 'Franchise',
-    'production': true,
-    'component': Franchise
+    path: '/year',
+    label: 'Year',
+    production: true,
+    component: Year
   },
   {
-    'path': '/universe',
-    'label': 'Universe',
-    'production': true,
-    'component': Universe
+    path: '/franchise',
+    label: 'Franchise',
+    production: true,
+    component: Franchise
   },
   {
-    'path': '/category',
-    'label': 'Category',
-    'production': true,
-    'component': Category
+    path: '/universe',
+    label: 'Universe',
+    production: true,
+    component: Universe
   },
   {
-    'path': '/award',
-    'label': 'Award',
-    'production': true,
-    'component': Award
+    path: '/category',
+    label: 'Category',
+    production: true,
+    component: Category
   },
   {
-    'path': '/top-rated-movies',
-    'label': 'Top Rated Movies',
-    'production': true,
-    'component': TopRatedMovies
+    path: '/award',
+    label: 'Award',
+    production: true,
+    component: Award
   },
   {
-    'path': '/add-new-country',
-    'label': 'Add New Country',
-    'production': false,
-    'component': AddNewCountry
+    path: '/top-rated-movies',
+    label: 'Top Rated Movies',
+    production: true,
+    component: TopRatedMovies
   },
   {
-    'path': '/add-new-language',
-    'label': 'Add New Language',
-    'production': false,
-    'component': AddNewLanguage
+    path: '/add-new-country',
+    label: 'Add New Country',
+    production: false,
+    component: AddNewCountry
   },
   {
-    'path': '/add-new-genre',
-    'label': 'Add New Genre',
-    'production': false,
-    'component': AddNewGenre
+    path: '/add-new-language',
+    label: 'Add New Language',
+    production: false,
+    component: AddNewLanguage
   },
   {
-    'path': '/add-new-universe',
-    'label': 'Add New Universe',
-    'production': false,
-    'component': AddNewUniverse
+    path: '/add-new-genre',
+    label: 'Add New Genre',
+    production: false,
+    component: AddNewGenre
   },
   {
-    'path': '/add-new-award',
-    'label': 'Add New Award',
-    'production': false,
-    'component': AddNewAward
+    path: '/add-new-universe',
+    label: 'Add New Universe',
+    production: false,
+    component: AddNewUniverse
   },
   {
-    'path': '/add-new-director',
-    'label': 'Add New Director',
-    'production': false,
-    'component': AddNewDirector
+    path: '/add-new-award',
+    label: 'Add New Award',
+    production: false,
+    component: AddNewAward
   },
   {
-    'path': '/add-new-franchise',
-    'label': 'Add New Franchise',
-    'production': false,
-    'component': AddNewFranchise
+    path: '/add-new-director',
+    label: 'Add New Director',
+    production: false,
+    component: AddNewDirector
   },
   {
-    'path': '/add-new-category',
-    'label': 'Add New Category',
-    'production': false,
-    'component': AddNewCategory
+    path: '/add-new-franchise',
+    label: 'Add New Franchise',
+    production: false,
+    component: AddNewFranchise
   },
   {
-    'path': '/add-new-movie',
-    'label': 'Add New Movie',
-    'production': false,
-    'component': AddNewMovie
-  }];
+    path: '/add-new-category',
+    label: 'Add New Category',
+    production: false,
+    component: AddNewCategory
+  },
+  {
+    path: '/add-new-movie',
+    label: 'Add New Movie',
+    production: false,
+    component: AddNewMovie
+  }
+];

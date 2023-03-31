@@ -1,14 +1,15 @@
 import { useState } from 'react';
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link, Navigate } from 'react-router-dom';
 import './App.css';
 import { AppBar, Box, Tab, Tabs } from './components/lib';
 import { ProtectedRoute, routes } from './components';
+import { routeProps } from './components/routes/routes';
 
 const currentTab = () => {
   if (process.env.NODE_ENV === 'production') {
-    const route = routes.find((ele) => ele.path === window.location.pathname);
+    const route = routes.find((ele: routeProps) => ele.path === window.location.pathname);
     if (route && !route.production) {
-      return '/';
+      return '/home';
     }
   }
   return window.location.pathname;
@@ -30,13 +31,13 @@ export const App = () => {
     />
   );
 
-  const handleMovieUpdateSelection = (movie) => {
+  const handleMovieUpdateSelection = (movie: unknown) => {
     setSelectedMovie(movie);
   };
 
-  const renderRoutes = (index, production, props) => {
+  const renderRoutes = (index, production, route: routeProps) => {
     // eslint-disable-next-line react/prop-types
-    const { component: Component, path } = props;
+    const { component: FC, path } = route;
     let componentProps = {};
     if (!production) {
       if (path === '/add-new-movie') {
@@ -44,14 +45,14 @@ export const App = () => {
       }
       return (
         <Route key={index} path={path} element={<ProtectedRoute />}>
-          <Route path={path} element={<Component {...componentProps} />} />
+          <Route path={path} element={<FC {...componentProps} />} />
         </Route>
       );
     } else {
-      if (path === '/') {
+      if (path.includes('/home')) {
         componentProps = { handleMovieUpdateSelection: handleMovieUpdateSelection };
       }
-      return <Route key={index} path={path} element={<Component {...componentProps} />} />;
+      return <Route key={index} path={path} element={<FC {...componentProps} />} />;
     }
   };
 
@@ -88,13 +89,12 @@ export const App = () => {
         }}
       >
         <Routes>
-          {routes.map((ele, index) => {
-            const routeProps = {
-              path: ele.path,
-              component: ele.component
-            };
-            return renderRoutes(index, ele.production, routeProps);
+          {routes.map((route: routeProps, index) => {
+            const { production } = route;
+            return renderRoutes(index, production, route);
           })}
+          <Route path="/" element={<Navigate to={routes[0].path} replace />} />
+          <Route path="*" element={<Navigate to={routes[0].path} replace />} />
         </Routes>
       </Box>
     </BrowserRouter>

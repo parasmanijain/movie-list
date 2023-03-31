@@ -3,7 +3,7 @@
     "outDir": "./dist/",
     "noImplicitAny": false,
     "module": "esnext",
-    "target": "es2015",
+    "target": "ESNext",
     "jsx": "react-jsx",
     "types": [
       "node"

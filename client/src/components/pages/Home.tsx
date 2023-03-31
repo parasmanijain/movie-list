@@ -1,6 +1,6 @@
 import { useState, useEffect, Fragment } from 'react';
 import { styled } from '@mui/material/styles';
-import { useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import axiosConfig from '../../helper/axiosConfig';
@@ -31,11 +31,16 @@ const StyledAccordion = styled(Accordion)(() => ({
   boxSizing: 'border-box'
 }));
 
-export const Home = (props: { handleMovieUpdateSelection: any }) => {
+interface HomeProps {
+  handleMovieUpdateSelection: (a: unknown) => void;
+}
+
+export const Home = ({ handleMovieUpdateSelection }: HomeProps) => {
+  const [searchParams] = useSearchParams();
   const [width, height] = useWindowDimensions();
-  const { handleMovieUpdateSelection } = props;
+  const { pathname } = useLocation();
   let limit = 0;
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(searchParams.get('page') ? +searchParams.get('page') : 1);
   const [count, setCount] = useState(1);
   const [total, setTotal] = useState(0);
   const [environment] = useState(process.env.NODE_ENV);
@@ -82,22 +87,6 @@ export const Home = (props: { handleMovieUpdateSelection: any }) => {
     }
   }
   const navigate = useNavigate();
-  const fetchData = () => {
-    const moviesUrl = axiosConfig.get(`${GET_MOVIES_URL}`, { params: { page, limit } });
-    setDataLoading(true);
-    Promise.all([moviesUrl])
-      .then((responses) => {
-        const { total, page, movies } = responses[0].data;
-        setMovieData(movies);
-        setTotal(total);
-        setPage(page);
-        setCount(Math.ceil(total / limit));
-        setDataLoading(false);
-      })
-      .catch(() => {
-        setDataLoading(false);
-      });
-  };
 
   const fetchTopFilters = () => {
     const topDirectors = axiosConfig.get(`${GET_TOP_DIRECTOR_URL}`);
@@ -117,15 +106,35 @@ export const Home = (props: { handleMovieUpdateSelection: any }) => {
         setFilterLoading(false);
       });
   };
-  useEffect(() => {
-    fetchData();
-    return () => {};
-  }, [page]);
 
   useEffect(() => {
     fetchTopFilters();
-    return () => {};
-  }, []);
+    navigate(
+      `${pathname}?page=${searchParams.get('page') ? searchParams.get('page') : 1}`, // inject code value into template
+      { replace: true }
+    );
+  }, [searchParams]);
+
+  const fetchData = () => {
+    const moviesUrl = axiosConfig.get(`${GET_MOVIES_URL}`, { params: { page, limit } });
+    setDataLoading(true);
+    Promise.all([moviesUrl])
+      .then((responses) => {
+        const { total, page, movies } = responses[0].data;
+        setMovieData(movies);
+        setTotal(total);
+        setPage(page);
+        setCount(Math.ceil(total / limit));
+        setDataLoading(false);
+      })
+      .catch(() => {
+        setDataLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [page]);
 
   const otherMovies = (movies, name, arr) => {
     return arr.length > 1 ? (
@@ -347,6 +356,10 @@ export const Home = (props: { handleMovieUpdateSelection: any }) => {
 
   const handleChange = (event, value) => {
     setPage(value);
+    navigate(
+      `${pathname}?page=${value}`, // inject code value into template
+      { replace: true }
+    );
   };
 
   return (
