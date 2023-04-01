@@ -3,7 +3,8 @@ import express, { json, urlencoded, Request, Response, NextFunction } from 'expr
 const app = express();
 import cors from 'cors';
 
-import './database.js';
+import { connect } from 'mongoose';
+connect(process.env.DATABASE_URL as string);
 
 app.use(cors());
 app.use(json());
