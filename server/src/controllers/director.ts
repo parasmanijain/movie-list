@@ -1,6 +1,7 @@
-import { Director } from '../schemaModels/director.js';
+import { Request, Response } from 'express';
+import { Director } from '../schemaModels/director';
 
-export const getDirectorList = async (req, res) => {
+export const getDirectorList = async (req: Request, res: Response) => {
   try {
     const results = await Director.aggregate([
       {
@@ -16,7 +17,7 @@ export const getDirectorList = async (req, res) => {
   }
 };
 
-export const getTopDirector = async (req, res) => {
+export const getTopDirector = async (req: Request, res: Response) => {
   // get data from the view and add it to mongodb
   try {
     const results = await Director.aggregate([
@@ -35,7 +36,7 @@ export const getTopDirector = async (req, res) => {
   }
 };
 
-export const getDirectorCount = async (req, res) => {
+export const getDirectorCount = async (req: Request, res: Response) => {
   // get data from the view and add it to mongodb
   try {
     const results = await Director.aggregate([
@@ -53,7 +54,7 @@ export const getDirectorCount = async (req, res) => {
   }
 };
 
-export const getMovieCount = async (req, res) => {
+export const getMovieCount = async (req: Request, res: Response) => {
   try {
     const results = await Director.aggregate([
       {
@@ -81,7 +82,7 @@ export const getMovieCount = async (req, res) => {
   }
 };
 
-export const addNewDirector = async (req, res) => {
+export const addNewDirector = async (req: Request, res: Response) => {
   try {
     const newDirector = await Director.create(req.body);
     return res.status(200).json(newDirector);

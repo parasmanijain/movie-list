@@ -1,10 +1,16 @@
-import { Director } from '../schemaModels/director.js';
-import { Language } from '../schemaModels/language.js';
-import { Movie } from '../schemaModels/movie.js';
-import { Franchise } from '../schemaModels/franchise.js';
-import { Category } from '../schemaModels/category.js';
+import { Document } from 'mongoose';
+import { Request, Response } from 'express';
+import { Director } from '../schemaModels/director';
+import { Language } from '../schemaModels/language';
+import { Movie } from '../schemaModels/movie';
+import { Franchise } from '../schemaModels/franchise';
+import { Category } from '../schemaModels/category';
+import { Genre } from '../schemaModels/genre';
 
-export const getMovieList = async (req, res) => {
+export const getMovieList = async (
+  req: Request<{}, {}, {}, { page: string; limit: string }>,
+  res: Response
+) => {
   let page = parseInt(req.query.page) || 1;
   let limit = parseInt(req.query.limit) || 36;
   // get data from the view and add it to mongodb
@@ -45,7 +51,7 @@ export const getMovieList = async (req, res) => {
   }
 };
 
-export const getMovieDetails = async (req, res) => {
+export const getMovieDetails = async (req: Request, res: Response) => {
   try {
     const results = await Movie.findById(req.query.movieID)
       .populate('language')
@@ -59,7 +65,7 @@ export const getMovieDetails = async (req, res) => {
   }
 };
 
-export const getTopMovie = async (req, res) => {
+export const getTopMovie = async (req: Request, res: Response) => {
   // get data from the view and add it to mongodb
   try {
     const results = await Movie.aggregate([
@@ -78,7 +84,7 @@ export const getTopMovie = async (req, res) => {
   }
 };
 
-export const addNewMovie = async (req, res) => {
+export const addNewMovie = async (req: Request, res: Response) => {
   try {
     const {
       name,
@@ -110,7 +116,7 @@ export const addNewMovie = async (req, res) => {
       query = { ...query, ...{ category: category } };
     }
     const newMovie = await Movie.create(query);
-    if (!newMovie) throw err;
+    if (!newMovie) throw newMovie;
     const bulkDirectorOps = newMovie.director.map((doc) => ({
       updateOne: {
         filter: { _id: doc },
@@ -179,7 +185,7 @@ export const addNewMovie = async (req, res) => {
   }
 };
 
-export const updateExistingMovie = async (req, res) => {
+export const updateExistingMovie = async (req: Request, res: Response) => {
   const { id, language, director, genre, franchise } = req.body;
   const keys = Object.keys(req.body);
   let object = {};
@@ -195,10 +201,10 @@ export const updateExistingMovie = async (req, res) => {
   // get data from the view and add it to mongodb
   try {
     const existingMovieUpdated = await Movie.findByIdAndUpdate(id, req.body, { new: true });
-    if (!existingMovieUpdated) throw err;
+    if (!existingMovieUpdated) throw existingMovieUpdated;
     if (language) {
       let languageOperations = [];
-      const languageAddOperations = language.added.map((doc) => ({
+      const languageAddOperations = language.added.map((doc: Document) => ({
         updateOne: {
           filter: { _id: doc },
           update: { $push: { movies: id } },
@@ -206,7 +212,7 @@ export const updateExistingMovie = async (req, res) => {
           useFindAndModify: false
         }
       }));
-      const languageRemoveOperations = language.removed.map((doc) => ({
+      const languageRemoveOperations = language.removed.map((doc: Document) => ({
         updateOne: {
           filter: { _id: doc },
           update: { $pull: { movies: id } },
@@ -220,7 +226,7 @@ export const updateExistingMovie = async (req, res) => {
     }
     if (director) {
       let directorOperations = [];
-      const directorAddOperations = director.added.map((doc) => ({
+      const directorAddOperations = director.added.map((doc: Document) => ({
         updateOne: {
           filter: { _id: doc },
           update: { $push: { movies: id } },
@@ -228,7 +234,7 @@ export const updateExistingMovie = async (req, res) => {
           useFindAndModify: false
         }
       }));
-      const directorRemoveOperations = director.removed.map((doc) => ({
+      const directorRemoveOperations = director.removed.map((doc: Document) => ({
         updateOne: {
           filter: { _id: doc },
           update: { $pull: { movies: id } },
@@ -242,7 +248,7 @@ export const updateExistingMovie = async (req, res) => {
     }
     if (genre) {
       let genreOperations = [];
-      const genreAddOperations = genre.added.map((doc) => ({
+      const genreAddOperations = genre.added.map((doc: Document) => ({
         updateOne: {
           filter: { _id: doc },
           update: { $push: { movies: id } },
@@ -250,7 +256,7 @@ export const updateExistingMovie = async (req, res) => {
           useFindAndModify: false
         }
       }));
-      const genreRemoveOperations = genre.removed.map((doc) => ({
+      const genreRemoveOperations = genre.removed.map((doc: Document) => ({
         updateOne: {
           filter: { _id: doc },
           update: { $pull: { movies: id } },
@@ -294,7 +300,7 @@ export const updateExistingMovie = async (req, res) => {
   }
 };
 
-export const getTopYear = async (req, res) => {
+export const getTopYear = async (req: Request, res: Response) => {
   // get data from the view and add it to mongodb
   try {
     const results = await Movie.aggregate([
@@ -308,7 +314,7 @@ export const getTopYear = async (req, res) => {
   }
 };
 
-export const getYearCount = async (req, res) => {
+export const getYearCount = async (req: Request, res: Response) => {
   // get data from the view and add it to mongodb
   try {
     const results = await Movie.aggregate([
@@ -327,7 +333,7 @@ export const getYearCount = async (req, res) => {
   }
 };
 
-export const getMovieAwards = async (req, res) => {
+export const getMovieAwards = async (req: Request, res: Response) => {
   try {
     const results = await Movie.aggregate([
       { $match: { category: { $ne: null } } },

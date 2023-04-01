@@ -1,11 +1,10 @@
 {
   "name": "movie-list-server",
   "version": "1.1.0",
-  "main": "app.js",
-  "type": "module",
+  "main": "./src/app.ts",
   "scripts": {
     "dev": "kill -9 $(lsof -i :4100) &>/dev/null | exit 0 nodemon app.js",
-    "start": "nodemon app.js",
+    "start": "ts-node-esm ./src/app.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "[ -d '.husky' ] && (husky install && shx rm -rf .git/hooks && shx ln -s ../.husky .git/hooks) || true",
     "prettier": "prettier '**/*.{js,jsx,ts,tsx}' --write",
@@ -20,13 +19,17 @@
     "mongoose": "^7.0.3"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.13",
+    "@types/express": "^4.17.17",
     "eslint": "^8.37.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^4.2.1",
     "husky": "^8.0.3",
     "lint-staged": "^13.2.0",
     "nodemon": "^2.0.22",
-    "prettier": "^2.8.7"
+    "prettier": "^2.8.7",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.3"
   },
   "eslintConfig": {
     "extends": [

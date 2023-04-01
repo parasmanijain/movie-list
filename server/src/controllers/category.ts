@@ -1,7 +1,8 @@
-import { Category } from '../schemaModels/category.js';
-import { Award } from '../schemaModels/award.js';
+import { Request, Response } from 'express';
+import { Category } from '../schemaModels/category';
+import { Award } from '../schemaModels/award';
 
-export const getCategoryList = async (req, res) => {
+export const getCategoryList = async (req: Request, res: Response) => {
   // get data from the view and add it to mongodb
   try {
     const results = await Category.find({ award: { $exists: false } }, null, {
@@ -16,7 +17,7 @@ export const getCategoryList = async (req, res) => {
   }
 };
 
-export const getTopCategory = async (req, res) => {
+export const getTopCategory = async (req: Request, res: Response) => {
   // get data from the view and add it to mongodb
   try {
     const results = await Category.aggregate([
@@ -35,7 +36,7 @@ export const getTopCategory = async (req, res) => {
   }
 };
 
-export const getCategoryCount = async (req, res) => {
+export const getCategoryCount = async (req: Request, res: Response) => {
   // get data from the view and add it to mongodb
   try {
     const results = await Category.aggregate([
@@ -54,7 +55,7 @@ export const getCategoryCount = async (req, res) => {
   }
 };
 
-export const addNewCategory = async (req, res) => {
+export const addNewCategory = async (req: Request, res: Response) => {
   try {
     const { name, movies, award } = req.body;
     // get data from the view and add it to mongodb
@@ -72,7 +73,7 @@ export const addNewCategory = async (req, res) => {
       }
     );
     if (!doc) {
-      return res.status(500).send({ error: err });
+      return res.status(500).send({ error: doc });
     }
     if (award) {
       const bulkAwardOps = [
@@ -90,7 +91,7 @@ export const addNewCategory = async (req, res) => {
         .catch(console.error.bind(console, 'Award BULK update error:'));
       return res.status(200).json({ message: 'Record updated successfully' });
     } else {
-      return res.send(200, 'Category Successfully Added');
+      return res.status(200).send('Category Successfully Added');
     }
   } catch (err) {
     return res.status(400).json(err);
