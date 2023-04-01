@@ -1,6 +1,6 @@
-const { Director } = require('../models/schemaModel');
+import { Director } from '../schemaModels/director.js';
 
-const getDirectorList = async (req, res) => {
+export const getDirectorList = async (req, res) => {
   try {
     const results = await Director.aggregate([
       {
@@ -12,11 +12,11 @@ const getDirectorList = async (req, res) => {
     ]);
     return res.send(results);
   } catch (err) {
-    return res.send(500, { error: err });
+    return res.status(500).send({ error: err });
   }
 };
 
-const getTopDirector = async (req, res) => {
+export const getTopDirector = async (req, res) => {
   // get data from the view and add it to mongodb
   try {
     const results = await Director.aggregate([
@@ -31,11 +31,11 @@ const getTopDirector = async (req, res) => {
     ]);
     return res.send(results);
   } catch (err) {
-    return res.send(500, { error: err });
+    return res.status(500).send({ error: err });
   }
 };
 
-const getDirectorCount = async (req, res) => {
+export const getDirectorCount = async (req, res) => {
   // get data from the view and add it to mongodb
   try {
     const results = await Director.aggregate([
@@ -49,11 +49,11 @@ const getDirectorCount = async (req, res) => {
     ]);
     return res.send(results);
   } catch (err) {
-    return res.send(500, { error: err });
+    return res.status(500).send({ error: err });
   }
 };
 
-const getMovieCount = async (req, res) => {
+export const getMovieCount = async (req, res) => {
   try {
     const results = await Director.aggregate([
       {
@@ -77,16 +77,16 @@ const getMovieCount = async (req, res) => {
     ]);
     return res.send(results);
   } catch (err) {
-    return res.send(500, { error: err });
+    return res.status(500).send({ error: err });
   }
 };
 
-const addNewDirector = async (req, res) => {
+export const addNewDirector = async (req, res) => {
   try {
     const newDirector = await Director.create(req.body);
     return res.status(200).json(newDirector);
   } catch (err) {
-    return res.status(400).json(err);
+    return res.status(500).send({ error: err });
   }
 };
 
@@ -95,11 +95,3 @@ const addNewDirector = async (req, res) => {
 //     if (err) return err;
 //     return results;
 // });
-
-module.exports = {
-  getDirectorList,
-  getTopDirector,
-  getDirectorCount,
-  addNewDirector,
-  getMovieCount
-};

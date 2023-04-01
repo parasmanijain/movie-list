@@ -1,6 +1,6 @@
-const { Universe } = require('../models/schemaModel');
+import { Universe } from '../schemaModels/universe.js';
 
-const getUniverseList = async (req, res) => {
+export const getUniverseList = async (req, res) => {
   try {
     const results = await Universe.aggregate([
       {
@@ -12,11 +12,11 @@ const getUniverseList = async (req, res) => {
     ]);
     return res.send(results);
   } catch (err) {
-    return res.send(500, { error: err });
+    return res.status(500).send({ error: err });
   }
 };
 
-const getUniverseFranchiseList = async (req, res) => {
+export const getUniverseFranchiseList = async (req, res) => {
   try {
     const results = await Universe.aggregate([
       {
@@ -51,11 +51,11 @@ const getUniverseFranchiseList = async (req, res) => {
     ]);
     return res.send(results);
   } catch (err) {
-    return res.send(500, { error: err });
+    return res.status(500).send({ error: err });
   }
 };
 
-const getUniverseCount = async (req, res) => {
+export const getUniverseCount = async (req, res) => {
   // get data from the view and add it to mongodb
   try {
     const results = await Universe.aggregate([
@@ -87,11 +87,11 @@ const getUniverseCount = async (req, res) => {
     ]);
     return res.send(results);
   } catch (err) {
-    return res.send(500, { error: err });
+    return res.status(500).send({ error: err });
   }
 };
 
-const addNewUniverse = async (req, res) => {
+export const addNewUniverse = async (req, res) => {
   // get data from the view and add it to mongodb
   var query = { name: req.body.name };
   const existing = req.body;
@@ -104,13 +104,6 @@ const addNewUniverse = async (req, res) => {
       return res.send('New Universe Succesfully added.');
     }
   } catch (err) {
-    return res.send(500, { error: err });
+    return res.status(500).send({ error: err });
   }
-};
-
-module.exports = {
-  getUniverseList,
-  getUniverseFranchiseList,
-  getUniverseCount,
-  addNewUniverse
 };

@@ -1,19 +1,22 @@
-const { Category, Award } = require('../models/schemaModel');
+import { Category } from '../schemaModels/category.js';
+import { Award } from '../schemaModels/award.js';
 
-const getCategoryList = async (req, res) => {
+export const getCategoryList = async (req, res) => {
   // get data from the view and add it to mongodb
   try {
-    const results = await Category.find({ award: { $exists: false } }, null, { sort: { name: 1 } })
+    const results = await Category.find({ award: { $exists: false } }, null, {
+      sort: { name: 1 }
+    })
       .populate('movies')
       .populate('award');
 
     return res.send(results);
   } catch (err) {
-    return res.send(500, { error: err });
+    return res.status(500).send({ error: err });
   }
 };
 
-const getTopCategory = async (req, res) => {
+export const getTopCategory = async (req, res) => {
   // get data from the view and add it to mongodb
   try {
     const results = await Category.aggregate([
@@ -28,11 +31,11 @@ const getTopCategory = async (req, res) => {
     ]);
     return res.send(results);
   } catch (err) {
-    return res.send(500, { error: err });
+    return res.status(500).send({ error: err });
   }
 };
 
-const getCategoryCount = async (req, res) => {
+export const getCategoryCount = async (req, res) => {
   // get data from the view and add it to mongodb
   try {
     const results = await Category.aggregate([
@@ -47,11 +50,11 @@ const getCategoryCount = async (req, res) => {
     ]);
     return res.send(results);
   } catch (err) {
-    return res.send(500, { error: err });
+    return res.status(500).send({ error: err });
   }
 };
 
-const addNewCategory = async (req, res) => {
+export const addNewCategory = async (req, res) => {
   try {
     const { name, movies, award } = req.body;
     // get data from the view and add it to mongodb
@@ -69,7 +72,7 @@ const addNewCategory = async (req, res) => {
       }
     );
     if (!doc) {
-      return res.send(500, { error: err });
+      return res.status(500).send({ error: err });
     }
     if (award) {
       const bulkAwardOps = [
@@ -92,11 +95,4 @@ const addNewCategory = async (req, res) => {
   } catch (err) {
     return res.status(400).json(err);
   }
-};
-
-module.exports = {
-  getCategoryList,
-  getTopCategory,
-  getCategoryCount,
-  addNewCategory
 };

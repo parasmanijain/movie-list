@@ -1,69 +1,111 @@
-require('dotenv').config();
-const express = require('express');
+import 'dotenv/config.js';
+import express, { json, urlencoded } from 'express';
 const app = express();
-const cors = require('cors');
+import cors from 'cors';
+import { connect } from 'mongoose';
+connect(process.env.DATABASE_URL, { useNewUrlParser: true, useUnifiedTopology: true });
 
 app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(json());
+app.use(urlencoded({ extended: true }));
 
-const country_controller = require('./controllers/country');
-const language_controller = require('./controllers/language');
-const director_controller = require('./controllers/director');
-const genre_controller = require('./controllers/genre');
-const franchise_controller = require('./controllers/franchise');
-const universe_controller = require('./controllers/universe');
-const category_controller = require('./controllers/category');
-const award_controller = require('./controllers/award');
-const movie_controller = require('./controllers/movie');
+import { getCountryList, addNewCountry } from './controllers/country.js';
+import {
+  getLanguageList,
+  getTopLanguage,
+  getLanguageCount,
+  addNewLanguage
+} from './controllers/language.js';
+import {
+  getDirectorList,
+  getTopDirector,
+  getDirectorCount,
+  addNewDirector,
+  getMovieCount
+} from './controllers/director.js';
+import { getGenreList, getTopGenre, getGenreCount, addNewGenre } from './controllers/genre.js';
+import {
+  getFranchiseList,
+  getTopFranchise,
+  getFranchiseCount,
+  addNewFranchise
+} from './controllers/franchise.js';
+import {
+  getUniverseList,
+  getUniverseFranchiseList,
+  getUniverseCount,
+  addNewUniverse
+} from './controllers/universe.js';
+import {
+  getCategoryList,
+  getTopCategory,
+  getCategoryCount,
+  addNewCategory
+} from './controllers/category.js';
+import {
+  getAwardList,
+  getAwardCategoryList,
+  getAwardCount,
+  addNewAward
+} from './controllers/award.js';
+import {
+  getMovieList,
+  getMovieDetails,
+  getTopMovie,
+  getMovieAwards,
+  addNewMovie,
+  updateExistingMovie,
+  getTopYear,
+  getYearCount
+} from './controllers/movie.js';
 
-app.get('/languages', language_controller.getLanguageList);
-app.get('/topLanguage', language_controller.getTopLanguage);
-app.get('/languagesCount', language_controller.getLanguageCount);
-app.post('/language', language_controller.addNewLanguage);
+app.get('/languages', getLanguageList);
+app.get('/topLanguage', getTopLanguage);
+app.get('/languagesCount', getLanguageCount);
+app.post('/language', addNewLanguage);
 
-app.get('/genres', genre_controller.getGenreList);
-app.get('/topGenre', genre_controller.getTopGenre);
-app.get('/genresCount', genre_controller.getGenreCount);
-app.post('/genre', genre_controller.addNewGenre);
+app.get('/genres', getGenreList);
+app.get('/topGenre', getTopGenre);
+app.get('/genresCount', getGenreCount);
+app.post('/genre', addNewGenre);
 
-app.get('/franchises', franchise_controller.getFranchiseList);
-app.get('/topFranchise', franchise_controller.getTopFranchise);
-app.get('/franchisesCount', franchise_controller.getFranchiseCount);
-app.post('/franchise', franchise_controller.addNewFranchise);
+app.get('/franchises', getFranchiseList);
+app.get('/topFranchise', getTopFranchise);
+app.get('/franchisesCount', getFranchiseCount);
+app.post('/franchise', addNewFranchise);
 
-app.get('/universes', universe_controller.getUniverseList);
-app.get('/universeFranchises', universe_controller.getUniverseFranchiseList);
-app.get('/universesCount', universe_controller.getUniverseCount);
-app.post('/universe', universe_controller.addNewUniverse);
+app.get('/universes', getUniverseList);
+app.get('/universeFranchises', getUniverseFranchiseList);
+app.get('/universesCount', getUniverseCount);
+app.post('/universe', addNewUniverse);
 
-app.get('/countries', country_controller.getCountryList);
-app.post('/country', country_controller.addNewCountry);
+app.get('/countries', getCountryList);
+app.post('/country', addNewCountry);
 
-app.get('/directors', director_controller.getDirectorList);
-app.get('/topDirector', director_controller.getTopDirector);
-app.get('/directorsCount', director_controller.getDirectorCount);
-app.post('/director', director_controller.addNewDirector);
-app.get('/moviesCount', director_controller.getMovieCount);
+app.get('/directors', getDirectorList);
+app.get('/topDirector', getTopDirector);
+app.get('/directorsCount', getDirectorCount);
+app.post('/director', addNewDirector);
+app.get('/moviesCount', getMovieCount);
 
-app.get('/movies', movie_controller.getMovieList);
-app.get('/movieDetails', movie_controller.getMovieDetails);
-app.get('/topMovie', movie_controller.getTopMovie);
-app.get('/movieAwards', movie_controller.getMovieAwards);
-app.post('/movie', movie_controller.addNewMovie);
-app.post('/updateMovie', movie_controller.updateExistingMovie);
-app.get('/topYear', movie_controller.getTopYear);
-app.get('/yearsCount', movie_controller.getYearCount);
+app.get('/movies', getMovieList);
+app.get('/movieDetails', getMovieDetails);
+app.get('/topMovie', getTopMovie);
+app.get('/movieAwards', getMovieAwards);
+app.post('/movie', addNewMovie);
+app.post('/updateMovie', updateExistingMovie);
+app.get('/topYear', getTopYear);
+app.get('/yearsCount', getYearCount);
 
-app.get('/categories', category_controller.getCategoryList);
-app.get('/topCategory', category_controller.getTopCategory);
-app.get('/categoriesCount', category_controller.getCategoryCount);
-app.post('/category', category_controller.addNewCategory);
+app.get('/categories', getCategoryList);
+app.get('/topCategory', getTopCategory);
+app.get('/categoriesCount', getCategoryCount);
+app.post('/category', addNewCategory);
 
-app.get('/awards', award_controller.getAwardList);
-app.get('/awardCategories', award_controller.getAwardCategoryList);
-app.get('/awardsCount', award_controller.getAwardCount);
-app.post('/award', award_controller.addNewAward);
+app.get('/awards', getAwardList);
+app.get('/awardCategories', getAwardCategoryList);
+app.get('/awardsCount', getAwardCount);
+app.post('/award', addNewAward);
 
 function setupCORS(req, res, next) {
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');

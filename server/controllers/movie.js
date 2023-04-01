@@ -1,11 +1,18 @@
-const { Movie, Director, Language, Genre, Franchise, Category } = require('../models/schemaModel');
+import { Director } from '../schemaModels/director.js';
+import { Language } from '../schemaModels/language.js';
+import { Movie } from '../schemaModels/movie.js';
+import { Franchise } from '../schemaModels/franchise.js';
+import { Category } from '../schemaModels/category.js';
 
-const getMovieList = async (req, res) => {
+export const getMovieList = async (req, res) => {
   let page = parseInt(req.query.page) || 1;
   let limit = parseInt(req.query.limit) || 36;
   // get data from the view and add it to mongodb
   try {
-    const results = await Movie.find({}, null, { sort: { name: 1 } })
+    const results = await Movie.find({}, null, {
+      sort: { name: 1 },
+      collation: { locale: 'en_US', numericOrdering: true }
+    })
       .skip((page - 1) * limit)
       .limit(limit)
       .populate('language')
@@ -34,11 +41,11 @@ const getMovieList = async (req, res) => {
       }
     }
   } catch (err) {
-    return res.send(500, { error: err });
+    return res.status(500).send({ error: err });
   }
 };
 
-const getMovieDetails = async (req, res) => {
+export const getMovieDetails = async (req, res) => {
   try {
     const results = await Movie.findById(req.query.movieID)
       .populate('language')
@@ -48,11 +55,11 @@ const getMovieDetails = async (req, res) => {
       .populate('category');
     return res.send(results);
   } catch (err) {
-    return res.send(500, { error: err });
+    return res.status(500).send({ error: err });
   }
 };
 
-const getTopMovie = async (req, res) => {
+export const getTopMovie = async (req, res) => {
   // get data from the view and add it to mongodb
   try {
     const results = await Movie.aggregate([
@@ -67,11 +74,11 @@ const getTopMovie = async (req, res) => {
     ]);
     return res.send(results);
   } catch (err) {
-    return res.send(500, { error: err });
+    return res.status(500).send({ error: err });
   }
 };
 
-const addNewMovie = async (req, res) => {
+export const addNewMovie = async (req, res) => {
   try {
     const {
       name,
@@ -172,7 +179,7 @@ const addNewMovie = async (req, res) => {
   }
 };
 
-const updateExistingMovie = async (req, res) => {
+export const updateExistingMovie = async (req, res) => {
   const { id, language, director, genre, franchise } = req.body;
   const keys = Object.keys(req.body);
   let object = {};
@@ -287,7 +294,7 @@ const updateExistingMovie = async (req, res) => {
   }
 };
 
-const getTopYear = async (req, res) => {
+export const getTopYear = async (req, res) => {
   // get data from the view and add it to mongodb
   try {
     const results = await Movie.aggregate([
@@ -297,11 +304,11 @@ const getTopYear = async (req, res) => {
     ]);
     return res.send(results);
   } catch (err) {
-    return res.send(500, { error: err });
+    return res.status(500).send({ error: err });
   }
 };
 
-const getYearCount = async (req, res) => {
+export const getYearCount = async (req, res) => {
   // get data from the view and add it to mongodb
   try {
     const results = await Movie.aggregate([
@@ -316,11 +323,11 @@ const getYearCount = async (req, res) => {
     ]);
     return res.send(results);
   } catch (err) {
-    return res.send(500, { error: err });
+    return res.status(500).send({ error: err });
   }
 };
 
-const getMovieAwards = async (req, res) => {
+export const getMovieAwards = async (req, res) => {
   try {
     const results = await Movie.aggregate([
       { $match: { category: { $ne: null } } },
@@ -350,7 +357,7 @@ const getMovieAwards = async (req, res) => {
     ]);
     return res.send(results);
   } catch (err) {
-    return res.send(500, { error: err });
+    return res.status(500).send({ error: err });
   }
 };
 
@@ -375,14 +382,3 @@ const getMovieAwards = async (req, res) => {
 //     console.log("Succes:", res);
 //     return res;
 // });
-
-module.exports = {
-  getMovieList,
-  getMovieDetails,
-  getTopMovie,
-  getMovieAwards,
-  addNewMovie,
-  updateExistingMovie,
-  getTopYear,
-  getYearCount
-};

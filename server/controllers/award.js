@@ -1,6 +1,6 @@
-const { Award } = require('../models/schemaModel');
+import { Award } from '../schemaModels/award.js';
 
-const getAwardList = async (req, res) => {
+export const getAwardList = async (req, res) => {
   try {
     const results = await Award.aggregate([
       {
@@ -12,11 +12,11 @@ const getAwardList = async (req, res) => {
     ]);
     return res.send(results);
   } catch (err) {
-    return res.send(500, { error: err });
+    return res.status(500).send({ error: err });
   }
 };
 
-const getAwardCategoryList = async (req, res) => {
+export const getAwardCategoryList = async (req, res) => {
   try {
     const results = await Award.aggregate([
       {
@@ -51,11 +51,11 @@ const getAwardCategoryList = async (req, res) => {
     ]);
     return res.send(results);
   } catch (err) {
-    return res.send(500, { error: err });
+    return res.status(500).send({ error: err });
   }
 };
 
-const getAwardCount = async (req, res) => {
+export const getAwardCount = async (req, res) => {
   // get data from the view and add it to mongodb
   try {
     const results = await Award.aggregate([
@@ -87,11 +87,11 @@ const getAwardCount = async (req, res) => {
     ]);
     return res.send(results);
   } catch (err) {
-    return res.send(500, { error: err });
+    return res.status(500).send({ error: err });
   }
 };
 
-const addNewAward = async (req, res) => {
+export const addNewAward = async (req, res) => {
   // get data from the view and add it to mongodb
   var query = { name: req.body.name };
   const existing = req.body;
@@ -104,13 +104,6 @@ const addNewAward = async (req, res) => {
       return res.send('New Award Succesfully added.');
     }
   } catch (err) {
-    return res.send(500, { error: err });
+    return res.status(500).send({ error: err });
   }
-};
-
-module.exports = {
-  getAwardList,
-  getAwardCategoryList,
-  getAwardCount,
-  addNewAward
 };
