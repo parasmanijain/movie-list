@@ -76,7 +76,6 @@ export const ChartContainer = (props: any) => {
       apiData.forEach((element) => {
         data = [];
         labels = [];
-        console.log(element);
         element.category.forEach((e) => {
           labels.push(e.name);
           data.push(e.length);

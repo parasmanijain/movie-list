@@ -1,6 +1,7 @@
-import { Genre } from '../schemaModels/genre.js';
+import { Request, Response } from 'express';
+import { Genre } from '../schemaModels/genre';
 
-export const getGenreList = async (req, res) => {
+export const getGenreList = async (req: Request, res: Response) => {
   try {
     const results = await Genre.aggregate([
       {
@@ -16,7 +17,7 @@ export const getGenreList = async (req, res) => {
   }
 };
 
-export const getTopGenre = async (req, res) => {
+export const getTopGenre = async (req: Request, res: Response) => {
   // get data from the view and add it to mongodb
   try {
     const results = await Genre.aggregate([
@@ -35,7 +36,7 @@ export const getTopGenre = async (req, res) => {
   }
 };
 
-export const getGenreCount = async (req, res) => {
+export const getGenreCount = async (req: Request, res: Response) => {
   // get data from the view and add it to mongodb
   try {
     const results = await Genre.aggregate([
@@ -53,12 +54,12 @@ export const getGenreCount = async (req, res) => {
   }
 };
 
-export const addNewGenre = async (req, res) => {
+export const addNewGenre = async (req: Request, res: Response) => {
   const { name, movies } = req.body;
   // get data from the view and add it to mongodb
   var query = { name: name, movies: movies };
   try {
-    const doc = awaitGenre.findOneAndUpdate(
+    const doc = await Genre.findOneAndUpdate(
       query,
       { $set: { name: name } },
       {

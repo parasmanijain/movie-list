@@ -1,6 +1,7 @@
-import { Language } from '../schemaModels/language.js';
+import { Request, Response } from 'express';
+import { Language } from '../schemaModels/language';
 
-export const getLanguageList = async (req, res) => {
+export const getLanguageList = async (req: Request, res: Response) => {
   try {
     const results = await Language.aggregate([
       {
@@ -16,7 +17,7 @@ export const getLanguageList = async (req, res) => {
   }
 };
 
-export const getTopLanguage = async (req, res) => {
+export const getTopLanguage = async (req: Request, res: Response) => {
   // get data from the view and add it to mongodb
   try {
     const results = await Language.aggregate([
@@ -35,7 +36,7 @@ export const getTopLanguage = async (req, res) => {
   }
 };
 
-export const getLanguageCount = async (req, res) => {
+export const getLanguageCount = async (req: Request, res: Response) => {
   // get data from the view and add it to mongodb
   try {
     const results = await Language.aggregate([
@@ -53,7 +54,7 @@ export const getLanguageCount = async (req, res) => {
   }
 };
 
-export const addNewLanguage = async (req, res) => {
+export const addNewLanguage = async (req: Request, res: Response) => {
   const { name, code, movies } = req.body;
   // get data from the view and add it to mongodb
   var query = { name: name, code: code, movies: movies };

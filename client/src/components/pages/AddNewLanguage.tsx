@@ -12,7 +12,6 @@ export const AddNewLanguage = () => {
     },
     validationSchema,
     onSubmit: (values, { resetForm }) => {
-      console.log(formik.values);
       axiosConfig
         .post(`${ADD_NEW_LANGUAGE_URL}`, {
           name: formik.values.name,

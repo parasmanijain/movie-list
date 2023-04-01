@@ -1,6 +1,7 @@
-import { Country } from '../schemaModels/country.js';
+import { Request, Response } from 'express';
+import { Country } from '../schemaModels/country';
 
-export const getCountryList = async (req, res) => {
+export const getCountryList = async (req: Request, res: Response) => {
   try {
     const results = await Country.aggregate([
       {
@@ -16,7 +17,7 @@ export const getCountryList = async (req, res) => {
   }
 };
 
-export const addNewCountry = async (req, res) => {
+export const addNewCountry = async (req: Request, res: Response) => {
   // get data from the view and add it to mongodb
   var query = { name: req.body.name };
   const existing = req.body;

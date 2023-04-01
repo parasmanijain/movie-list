@@ -1,53 +1,53 @@
-import 'dotenv/config.js';
-import express, { json, urlencoded } from 'express';
+import 'dotenv/config';
+import express, { json, urlencoded, Request, Response, NextFunction } from 'express';
 const app = express();
 import cors from 'cors';
-import { connect } from 'mongoose';
-connect(process.env.DATABASE_URL, { useNewUrlParser: true, useUnifiedTopology: true });
+
+import './database.js';
 
 app.use(cors());
 app.use(json());
 app.use(urlencoded({ extended: true }));
 
-import { getCountryList, addNewCountry } from './controllers/country.js';
+import { getCountryList, addNewCountry } from './controllers/country';
 import {
   getLanguageList,
   getTopLanguage,
   getLanguageCount,
   addNewLanguage
-} from './controllers/language.js';
+} from './controllers/language';
 import {
   getDirectorList,
   getTopDirector,
   getDirectorCount,
   addNewDirector,
   getMovieCount
-} from './controllers/director.js';
-import { getGenreList, getTopGenre, getGenreCount, addNewGenre } from './controllers/genre.js';
+} from './controllers/director';
+import { getGenreList, getTopGenre, getGenreCount, addNewGenre } from './controllers/genre';
 import {
   getFranchiseList,
   getTopFranchise,
   getFranchiseCount,
   addNewFranchise
-} from './controllers/franchise.js';
+} from './controllers/franchise';
 import {
   getUniverseList,
   getUniverseFranchiseList,
   getUniverseCount,
   addNewUniverse
-} from './controllers/universe.js';
+} from './controllers/universe';
 import {
   getCategoryList,
   getTopCategory,
   getCategoryCount,
   addNewCategory
-} from './controllers/category.js';
+} from './controllers/category';
 import {
   getAwardList,
   getAwardCategoryList,
   getAwardCount,
   addNewAward
-} from './controllers/award.js';
+} from './controllers/award';
 import {
   getMovieList,
   getMovieDetails,
@@ -57,7 +57,7 @@ import {
   updateExistingMovie,
   getTopYear,
   getYearCount
-} from './controllers/movie.js';
+} from './controllers/movie';
 
 app.get('/languages', getLanguageList);
 app.get('/topLanguage', getTopLanguage);
@@ -107,7 +107,7 @@ app.get('/awardCategories', getAwardCategoryList);
 app.get('/awardsCount', getAwardCount);
 app.post('/award', addNewAward);
 
-function setupCORS(req, res, next) {
+function setupCORS(req: Request, res: Response, next: NextFunction) {
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
   res.header(
     'Access-Control-Allow-Headers',

@@ -1,8 +1,9 @@
-import { Award } from '../schemaModels/award.js';
+import { Request, Response } from 'express';
+import { Universe } from '../schemaModels/universe';
 
-export const getAwardList = async (req, res) => {
+export const getUniverseList = async (req: Request, res: Response) => {
   try {
-    const results = await Award.aggregate([
+    const results = await Universe.aggregate([
       {
         $project: {
           name: 1
@@ -16,17 +17,17 @@ export const getAwardList = async (req, res) => {
   }
 };
 
-export const getAwardCategoryList = async (req, res) => {
+export const getUniverseFranchiseList = async (req: Request, res: Response) => {
   try {
-    const results = await Award.aggregate([
+    const results = await Universe.aggregate([
       {
         $lookup: {
-          from: 'categories',
-          let: { categories: '$categories' },
-          as: 'categories',
+          from: 'franchises',
+          let: { franchises: '$franchises' },
+          as: 'franchises',
           pipeline: [
             {
-              $match: { $expr: { $in: ['$_id', '$$categories'] } }
+              $match: { $expr: { $in: ['$_id', '$$franchises'] } }
             },
             { $sort: { name: 1 } }
           ]
@@ -35,13 +36,13 @@ export const getAwardCategoryList = async (req, res) => {
       {
         $project: {
           name: 1,
-          categories: {
+          franchises: {
             $map: {
-              input: '$categories',
-              as: 'c',
+              input: '$franchises',
+              as: 'f',
               in: {
-                name: '$$c.name',
-                _id: '$$c._id'
+                name: '$$f.name',
+                _id: '$$f._id'
               }
             }
           }
@@ -55,24 +56,24 @@ export const getAwardCategoryList = async (req, res) => {
   }
 };
 
-export const getAwardCount = async (req, res) => {
+export const getUniverseCount = async (req: Request, res: Response) => {
   // get data from the view and add it to mongodb
   try {
-    const results = await Award.aggregate([
+    const results = await Universe.aggregate([
       {
         $lookup: {
-          from: 'categories',
+          from: 'franchises',
           localField: '_id',
-          foreignField: 'award',
-          as: 'categories'
+          foreignField: 'universe',
+          as: 'franchises'
         }
       },
       {
         $project: {
           name: 1,
-          category: {
+          franchise: {
             $map: {
-              input: '$categories',
+              input: '$franchises',
               in: {
                 name: '$$this.name',
                 length: {
@@ -91,17 +92,17 @@ export const getAwardCount = async (req, res) => {
   }
 };
 
-export const addNewAward = async (req, res) => {
+export const addNewUniverse = async (req: Request, res: Response) => {
   // get data from the view and add it to mongodb
   var query = { name: req.body.name };
   const existing = req.body;
   try {
-    const doc = await Award.findOneAndUpdate(query, existing, {
+    const doc = await Universe.findOneAndUpdate(query, existing, {
       upsert: true,
       useFindAndModify: false
     });
     if (doc) {
-      return res.send('New Award Succesfully added.');
+      return res.send('New Universe Succesfully added.');
     }
   } catch (err) {
     return res.status(500).send({ error: err });

@@ -1,7 +1,8 @@
-import { Franchise } from '../schemaModels/franchise.js';
-import { Universe } from '../schemaModels/universe.js';
+import { Request, Response } from 'express';
+import { Franchise } from '../schemaModels/franchise';
+import { Universe } from '../schemaModels/universe';
 
-export const getFranchiseList = async (req, res) => {
+export const getFranchiseList = async (req: Request, res: Response) => {
   try {
     const results = await Franchise.aggregate([
       {
@@ -22,7 +23,7 @@ export const getFranchiseList = async (req, res) => {
   }
 };
 
-export const getTopFranchise = async (req, res) => {
+export const getTopFranchise = async (req: Request, res: Response) => {
   // get data from the view and add it to mongodb
   try {
     const results = await Franchise.aggregate([
@@ -41,7 +42,7 @@ export const getTopFranchise = async (req, res) => {
   }
 };
 
-export const getFranchiseCount = async (req, res) => {
+export const getFranchiseCount = async (req: Request, res: Response) => {
   // get data from the view and add it to mongodb
   try {
     const results = await Franchise.aggregate([
@@ -60,7 +61,7 @@ export const getFranchiseCount = async (req, res) => {
   }
 };
 
-export const addNewFranchise = async (req, res) => {
+export const addNewFranchise = async (req: Request, res: Response) => {
   try {
     const { name, movies, universe } = req.body;
     // get data from the view and add it to mongodb
@@ -78,7 +79,7 @@ export const addNewFranchise = async (req, res) => {
       }
     );
     if (!doc) {
-      return res.status(500).send({ error: err });
+      return res.status(500).send({ error: doc });
     }
     if (universe) {
       const bulkUniverseOps = [
