@@ -1,6 +1,7 @@
-const { Franchise, Universe } = require('../models/schemaModel');
+import { Franchise } from '../schemaModels/franchise.js';
+import { Universe } from '../schemaModels/universe.js';
 
-const getFranchiseList = async (req, res) => {
+export const getFranchiseList = async (req, res) => {
   try {
     const results = await Franchise.aggregate([
       {
@@ -17,11 +18,11 @@ const getFranchiseList = async (req, res) => {
     ]);
     return res.send(results);
   } catch (err) {
-    return res.send(500, { error: err });
+    return res.status(500).send({ error: err });
   }
 };
 
-const getTopFranchise = async (req, res) => {
+export const getTopFranchise = async (req, res) => {
   // get data from the view and add it to mongodb
   try {
     const results = await Franchise.aggregate([
@@ -36,11 +37,11 @@ const getTopFranchise = async (req, res) => {
     ]);
     return res.send(results);
   } catch (err) {
-    return res.send(500, { error: err });
+    return res.status(500).send({ error: err });
   }
 };
 
-const getFranchiseCount = async (req, res) => {
+export const getFranchiseCount = async (req, res) => {
   // get data from the view and add it to mongodb
   try {
     const results = await Franchise.aggregate([
@@ -55,11 +56,11 @@ const getFranchiseCount = async (req, res) => {
     ]);
     return res.send(results);
   } catch (err) {
-    return res.send(500, { error: err });
+    return res.status(500).send({ error: err });
   }
 };
 
-const addNewFranchise = async (req, res) => {
+export const addNewFranchise = async (req, res) => {
   try {
     const { name, movies, universe } = req.body;
     // get data from the view and add it to mongodb
@@ -77,7 +78,7 @@ const addNewFranchise = async (req, res) => {
       }
     );
     if (!doc) {
-      return res.send(500, { error: err });
+      return res.status(500).send({ error: err });
     }
     if (universe) {
       const bulkUniverseOps = [
@@ -99,11 +100,4 @@ const addNewFranchise = async (req, res) => {
   } catch (err) {
     return res.status(400).json(err);
   }
-};
-
-module.exports = {
-  getFranchiseList,
-  getTopFranchise,
-  getFranchiseCount,
-  addNewFranchise
 };

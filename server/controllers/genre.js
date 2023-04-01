@@ -1,6 +1,6 @@
-const { Genre } = require('../models/schemaModel');
+import { Genre } from '../schemaModels/genre.js';
 
-const getGenreList = async (req, res) => {
+export const getGenreList = async (req, res) => {
   try {
     const results = await Genre.aggregate([
       {
@@ -12,11 +12,11 @@ const getGenreList = async (req, res) => {
     ]);
     return res.send(results);
   } catch (err) {
-    return res.send(500, { error: err });
+    return res.status(500).send({ error: err });
   }
 };
 
-const getTopGenre = async (req, res) => {
+export const getTopGenre = async (req, res) => {
   // get data from the view and add it to mongodb
   try {
     const results = await Genre.aggregate([
@@ -31,11 +31,11 @@ const getTopGenre = async (req, res) => {
     ]);
     return res.send(results);
   } catch (err) {
-    return res.send(500, { error: err });
+    return res.status(500).send({ error: err });
   }
 };
 
-const getGenreCount = async (req, res) => {
+export const getGenreCount = async (req, res) => {
   // get data from the view and add it to mongodb
   try {
     const results = await Genre.aggregate([
@@ -49,11 +49,11 @@ const getGenreCount = async (req, res) => {
     ]);
     return res.send(results);
   } catch (err) {
-    return res.send(500, { error: err });
+    return res.status(500).send({ error: err });
   }
 };
 
-const addNewGenre = async (req, res) => {
+export const addNewGenre = async (req, res) => {
   const { name, movies } = req.body;
   // get data from the view and add it to mongodb
   var query = { name: name, movies: movies };
@@ -70,13 +70,6 @@ const addNewGenre = async (req, res) => {
       return res.send('New Genre Succesfully added.');
     }
   } catch (err) {
-    return res.send(500, { error: err });
+    return res.status(500).send({ error: err });
   }
-};
-
-module.exports = {
-  getGenreList,
-  getTopGenre,
-  getGenreCount,
-  addNewGenre
 };

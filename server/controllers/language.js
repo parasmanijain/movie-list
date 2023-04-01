@@ -1,6 +1,6 @@
-const { Language } = require('../models/schemaModel');
+import { Language } from '../schemaModels/language.js';
 
-const getLanguageList = async (req, res) => {
+export const getLanguageList = async (req, res) => {
   try {
     const results = await Language.aggregate([
       {
@@ -12,11 +12,11 @@ const getLanguageList = async (req, res) => {
     ]);
     return res.send(results);
   } catch (err) {
-    return res.send(500, { error: err });
+    return res.status(500).send({ error: err });
   }
 };
 
-const getTopLanguage = async (req, res) => {
+export const getTopLanguage = async (req, res) => {
   // get data from the view and add it to mongodb
   try {
     const results = await Language.aggregate([
@@ -31,11 +31,11 @@ const getTopLanguage = async (req, res) => {
     ]);
     return res.send(results);
   } catch (err) {
-    return res.send(500, { error: err });
+    return res.status(500).send({ error: err });
   }
 };
 
-const getLanguageCount = async (req, res) => {
+export const getLanguageCount = async (req, res) => {
   // get data from the view and add it to mongodb
   try {
     const results = await Language.aggregate([
@@ -49,11 +49,11 @@ const getLanguageCount = async (req, res) => {
     ]);
     return res.send(results);
   } catch (err) {
-    return res.send(500, { error: err });
+    return res.status(500).send({ error: err });
   }
 };
 
-const addNewLanguage = async (req, res) => {
+export const addNewLanguage = async (req, res) => {
   const { name, code, movies } = req.body;
   // get data from the view and add it to mongodb
   var query = { name: name, code: code, movies: movies };
@@ -70,7 +70,7 @@ const addNewLanguage = async (req, res) => {
       return res.send('New Language Succesfully added.');
     }
   } catch (err) {
-    return res.send(500, { error: err });
+    return res.status(500).send({ error: err });
   }
 };
 
@@ -79,10 +79,3 @@ const addNewLanguage = async (req, res) => {
 //     if (err) return err;
 //     return results;
 // });
-
-module.exports = {
-  getLanguageList,
-  getTopLanguage,
-  getLanguageCount,
-  addNewLanguage
-};
