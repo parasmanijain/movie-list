@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Schema } from 'mongoose';
 import { useFormik } from 'formik';
 import * as _ from 'lodash';
 import axiosConfig from '../../helper/axiosConfig';
@@ -33,8 +34,22 @@ import {
   ListSubheader,
   FormHelperText
 } from '../lib';
+import { Language } from '../../models/Language';
 
-const initialValues = {
+interface IFormikValues {
+  name: string;
+  language: Schema.Types.ObjectId[];
+  director: Schema.Types.ObjectId[];
+  imdb: string;
+  rottenTomatoes?: string;
+  year: number;
+  url: string;
+  genre: Schema.Types.ObjectId[];
+  franchise?: Schema.Types.ObjectId;
+  category?: Schema.Types.ObjectId[];
+}
+
+const initialValues: IFormikValues = {
   name: '',
   language: [],
   director: [],
@@ -43,13 +58,13 @@ const initialValues = {
   year: new Date().getUTCFullYear(),
   url: '',
   genre: [],
-  franchise: '',
+  franchise: null,
   category: []
 };
 
 export const AddNewMovie = (props: { selectedMovie?: string }) => {
   const { selectedMovie } = props;
-  const [languageData, setLanguageData] = useState([]);
+  const [languageData, setLanguageData] = useState<Language[]>([]);
   const [genreData, setGenreData] = useState([]);
   const [franchiseData, setFranchiseData] = useState([]);
   const [categoryData, setCategoryData] = useState([]);
@@ -81,7 +96,7 @@ export const AddNewMovie = (props: { selectedMovie?: string }) => {
       });
   };
 
-  const fetchSelectedMovieDetails = (franchiseList: any[]) => {
+  const fetchSelectedMovieDetails = (franchiseList) => {
     const selectedMovieDetails = axiosConfig.get(`${GET_MOVIE_DETAILS_URL}`, {
       params: { movieID: selectedMovie }
     });
@@ -101,18 +116,24 @@ export const AddNewMovie = (props: { selectedMovie?: string }) => {
             franchise,
             category
           } = responses[0].data;
-          const languageValues = language.map((element: { _id: any }) => element._id);
-          const directorValues = director.map((element: { _id: any }) => element._id);
-          const genreValues = genre.map((element: { _id: any }) => element._id);
-          let categoryValues: any;
+          const languageValues: Schema.Types.ObjectId[] = language.map(
+            (element: { _id: Schema.Types.ObjectId }) => element._id
+          );
+          const directorValues: Schema.Types.ObjectId[] = director.map(
+            (element: { _id: Schema.Types.ObjectId }) => element._id
+          );
+          const genreValues: Schema.Types.ObjectId[] = genre.map(
+            (element: { _id: Schema.Types.ObjectId }) => element._id
+          );
+          let categoryValues: Schema.Types.ObjectId[];
           if (category) {
-            categoryValues = category.map((element: { _id: any }) => element._id);
+            categoryValues = category.map((element: { _id: Schema.Types.ObjectId }) => element._id);
           }
-          let franchiseValue: { _id: any }[];
+          let franchiseValue: { _id: Schema.Types.ObjectId }[];
           if (franchise && franchise.universe) {
             franchiseValue = franchiseList
-              .find((ele: { _id: any }) => ele._id === franchise.universe)
-              .franchises.filter((x: { _id: any }) => x._id === franchise._id);
+              .find((ele: { _id: Schema.Types.ObjectId }) => ele._id === franchise.universe)
+              .franchises.filter((x: { _id: Schema.Types.ObjectId }) => x._id === franchise._id);
           }
           const obj = {
             name,
@@ -123,8 +144,8 @@ export const AddNewMovie = (props: { selectedMovie?: string }) => {
             url,
             year,
             genre: genreValues,
-            franchise: franchise ? franchiseValue[0]._id : '',
-            category: categoryValues ? categoryValues : ''
+            franchise: franchise ? franchiseValue[0]._id : null,
+            category: categoryValues ? categoryValues : null
           };
           formik.setValues(obj, true);
           setExistingValues(obj);
@@ -149,7 +170,7 @@ export const AddNewMovie = (props: { selectedMovie?: string }) => {
         apiURL = UPDATE_EXISTING_MOVIE_URL;
         const diff = _.reduce(
           existingValues,
-          (result: string | any[], value: any, key: string | number) =>
+          (result, value, key: string | number) =>
             _.isEqual(value, formik.values[key]) ? result : result.concat(key.toString()),
           []
         );
@@ -157,8 +178,8 @@ export const AddNewMovie = (props: { selectedMovie?: string }) => {
         diff.forEach((ele: string) => {
           let obj = {};
           if (arrkeys.includes(ele)) {
-            const removed = existingValues[ele].filter((x: any) => !formik.values[ele].includes(x));
-            const added = formik.values[ele].filter((x: any) => !existingValues[ele].includes(x));
+            const removed = existingValues[ele].filter((x) => !formik.values[ele].includes(x));
+            const added = formik.values[ele].filter((x) => !existingValues[ele].includes(x));
             obj = {
               [ele]: {
                 value: formik.values[ele],
@@ -206,16 +227,16 @@ export const AddNewMovie = (props: { selectedMovie?: string }) => {
     }
   });
 
-  const makeSingleOptionItems = (data: any[], key: string) => {
+  const makeSingleOptionItems = (data, key: string) => {
     const items = [];
-    data.forEach((element: { [x: string]: any[]; _id: any; name: any }, index: any) => {
+    data.forEach((element, index: number) => {
       if (element[key]) {
         items.push(
           <ListSubheader sx={{ fontSize: '16px', fontWeight: '700' }} key={element._id + index}>
             {element.name}
           </ListSubheader>
         );
-        element[key].forEach((el: { _id: any; name: any }) => {
+        element[key].forEach((el: { _id: Schema.Types.ObjectId; name: string }) => {
           items.push(
             <MenuItem key={el._id} value={el._id}>
               {el.name}
@@ -234,16 +255,16 @@ export const AddNewMovie = (props: { selectedMovie?: string }) => {
     return items;
   };
 
-  const makeMultiOptionItems = (data: any[], list: string, key: string) => {
+  const makeMultiOptionItems = (data, list: string, key: string) => {
     const items = [];
-    data.forEach((element: { [x: string]: any[]; _id: any; name: any }, index: any) => {
+    data.forEach((element, index: number) => {
       if (element[list]) {
         items.push(
           <ListSubheader sx={{ fontSize: '16px', fontWeight: '700' }} key={element._id + index}>
             {element.name}
           </ListSubheader>
         );
-        element[list].forEach((el: { _id: any; name: any }) => {
+        element[list].forEach((el: { _id: Schema.Types.ObjectId; name: string }) => {
           items.push(
             <MenuItem key={el._id} value={el._id}>
               <CheckBox checked={formik.values[key].indexOf(el._id) > -1} />
@@ -281,7 +302,7 @@ export const AddNewMovie = (props: { selectedMovie?: string }) => {
             onChange={formik.handleChange}
             error={formik.touched.language && Boolean(formik.errors.language)}
             input={<OutlinedInput label="Language" />}
-            renderValue={(selected: string[]) => {
+            renderValue={(selected: Schema.Types.ObjectId[]) => {
               const selectedLanguages = [...languageData]
                 .filter((language) => selected.includes(language._id))
                 .map((element) => element.name);

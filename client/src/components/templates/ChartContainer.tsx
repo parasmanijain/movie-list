@@ -12,7 +12,7 @@ const createChunks = (array, chunk) => {
   return temp;
 };
 
-export const ChartContainer = (props: any) => {
+export const ChartContainer = (props: { title: string; fullHeight; apiData; stacked }) => {
   const { title, fullHeight, apiData, stacked } = props;
   const [chartData, setChartData] = useState([]);
   const [width, height] = useWindowDimensions();

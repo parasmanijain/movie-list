@@ -43,7 +43,15 @@ const renderOptions = (title, subtitle?, stacked?) => {
   return options;
 };
 
-export const RenderChart = (props: any) => {
+export const RenderChart = (props: {
+  title: string;
+  subtitle: string;
+  width;
+  data;
+  canvasHeight;
+  index: number;
+  stacked;
+}) => {
   const { title, subtitle, width, data, canvasHeight, index, stacked } = props;
   return (
     <Box key={index} sx={{ display: 'inline-block' }}>
