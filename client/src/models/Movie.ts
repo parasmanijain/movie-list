@@ -9,7 +9,7 @@ export interface Movie {
   url: string;
   imdb: string;
   rottenTomatoes?: string;
-  franchise?: Schema.Types.ObjectId;
+  franchise?: Schema.Types.ObjectId | string;
   genre: Schema.Types.ObjectId[];
   category?: Schema.Types.ObjectId[];
 }
