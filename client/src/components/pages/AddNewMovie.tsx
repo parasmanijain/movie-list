@@ -45,7 +45,7 @@ interface IFormikValues {
   year: number;
   url: string;
   genre: Schema.Types.ObjectId[];
-  franchise?: Schema.Types.ObjectId;
+  franchise?: Schema.Types.ObjectId | string;
   category?: Schema.Types.ObjectId[];
 }
 
@@ -58,7 +58,7 @@ const initialValues: IFormikValues = {
   year: new Date().getUTCFullYear(),
   url: '',
   genre: [],
-  franchise: null,
+  franchise: '',
   category: []
 };
 
@@ -144,7 +144,7 @@ export const AddNewMovie = (props: { selectedMovie?: string }) => {
             url,
             year,
             genre: genreValues,
-            franchise: franchise ? franchiseValue[0]._id : null,
+            franchise: franchise ? franchiseValue[0]._id : '',
             category: categoryValues ? categoryValues : null
           };
           formik.setValues(obj, true);
