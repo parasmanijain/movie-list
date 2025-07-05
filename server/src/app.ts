@@ -1,15 +1,20 @@
 import 'dotenv/config';
 import express, { json, urlencoded, Request, Response, NextFunction } from 'express';
-const app = express();
 import cors from 'cors';
-
 import { connect } from 'mongoose';
+
+// Connect to the database
 connect(process.env.DATABASE_URL as string);
 
+// Initialize Express app
+const app = express();
+
+// Middleware setup
 app.use(cors());
 app.use(json());
 app.use(urlencoded({ extended: true }));
 
+// Import controllers
 import { getCountryList, addNewCountry } from './controllers/country';
 import {
   getLanguageList,
@@ -60,6 +65,7 @@ import {
   getYearCount
 } from './controllers/movie';
 
+// Define routes
 app.get('/languages', getLanguageList);
 app.get('/topLanguage', getTopLanguage);
 app.get('/languagesCount', getLanguageCount);
@@ -108,6 +114,7 @@ app.get('/awardCategories', getAwardCategoryList);
 app.get('/awardsCount', getAwardCount);
 app.post('/award', addNewAward);
 
+// CORS setup function
 function setupCORS(req: Request, res: Response, next: NextFunction) {
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
   res.header(
@@ -122,7 +129,10 @@ function setupCORS(req: Request, res: Response, next: NextFunction) {
   }
 }
 
-app.all('/*', setupCORS);
+// Apply CORS setup
+app.all(/.*/, setupCORS);
+
+// Start the server
 app.listen(process.env.API_PORT, () => {
   console.log(`Server has started at ${process.env.API_PORT}`);
 });

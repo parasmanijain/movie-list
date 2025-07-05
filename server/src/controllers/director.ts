@@ -11,9 +11,9 @@ export const getDirectorList = async (req: Request, res: Response) => {
       },
       { $sort: { name: 1 } }
     ]);
-    return res.send(results);
+    res.status(200).send(results);
   } catch (err) {
-    return res.status(500).send({ error: err });
+    res.status(500).send({ error: err });
   }
 };
 
@@ -30,9 +30,9 @@ export const getTopDirector = async (req: Request, res: Response) => {
       { $sort: { length: -1 } },
       { $limit: 1 }
     ]);
-    return res.send(results);
+    res.status(200).send(results);
   } catch (err) {
-    return res.status(500).send({ error: err });
+    res.status(500).send({ error: err });
   }
 };
 
@@ -48,9 +48,9 @@ export const getDirectorCount = async (req: Request, res: Response) => {
       },
       { $sort: { name: 1 } }
     ]);
-    return res.send(results);
+    res.status(200).send(results);
   } catch (err) {
-    return res.status(500).send({ error: err });
+    res.status(500).send({ error: err });
   }
 };
 
@@ -76,23 +76,23 @@ export const getMovieCount = async (req: Request, res: Response) => {
       },
       { $sort: { movie_count: 1 } }
     ]);
-    return res.send(results);
+    res.status(200).send(results);
   } catch (err) {
-    return res.status(500).send({ error: err });
+    res.status(500).send({ error: err });
   }
 };
 
 export const addNewDirector = async (req: Request, res: Response) => {
   try {
     const newDirector = await Director.create(req.body);
-    return res.status(200).json(newDirector);
+    res.status(200).json(newDirector);
   } catch (err) {
-    return res.status(500).send({ error: err });
+    res.status(500).send({ error: err });
   }
 };
 
 // Director.updateOne({'_id':'618acee6c5f642268fc6c6fe'}, {"$pull": {movies: null}}).exec(function (err, results) {
 //     console.log(results);
-//     if (err) return err;
-//     return results;
+//     if (err)  err;
+//      results;
 // });

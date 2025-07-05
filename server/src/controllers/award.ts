@@ -11,9 +11,9 @@ export const getAwardList = async (req: Request, res: Response) => {
       },
       { $sort: { name: 1 } }
     ]);
-    return res.send(results);
+    res.status(200).send(results);
   } catch (err) {
-    return res.status(500).send({ error: err });
+    res.status(500).send({ error: err });
   }
 };
 
@@ -50,9 +50,9 @@ export const getAwardCategoryList = async (req: Request, res: Response) => {
       },
       { $sort: { name: 1 } }
     ]);
-    return res.send(results);
+    res.status(200).send(results);
   } catch (err) {
-    return res.status(500).send({ error: err });
+    res.status(500).send({ error: err });
   }
 };
 
@@ -86,9 +86,9 @@ export const getAwardCount = async (req: Request, res: Response) => {
       },
       { $sort: { name: 1 } }
     ]);
-    return res.send(results);
+    res.status(200).send(results);
   } catch (err) {
-    return res.status(500).send({ error: err });
+    res.status(500).send({ error: err });
   }
 };
 
@@ -102,9 +102,9 @@ export const addNewAward = async (req: Request, res: Response) => {
       useFindAndModify: false
     });
     if (doc) {
-      return res.send('New Award Succesfully added.');
+      res.status(200).send('New Award Succesfully added.');
     }
   } catch (err) {
-    return res.status(500).send({ error: err });
+    res.status(500).send({ error: err });
   }
 };

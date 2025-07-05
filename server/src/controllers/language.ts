@@ -11,14 +11,13 @@ export const getLanguageList = async (req: Request, res: Response) => {
       },
       { $sort: { name: 1 } }
     ]);
-    return res.send(results);
+    res.status(200).send(results);
   } catch (err) {
-    return res.status(500).send({ error: err });
+    res.status(500).send({ error: err });
   }
 };
 
 export const getTopLanguage = async (req: Request, res: Response) => {
-  // get data from the view and add it to mongodb
   try {
     const results = await Language.aggregate([
       {
@@ -30,14 +29,13 @@ export const getTopLanguage = async (req: Request, res: Response) => {
       { $sort: { length: -1 } },
       { $limit: 1 }
     ]);
-    return res.send(results);
+    res.status(200).send(results);
   } catch (err) {
-    return res.status(500).send({ error: err });
+    res.status(500).send({ error: err });
   }
 };
 
 export const getLanguageCount = async (req: Request, res: Response) => {
-  // get data from the view and add it to mongodb
   try {
     const results = await Language.aggregate([
       {
@@ -48,16 +46,15 @@ export const getLanguageCount = async (req: Request, res: Response) => {
       },
       { $sort: { name: 1 } }
     ]);
-    return res.send(results);
+    res.status(200).send(results);
   } catch (err) {
-    return res.status(500).send({ error: err });
+    res.status(500).send({ error: err });
   }
 };
 
 export const addNewLanguage = async (req: Request, res: Response) => {
   const { name, code, movies } = req.body;
-  // get data from the view and add it to mongodb
-  var query = { name: name, code: code, movies: movies };
+  const query = { name: name, code: code, movies: movies };
   try {
     const doc = await Language.findOneAndUpdate(
       query,
@@ -68,15 +65,9 @@ export const addNewLanguage = async (req: Request, res: Response) => {
       }
     );
     if (doc) {
-      return res.send('New Language Succesfully added.');
+      res.status(200).send('New Language Successfully added.');
     }
   } catch (err) {
-    return res.status(500).send({ error: err });
+    res.status(500).send({ error: err });
   }
 };
-
-// Language.updateOne({'_id':'618a5d02b958c5b30593f4f8'}, {"$pull": {movies: null}}).exec(function (err, results) {
-//     console.log(results);
-//     if (err) return err;
-//     return results;
-// });

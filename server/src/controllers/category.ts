@@ -11,9 +11,9 @@ export const getCategoryList = async (req: Request, res: Response) => {
       .populate('movies')
       .populate('award');
 
-    return res.send(results);
+    res.status(200).send(results);
   } catch (err) {
-    return res.status(500).send({ error: err });
+    res.status(500).send({ error: err });
   }
 };
 
@@ -30,9 +30,9 @@ export const getTopCategory = async (req: Request, res: Response) => {
       { $sort: { length: -1 } },
       { $limit: 1 }
     ]);
-    return res.send(results);
+    res.status(200).send(results);
   } catch (err) {
-    return res.status(500).send({ error: err });
+    res.status(500).send({ error: err });
   }
 };
 
@@ -49,9 +49,9 @@ export const getCategoryCount = async (req: Request, res: Response) => {
       },
       { $sort: { name: 1 } }
     ]);
-    return res.send(results);
+    res.status(200).send(results);
   } catch (err) {
-    return res.status(500).send({ error: err });
+    res.status(500).send({ error: err });
   }
 };
 
@@ -73,7 +73,7 @@ export const addNewCategory = async (req: Request, res: Response) => {
       }
     );
     if (!doc) {
-      return res.status(500).send({ error: doc });
+      res.status(500).send({ error: doc });
     }
     if (award) {
       const bulkAwardOps = [
@@ -89,11 +89,11 @@ export const addNewCategory = async (req: Request, res: Response) => {
       let operation = await Award.bulkWrite(bulkAwardOps)
         .then((bulkWriteOpResult) => console.log('Award BULK update OK:', bulkWriteOpResult))
         .catch(console.error.bind(console, 'Award BULK update error:'));
-      return res.status(200).json({ message: 'Record updated successfully' });
+      res.status(200).json({ message: 'Record updated successfully' });
     } else {
-      return res.status(200).send('Category Successfully Added');
+      res.status(200).send('Category Successfully Added');
     }
   } catch (err) {
-    return res.status(400).json(err);
+    res.status(400).json(err);
   }
 };

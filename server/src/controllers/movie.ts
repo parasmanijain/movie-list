@@ -38,7 +38,7 @@ export const getMovieList = async (
     if (results) {
       const count = await Movie.countDocuments({});
       if (count) {
-        return res.json({
+        res.json({
           total: count,
           page: page,
           pageSize: results.length,
@@ -47,7 +47,7 @@ export const getMovieList = async (
       }
     }
   } catch (err) {
-    return res.status(500).send({ error: err });
+    res.status(500).send({ error: err });
   }
 };
 
@@ -59,9 +59,9 @@ export const getMovieDetails = async (req: Request, res: Response) => {
       .populate('genre')
       .populate('franchise')
       .populate('category');
-    return res.send(results);
+    res.status(200).send(results);
   } catch (err) {
-    return res.status(500).send({ error: err });
+    res.status(500).send({ error: err });
   }
 };
 
@@ -78,9 +78,9 @@ export const getTopMovie = async (req: Request, res: Response) => {
         }
       }
     ]);
-    return res.send(results);
+    res.status(200).send(results);
   } catch (err) {
-    return res.status(500).send({ error: err });
+    res.status(500).send({ error: err });
   }
 };
 
@@ -179,9 +179,9 @@ export const addNewMovie = async (req: Request, res: Response) => {
         .then((bulkWriteOpResult) => console.log('Category BULK update OK:', bulkWriteOpResult))
         .catch(console.error.bind(console, 'Category BULK update error:'));
     }
-    return res.status(200).json({ message: 'Records updated succesfully' });
+    res.status(200).json({ message: 'Records updated succesfully' });
   } catch (err) {
-    return res.status(400).json(err);
+    res.status(400).json(err);
   }
 };
 
@@ -294,9 +294,9 @@ export const updateExistingMovie = async (req: Request, res: Response) => {
         .then((bulkWriteOpResult) => console.log('Franchise BULK update OK:', bulkWriteOpResult))
         .catch(console.error.bind(console, 'Franchise BULK update error:'));
     }
-    return res.status(200).json({ message: 'Records updated succesfully' });
+    res.status(200).json({ message: 'Records updated succesfully' });
   } catch (err) {
-    return res.status(400).json(err);
+    res.status(400).json(err);
   }
 };
 
@@ -308,9 +308,9 @@ export const getTopYear = async (req: Request, res: Response) => {
       { $sort: { count: -1 } },
       { $limit: 1 }
     ]);
-    return res.send(results);
+    res.status(200).send(results);
   } catch (err) {
-    return res.status(500).send({ error: err });
+    res.status(500).send({ error: err });
   }
 };
 
@@ -327,9 +327,9 @@ export const getYearCount = async (req: Request, res: Response) => {
       },
       { $sort: { _id: 1 } }
     ]);
-    return res.send(results);
+    res.status(200).send(results);
   } catch (err) {
-    return res.status(500).send({ error: err });
+    res.status(500).send({ error: err });
   }
 };
 
@@ -361,9 +361,9 @@ export const getMovieAwards = async (req: Request, res: Response) => {
       },
       { $sort: { name: 1 } }
     ]);
-    return res.send(results);
+    res.status(200).send(results);
   } catch (err) {
-    return res.status(500).send({ error: err });
+    res.status(500).send({ error: err });
   }
 };
 
@@ -372,10 +372,10 @@ export const getMovieAwards = async (req: Request, res: Response) => {
 //         Movie.updateOne({"_id": x._id}, {"$set": {"franchise": [ x.director ] }}).exec(function (err, res) {
 //             if (err) {
 //                 console.log(err);
-//                 return err;
+//                  err;
 //             }
 //             console.log(res);
-//             return res;
+//              res;
 //         });
 //      });
 // });
@@ -383,8 +383,8 @@ export const getMovieAwards = async (req: Request, res: Response) => {
 // Movie.syncIndexes(function (err, res) {
 //     if (err) {
 //         console.log("Error", err);
-//         return err;
+//          err;
 //     }
 //     console.log("Succes:", res);
-//     return res;
+//      res;
 // });

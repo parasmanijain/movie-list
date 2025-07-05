@@ -11,9 +11,9 @@ export const getUniverseList = async (req: Request, res: Response) => {
       },
       { $sort: { name: 1 } }
     ]);
-    return res.send(results);
+    res.status(200).send(results);
   } catch (err) {
-    return res.status(500).send({ error: err });
+    res.status(500).send({ error: err });
   }
 };
 
@@ -50,9 +50,9 @@ export const getUniverseFranchiseList = async (req: Request, res: Response) => {
       },
       { $sort: { name: 1 } }
     ]);
-    return res.send(results);
+    res.status(200).send(results);
   } catch (err) {
-    return res.status(500).send({ error: err });
+    res.status(500).send({ error: err });
   }
 };
 
@@ -86,9 +86,9 @@ export const getUniverseCount = async (req: Request, res: Response) => {
       },
       { $sort: { name: 1 } }
     ]);
-    return res.send(results);
+    res.status(200).send(results);
   } catch (err) {
-    return res.status(500).send({ error: err });
+    res.status(500).send({ error: err });
   }
 };
 
@@ -102,9 +102,9 @@ export const addNewUniverse = async (req: Request, res: Response) => {
       useFindAndModify: false
     });
     if (doc) {
-      return res.send('New Universe Succesfully added.');
+      res.status(200).send('New Universe Succesfully added.');
     }
   } catch (err) {
-    return res.status(500).send({ error: err });
+    res.status(500).send({ error: err });
   }
 };

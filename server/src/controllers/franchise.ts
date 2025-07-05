@@ -17,9 +17,9 @@ export const getFranchiseList = async (req: Request, res: Response) => {
       },
       { $sort: { name: 1 } }
     ]);
-    return res.send(results);
+    res.status(200).send(results);
   } catch (err) {
-    return res.status(500).send({ error: err });
+    res.status(500).send({ error: err });
   }
 };
 
@@ -36,9 +36,9 @@ export const getTopFranchise = async (req: Request, res: Response) => {
       { $sort: { length: -1 } },
       { $limit: 1 }
     ]);
-    return res.send(results);
+    res.status(200).send(results);
   } catch (err) {
-    return res.status(500).send({ error: err });
+    res.status(500).send({ error: err });
   }
 };
 
@@ -55,9 +55,9 @@ export const getFranchiseCount = async (req: Request, res: Response) => {
       },
       { $sort: { name: 1 } }
     ]);
-    return res.send(results);
+    res.status(200).send(results);
   } catch (err) {
-    return res.status(500).send({ error: err });
+    res.status(500).send({ error: err });
   }
 };
 
@@ -79,7 +79,7 @@ export const addNewFranchise = async (req: Request, res: Response) => {
       }
     );
     if (!doc) {
-      return res.status(500).send({ error: doc });
+      res.status(500).send({ error: doc });
     }
     if (universe) {
       const bulkUniverseOps = [
@@ -97,8 +97,8 @@ export const addNewFranchise = async (req: Request, res: Response) => {
         .then((bulkWriteOpResult) => console.log('Universe BULK update OK:', bulkWriteOpResult))
         .catch(console.error.bind(console, 'Universe BULK update error:'));
     }
-    return res.status(200).json({ message: 'Records updated succesfully' });
+    res.status(200).json({ message: 'Records updated succesfully' });
   } catch (err) {
-    return res.status(400).json(err);
+    res.status(400).json(err);
   }
 };

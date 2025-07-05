@@ -11,9 +11,9 @@ export const getGenreList = async (req: Request, res: Response) => {
       },
       { $sort: { name: 1 } }
     ]);
-    return res.send(results);
+    res.status(200).send(results);
   } catch (err) {
-    return res.status(500).send({ error: err });
+    res.status(500).send({ error: err });
   }
 };
 
@@ -30,9 +30,9 @@ export const getTopGenre = async (req: Request, res: Response) => {
       { $sort: { length: -1 } },
       { $limit: 1 }
     ]);
-    return res.send(results);
+    res.status(200).send(results);
   } catch (err) {
-    return res.status(500).send({ error: err });
+    res.status(500).send({ error: err });
   }
 };
 
@@ -48,9 +48,9 @@ export const getGenreCount = async (req: Request, res: Response) => {
       },
       { $sort: { name: 1 } }
     ]);
-    return res.send(results);
+    res.status(200).send(results);
   } catch (err) {
-    return res.status(500).send({ error: err });
+    res.status(500).send({ error: err });
   }
 };
 
@@ -68,9 +68,9 @@ export const addNewGenre = async (req: Request, res: Response) => {
       }
     );
     if (doc) {
-      return res.send('New Genre Succesfully added.');
+      res.status(200).send('New Genre Succesfully added.');
     }
   } catch (err) {
-    return res.status(500).send({ error: err });
+    res.status(500).send({ error: err });
   }
 };

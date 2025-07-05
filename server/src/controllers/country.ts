@@ -11,9 +11,9 @@ export const getCountryList = async (req: Request, res: Response) => {
       },
       { $sort: { name: 1 } }
     ]);
-    return res.send(results);
+    res.status(200).send(results);
   } catch (err) {
-    return res.status(500).send({ error: err });
+    res.status(500).send({ error: err });
   }
 };
 
@@ -27,9 +27,9 @@ export const addNewCountry = async (req: Request, res: Response) => {
       useFindAndModify: false
     });
     if (doc) {
-      return res.send('New Country Succesfully added.');
+      res.status(200).send('New Country Succesfully added.');
     }
   } catch (err) {
-    return res.status(500).send({ error: err });
+    res.status(500).send({ error: err });
   }
 };
