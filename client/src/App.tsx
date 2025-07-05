@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { SetStateAction, useState } from 'react';
 import { BrowserRouter, Routes, Route, Link, Navigate } from 'react-router-dom';
 import './App.css';
 import { AppBar, Box, Tab, Tabs } from './components/lib';
@@ -6,7 +6,7 @@ import { ProtectedRoute, routes } from './components';
 import { routeProps } from './components/routes/routes';
 
 const currentTab = () => {
-  if (process.env.NODE_ENV === 'production') {
+  if (import.meta.env.NODE_ENV === 'production') {
     const route = routes.find((ele: routeProps) => ele.path === window.location.pathname);
     if (route && !route.production) {
       return '/home';
@@ -17,7 +17,7 @@ const currentTab = () => {
 
 export const App = () => {
   const [selectedMovie, setSelectedMovie] = useState(null);
-  const [environment] = useState(process.env.NODE_ENV);
+  const [environment] = useState(import.meta.env.NODE_ENV || 'development'); // Default to 'development'
   const [value, setValue] = useState(currentTab());
 
   const renderTabs = (label, value, index) => (
@@ -36,7 +36,6 @@ export const App = () => {
   };
 
   const renderRoutes = (index, production, route: routeProps) => {
-    // eslint-disable-next-line react/prop-types
     const { component: FC, path } = route;
     let componentProps = {};
     if (!production) {
@@ -56,7 +55,7 @@ export const App = () => {
     }
   };
 
-  const handleChange = (event, newValue) => {
+  const handleChange = (_: any, newValue: SetStateAction<string>) => {
     setValue(newValue);
   };
 
@@ -73,7 +72,7 @@ export const App = () => {
           sx={{ minHeight: '40px' }}
         >
           {routes.map((ele, index) =>
-            environment.toLowerCase() !== 'development' && !ele.production
+            environment?.toLowerCase() !== 'development' && !ele.production
               ? null
               : renderTabs(ele.label, ele.path, index)
           )}

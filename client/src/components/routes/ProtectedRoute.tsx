@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 
 export const ProtectedRoute = () => {
-  const isDev = (process.env.NODE_ENV).toLowerCase().includes('development');
+  const [environment] = useState(import.meta.env.NODE_ENV || 'development'); // Default to 'development'
+  const isDev = environment?.toLowerCase().includes('development');
   return isDev ? <Outlet /> : <Navigate to="/" />;
 };

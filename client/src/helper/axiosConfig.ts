@@ -2,8 +2,8 @@
 import axios from 'axios';
 // Next we make an 'instance' of it
 const instance = axios.create({
-// .. where we make our configurations
-  baseURL: `${process.env.REACT_APP_API_URL}`
+  // .. where we make our configurations
+  baseURL: `${import.meta.env.VITE_APP_API_URL}`
 });
 
 // Where you would set stuff like your 'Authorization' header, etc ...

@@ -1,35 +1,24 @@
 {
   "compilerOptions": {
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "target": "ESNext",
+    "types": ["vite/client"],
+    "isolatedModules": true,
     "outDir": "./dist/",
     "noImplicitAny": false,
     "module": "esnext",
-    "target": "ESNext",
     "jsx": "react-jsx",
-    "types": [
-      "node"
-    ],
     "allowJs": true,
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "strict": false,
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
     "skipLibCheck": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "resolveJsonModule": true,
-    "isolatedModules": true,
     "noEmit": true
   },
-  "lib": [
-    "es2018",
-    "dom"
-  ],
-  "include": [
-    "src"
-  ]
+  "lib": ["es2018", "dom"],
+  "include": ["src"]
 }

@@ -43,7 +43,7 @@ export const Home = ({ handleMovieUpdateSelection }: HomeProps) => {
   const [page, setPage] = useState(searchParams.get('page') ? +searchParams.get('page') : 1);
   const [count, setCount] = useState(1);
   const [total, setTotal] = useState(0);
-  const [environment] = useState(process.env.NODE_ENV);
+  const [environment] = useState(import.meta.env.NODE_ENV);
   const [movieData, setMovieData] = useState([]);
   const [topDirectorData, setTopDirectorData] = useState([]);
   const [topLanguageData, setTopLanguageData] = useState([]);
@@ -298,7 +298,7 @@ export const Home = ({ handleMovieUpdateSelection }: HomeProps) => {
               </Fragment>
             ) : null}
             {movie.category.length ? renderAwards(movie.category) : null}
-            {environment.toLowerCase() === 'development' && (
+            {environment?.toLowerCase() === 'development' && (
               <Box>
                 <Button
                   variant="text"
