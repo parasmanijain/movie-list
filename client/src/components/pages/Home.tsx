@@ -210,7 +210,7 @@ export const Home = ({ handleMovieUpdateSelection }: HomeProps) => {
     directorURL(director.url, director.name, director._id, index, length);
 
   const movieList = movieData?.map((movie) => (
-    <Grid item xs={6} sm={4} md={3} lg={3} xl={3} key={movie._id} sx={{ padding: '0px' }}>
+    <Grid size={{ xs: 6, sm: 4, md: 3, lg: 3, xl: 3 }} key={movie._id} sx={{ padding: '0px' }}>
       <StyledAccordion
         sx={{
           padding: '0px',
