@@ -102,3 +102,4 @@ dist
 build
 
 .vscode
+.env
