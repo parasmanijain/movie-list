@@ -102,4 +102,4 @@ dist
 build
 
 .vscode
-.env
+*/.env
