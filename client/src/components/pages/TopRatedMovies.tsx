@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
-import PropTypes from 'prop-types';
 import axiosConfig from '../../helper/axiosConfig';
 import { GET_TOP_RATED_MOVIE_URL } from '../../helper/config';
 import {
@@ -19,6 +18,37 @@ import {
   Toolbar,
   Typography
 } from '../lib';
+
+// Represents a single movie row in the table
+export interface TopRatedMovie {
+  name: string;
+  year: number;
+  imdb: number;
+  rottenTomatoes: number;
+}
+
+// Represents a table header cell
+export interface HeadCell {
+  id: keyof TopRatedMovie;
+  numeric: boolean;
+  disablePadding: boolean;
+  label: string;
+  minWidth?: number;
+}
+
+// Props for EnhancedTableHead component
+export interface EnhancedTableHeadProps {
+  order: 'asc' | 'desc';
+  orderBy: keyof TopRatedMovie;
+  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof TopRatedMovie) => void;
+  numSelected: number;
+  rowCount: number;
+}
+
+// Props for EnhancedTableToolbar component
+export interface EnhancedTableToolbarProps {
+  numSelected: number;
+}
 
 const descendingComparator = (a, b, orderBy) => {
   if (b[orderBy] < a[orderBy]) {
@@ -86,15 +116,6 @@ const EnhancedTableHead = (props) => {
   );
 };
 
-EnhancedTableHead.propTypes = {
-  classes: PropTypes.object.isRequired,
-  numSelected: PropTypes.number.isRequired,
-  onRequestSort: PropTypes.func.isRequired,
-  order: PropTypes.oneOf(['asc', 'desc']).isRequired,
-  orderBy: PropTypes.string.isRequired,
-  rowCount: PropTypes.number.isRequired
-};
-
 const EnhancedTableToolbar = () => {
   return (
     <Toolbar>
@@ -103,10 +124,6 @@ const EnhancedTableToolbar = () => {
       </Typography>
     </Toolbar>
   );
-};
-
-EnhancedTableToolbar.propTypes = {
-  numSelected: PropTypes.number.isRequired
 };
 
 const StyledBox = styled(Box)(() => ({
@@ -176,7 +193,7 @@ export const TopRatedMovies = () => {
   return (
     <StyledBox>
       <Paper sx={{ width: '75%' }}>
-        <EnhancedTableToolbar numSelected={selected.length} />
+        <EnhancedTableToolbar />
         <TableContainer>
           <Table
             stickyHeader
