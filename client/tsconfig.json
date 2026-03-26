@@ -1,24 +1,31 @@
 {
   "compilerOptions": {
     "lib": ["dom", "dom.iterable", "esnext"],
-    "target": "ESNext",
+    "target": "ES2022",
     "types": ["vite/client"],
     "isolatedModules": true,
     "outDir": "./dist/",
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "module": "esnext",
     "jsx": "react-jsx",
     "allowJs": true,
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
-    "strict": false,
+    "strict": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "resolveJsonModule": true,
-    "noEmit": true
+    "noEmit": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitReturns": true,
+    "noUncheckedIndexedAccess": true,
+    "useUnknownInCatchVariables": true,
+    "verbatimModuleSyntax": true,
+    "allowImportingTsExtensions": true,
+    "noImplicitOverride": true,
+    "ignoreDeprecations": "6.0"
   },
-  "lib": ["es2018", "dom"],
   "include": ["src"]
 }
