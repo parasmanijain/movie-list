@@ -105,3 +105,4 @@ build
 */.env
 
 .slingshot
+.vscode
