@@ -1,16 +1,19 @@
 {
   "include": ["./**/*.ts", "./src/*.d.ts", "src/app.ts"],
   "exclude": [
-    "./node_modules"
+    "./node_modules",
+    "./dist"
   ],
   "compilerOptions": {
     "target": "ES2022",
-    "module": "CommonJS",
+    "module": "ES2022",
     "rootDir": "./src",
     "moduleResolution": "node",
     "allowJs": true,
+    "allowImportingTsExtensions": true,
     "outDir": "./dist",
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "useUnknownInCatchVariables": true,
@@ -18,7 +21,20 @@
     "noImplicitReturns": true,
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noUncheckedSideEffectImports": true,
     "ignoreDeprecations": "6.0",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "removeComments": false,
+    "preserveConstEnums": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true
+  },
+  "ts-node": {
+    "esm": true
   }
 }

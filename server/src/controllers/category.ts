@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { Category } from '../schemaModels/category';
-import { Award } from '../schemaModels/award';
+import { Category } from '../schemaModels/category.js';
+import { Award } from '../schemaModels/award.js';
 
 export const getCategoryList = async (req: Request, res: Response) => {
   // get data from the view and add it to mongodb
@@ -59,11 +59,11 @@ export const addNewCategory = async (req: Request, res: Response) => {
   try {
     const { name, movies, award } = req.body;
     // get data from the view and add it to mongodb
-    var query = { name: name, movies: movies };
+    let query: { name: string; movies: any; award?: any } = { name: name, movies: movies };
     if (award) {
-      query = { ...query, ...{ award: award } };
+      query = { ...query, award: award };
     }
-    let doc = await Category.findOneAndUpdate(
+    const doc = await Category.findOneAndUpdate(
       query,
       { $set: { name: name } },
       {
@@ -73,7 +73,8 @@ export const addNewCategory = async (req: Request, res: Response) => {
       }
     );
     if (!doc) {
-      res.status(500).send({ error: doc });
+      res.status(500).send({ error: 'Failed to create or update category' });
+      return;
     }
     if (award) {
       const bulkAwardOps = [
@@ -86,14 +87,15 @@ export const addNewCategory = async (req: Request, res: Response) => {
           }
         }
       ];
-      let operation = await Award.bulkWrite(bulkAwardOps)
+      const operation = await Award.bulkWrite(bulkAwardOps)
         .then((bulkWriteOpResult) => console.log('Award BULK update OK:', bulkWriteOpResult))
         .catch(console.error.bind(console, 'Award BULK update error:'));
       res.status(200).json({ message: 'Record updated successfully' });
     } else {
       res.status(200).send('Category Successfully Added');
     }
-  } catch (err) {
-    res.status(400).json(err);
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+    res.status(400).json({ error: errorMessage });
   }
 };

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { Franchise } from '../schemaModels/franchise';
-import { Universe } from '../schemaModels/universe';
+import { Franchise } from '../schemaModels/franchise.js';
+import { Universe } from '../schemaModels/universe.js';
 
 export const getFranchiseList = async (req: Request, res: Response) => {
   try {
@@ -65,11 +65,11 @@ export const addNewFranchise = async (req: Request, res: Response) => {
   try {
     const { name, movies, universe } = req.body;
     // get data from the view and add it to mongodb
-    var query = { name: name, movies: movies };
+    let query: { name: string; movies: any; universe?: any } = { name: name, movies: movies };
     if (universe) {
-      query = { ...query, ...{ universe: universe } };
+      query = { ...query, universe: universe };
     }
-    let doc = await Franchise.findOneAndUpdate(
+    const doc = await Franchise.findOneAndUpdate(
       query,
       { $set: { name: name } },
       {
@@ -79,7 +79,8 @@ export const addNewFranchise = async (req: Request, res: Response) => {
       }
     );
     if (!doc) {
-      res.status(500).send({ error: doc });
+      res.status(500).send({ error: 'Failed to create or update franchise' });
+      return;
     }
     if (universe) {
       const bulkUniverseOps = [
@@ -93,12 +94,13 @@ export const addNewFranchise = async (req: Request, res: Response) => {
         }
       ];
 
-      let operation = await Universe.bulkWrite(bulkUniverseOps)
+      const operation = await Universe.bulkWrite(bulkUniverseOps)
         .then((bulkWriteOpResult) => console.log('Universe BULK update OK:', bulkWriteOpResult))
         .catch(console.error.bind(console, 'Universe BULK update error:'));
     }
-    res.status(200).json({ message: 'Records updated succesfully' });
-  } catch (err) {
-    res.status(400).json(err);
+    res.status(200).json({ message: 'Records updated successfully' });
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+    res.status(400).json({ error: errorMessage });
   }
 };

@@ -1,11 +1,11 @@
 import { Document } from 'mongoose';
 import { Request, Response } from 'express';
-import { Director } from '../schemaModels/director';
-import { Language } from '../schemaModels/language';
-import { Movie } from '../schemaModels/movie';
-import { Franchise } from '../schemaModels/franchise';
-import { Category } from '../schemaModels/category';
-import { Genre } from '../schemaModels/genre';
+import { Director } from '../schemaModels/director.js';
+import { Language } from '../schemaModels/language.js';
+import { Movie } from '../schemaModels/movie.js';
+import { Franchise } from '../schemaModels/franchise.js';
+import { Category } from '../schemaModels/category.js';
+import { Genre } from '../schemaModels/genre.js';
 
 export const getMovieList = async (
   req: Request<{}, {}, {}, { page: string; limit: string }>,
@@ -53,15 +53,16 @@ export const getMovieList = async (
 
 export const getMovieDetails = async (req: Request, res: Response) => {
   try {
-    const results = await Movie.findById(req.query.movieID)
+    const results = await Movie.findById(req.query['movieID'])
       .populate('language')
       .populate('director')
       .populate('genre')
       .populate('franchise')
       .populate('category');
     res.status(200).send(results);
-  } catch (err) {
-    res.status(500).send({ error: err });
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+    res.status(500).send({ error: errorMessage });
   }
 };
 
@@ -99,7 +100,7 @@ export const addNewMovie = async (req: Request, res: Response) => {
       category
     } = req.body;
     // get data from the view and add it to mongodb
-    let query = {
+    let query: any = {
       name: name,
       language: language,
       director: director,
@@ -110,13 +111,13 @@ export const addNewMovie = async (req: Request, res: Response) => {
       genre: genre
     };
     if (franchise) {
-      query = { ...query, ...{ franchise: franchise } };
+      query = { ...query, franchise: franchise };
     }
     if (category) {
-      query = { ...query, ...{ category: category } };
+      query = { ...query, category: category };
     }
     const newMovie = await Movie.create(query);
-    if (!newMovie) throw newMovie;
+    if (!newMovie) throw new Error('Failed to create movie');
     const bulkDirectorOps = newMovie.director.map((doc) => ({
       updateOne: {
         filter: { _id: doc },
@@ -141,7 +142,6 @@ export const addNewMovie = async (req: Request, res: Response) => {
         useFindAndModify: false
       }
     }));
-    let operations = {};
     const directorOption = await Director.bulkWrite(bulkDirectorOps)
       .then((bulkWriteOpResult) => console.log('Director BULK update OK:', bulkWriteOpResult))
       .catch(console.error.bind(console, 'Director BULK update error:'));
@@ -179,21 +179,22 @@ export const addNewMovie = async (req: Request, res: Response) => {
         .then((bulkWriteOpResult) => console.log('Category BULK update OK:', bulkWriteOpResult))
         .catch(console.error.bind(console, 'Category BULK update error:'));
     }
-    res.status(200).json({ message: 'Records updated succesfully' });
-  } catch (err) {
-    res.status(400).json(err);
+    res.status(200).json({ message: 'Records updated successfully' });
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+    res.status(400).json({ error: errorMessage });
   }
 };
 
 export const updateExistingMovie = async (req: Request, res: Response) => {
   const { id, language, director, genre, franchise } = req.body;
   const keys = Object.keys(req.body);
-  let object = {};
+  let object: Record<string, any> = {};
   keys.forEach((key) => {
     if (['language', 'director', 'genre'].includes(key)) {
-      object = { ...object, [key]: req.body[key].value };
+      object = { ...object, [key]: req.body[key]?.value };
     } else if (key === 'franchise') {
-      object = { ...object, [key]: req.body[key].new };
+      object = { ...object, [key]: req.body[key]?.new };
     } else {
       object = { ...object, [key]: req.body[key] };
     }
@@ -201,75 +202,81 @@ export const updateExistingMovie = async (req: Request, res: Response) => {
   // get data from the view and add it to mongodb
   try {
     const existingMovieUpdated = await Movie.findByIdAndUpdate(id, req.body, { new: true });
-    if (!existingMovieUpdated) throw existingMovieUpdated;
+    if (!existingMovieUpdated) throw new Error('Failed to update movie');
     if (language) {
-      let languageOperations = [];
-      const languageAddOperations = language.added.map((doc: Document) => ({
-        updateOne: {
-          filter: { _id: doc },
-          update: { $push: { movies: id } },
-          upsert: true,
-          useFindAndModify: false
-        }
-      }));
-      const languageRemoveOperations = language.removed.map((doc: Document) => ({
-        updateOne: {
-          filter: { _id: doc },
-          update: { $pull: { movies: id } },
-          useFindAndModify: false
-        }
-      }));
-      languageOperations = [...languageAddOperations, ...languageRemoveOperations];
+      const languageOperations = [];
+      const languageAddOperations =
+        language.added?.map((doc: Document) => ({
+          updateOne: {
+            filter: { _id: doc },
+            update: { $push: { movies: id } },
+            upsert: true,
+            useFindAndModify: false
+          }
+        })) || [];
+      const languageRemoveOperations =
+        language.removed?.map((doc: Document) => ({
+          updateOne: {
+            filter: { _id: doc },
+            update: { $pull: { movies: id } },
+            useFindAndModify: false
+          }
+        })) || [];
+      languageOperations.push(...languageAddOperations, ...languageRemoveOperations);
       const languageOperation = await Language.bulkWrite(languageOperations)
         .then((bulkWriteOpResult) => console.log('Language BULK update OK:', bulkWriteOpResult))
         .catch(console.error.bind(console, 'Language BULK update error:'));
     }
     if (director) {
-      let directorOperations = [];
-      const directorAddOperations = director.added.map((doc: Document) => ({
-        updateOne: {
-          filter: { _id: doc },
-          update: { $push: { movies: id } },
-          upsert: true,
-          useFindAndModify: false
-        }
-      }));
-      const directorRemoveOperations = director.removed.map((doc: Document) => ({
-        updateOne: {
-          filter: { _id: doc },
-          update: { $pull: { movies: id } },
-          useFindAndModify: false
-        }
-      }));
-      directorOperations = [...directorAddOperations, ...directorRemoveOperations];
+      const directorOperations = [];
+      const directorAddOperations =
+        director.added?.map((doc: Document) => ({
+          updateOne: {
+            filter: { _id: doc },
+            update: { $push: { movies: id } },
+            upsert: true,
+            useFindAndModify: false
+          }
+        })) || [];
+      const directorRemoveOperations =
+        director.removed?.map((doc: Document) => ({
+          updateOne: {
+            filter: { _id: doc },
+            update: { $pull: { movies: id } },
+            useFindAndModify: false
+          }
+        })) || [];
+      directorOperations.push(...directorAddOperations, ...directorRemoveOperations);
       const directorOperation = await Director.bulkWrite(directorOperations)
         .then((bulkWriteOpResult) => console.log('Director BULK update OK:', bulkWriteOpResult))
         .catch(console.error.bind(console, 'Director BULK update error:'));
     }
     if (genre) {
-      let genreOperations = [];
-      const genreAddOperations = genre.added.map((doc: Document) => ({
-        updateOne: {
-          filter: { _id: doc },
-          update: { $push: { movies: id } },
-          upsert: true,
-          useFindAndModify: false
-        }
-      }));
-      const genreRemoveOperations = genre.removed.map((doc: Document) => ({
-        updateOne: {
-          filter: { _id: doc },
-          update: { $pull: { movies: id } },
-          useFindAndModify: false
-        }
-      }));
-      genreOperations = [...genreAddOperations, ...genreRemoveOperations];
+      const genreOperations = [];
+      const genreAddOperations =
+        genre.added?.map((doc: Document) => ({
+          updateOne: {
+            filter: { _id: doc },
+            update: { $push: { movies: id } },
+            upsert: true,
+            useFindAndModify: false
+          }
+        })) || [];
+      const genreRemoveOperations =
+        genre.removed?.map((doc: Document) => ({
+          updateOne: {
+            filter: { _id: doc },
+            update: { $pull: { movies: id } },
+            useFindAndModify: false
+          }
+        })) || [];
+      genreOperations.push(...genreAddOperations, ...genreRemoveOperations);
       const genreOperation = await Genre.bulkWrite(genreOperations)
         .then((bulkWriteOpResult) => console.log('Genre BULK update OK:', bulkWriteOpResult))
         .catch(console.error.bind(console, 'Genre BULK update error:'));
     }
     if (franchise) {
-      let franchiseOperations = [];
+      const franchiseOperations = [];
       const franchiseAddOperations = [
         {
           updateOne: {
@@ -289,14 +296,15 @@ export const updateExistingMovie = async (req: Request, res: Response) => {
           }
         }
       ];
-      franchiseOperations = [...franchiseAddOperations, ...franchiseRemoveOperations];
+      franchiseOperations.push(...franchiseAddOperations, ...franchiseRemoveOperations);
       const franchiseOperation = await Franchise.bulkWrite(franchiseOperations)
         .then((bulkWriteOpResult) => console.log('Franchise BULK update OK:', bulkWriteOpResult))
         .catch(console.error.bind(console, 'Franchise BULK update error:'));
     }
-    res.status(200).json({ message: 'Records updated succesfully' });
-  } catch (err) {
-    res.status(400).json(err);
+    res.status(200).json({ message: 'Records updated successfully' });
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+    res.status(400).json({ error: errorMessage });
   }
 };
 

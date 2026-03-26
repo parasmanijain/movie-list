@@ -15,45 +15,45 @@ app.use(json());
 app.use(urlencoded({ extended: true }));
 
 // Import controllers
-import { getCountryList, addNewCountry } from './controllers/country';
+import { getCountryList, addNewCountry } from './controllers/country.ts';
 import {
   getLanguageList,
   getTopLanguage,
   getLanguageCount,
   addNewLanguage
-} from './controllers/language';
+} from './controllers/language.ts';
 import {
   getDirectorList,
   getTopDirector,
   getDirectorCount,
   addNewDirector,
   getMovieCount
-} from './controllers/director';
-import { getGenreList, getTopGenre, getGenreCount, addNewGenre } from './controllers/genre';
+} from './controllers/director.ts';
+import { getGenreList, getTopGenre, getGenreCount, addNewGenre } from './controllers/genre.ts';
 import {
   getFranchiseList,
   getTopFranchise,
   getFranchiseCount,
   addNewFranchise
-} from './controllers/franchise';
+} from './controllers/franchise.ts';
 import {
   getUniverseList,
   getUniverseFranchiseList,
   getUniverseCount,
   addNewUniverse
-} from './controllers/universe';
+} from './controllers/universe.ts';
 import {
   getCategoryList,
   getTopCategory,
   getCategoryCount,
   addNewCategory
-} from './controllers/category';
+} from './controllers/category.ts';
 import {
   getAwardList,
   getAwardCategoryList,
   getAwardCount,
   addNewAward
-} from './controllers/award';
+} from './controllers/award.ts';
 import {
   getMovieList,
   getMovieDetails,
@@ -63,7 +63,7 @@ import {
   updateExistingMovie,
   getTopYear,
   getYearCount
-} from './controllers/movie';
+} from './controllers/movie.ts';
 
 // Define routes
 app.get('/languages', getLanguageList);
@@ -115,7 +115,7 @@ app.get('/awardsCount', getAwardCount);
 app.post('/award', addNewAward);
 
 // CORS setup function
-function setupCORS(req: Request, res: Response, next: NextFunction) {
+const setupCORS = (req: Request, res: Response, next: NextFunction): void => {
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
   res.header(
     'Access-Control-Allow-Headers',
@@ -127,12 +127,12 @@ function setupCORS(req: Request, res: Response, next: NextFunction) {
   } else {
     next();
   }
-}
+};
 
 // Apply CORS setup
 app.all(/.*/, setupCORS);
 
 // Start the server
 app.listen(process.env.API_PORT, () => {
-  console.log(`Server has started at ${process.env.API_PORT}`);
+  console.log(`Server has started at port ${process.env.API_PORT}`);
 });

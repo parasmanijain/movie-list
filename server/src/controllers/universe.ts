@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Universe } from '../schemaModels/universe';
+import { Universe } from '../schemaModels/universe.js';
 
 export const getUniverseList = async (req: Request, res: Response) => {
   try {
@@ -94,7 +94,7 @@ export const getUniverseCount = async (req: Request, res: Response) => {
 
 export const addNewUniverse = async (req: Request, res: Response) => {
   // get data from the view and add it to mongodb
-  var query = { name: req.body.name };
+  const query = { name: req.body.name };
   const existing = req.body;
   try {
     const doc = await Universe.findOneAndUpdate(query, existing, {
@@ -102,9 +102,10 @@ export const addNewUniverse = async (req: Request, res: Response) => {
       useFindAndModify: false
     });
     if (doc) {
-      res.status(200).send('New Universe Succesfully added.');
+      res.status(200).send('New Universe Successfully added.');
     }
-  } catch (err) {
-    res.status(500).send({ error: err });
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+    res.status(500).send({ error: errorMessage });
   }
 };

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Genre } from '../schemaModels/genre';
+import { Genre } from '../schemaModels/genre.js';
 
 export const getGenreList = async (req: Request, res: Response) => {
   try {
@@ -57,7 +57,7 @@ export const getGenreCount = async (req: Request, res: Response) => {
 export const addNewGenre = async (req: Request, res: Response) => {
   const { name, movies } = req.body;
   // get data from the view and add it to mongodb
-  var query = { name: name, movies: movies };
+  const query = { name: name, movies: movies };
   try {
     const doc = await Genre.findOneAndUpdate(
       query,
@@ -68,9 +68,10 @@ export const addNewGenre = async (req: Request, res: Response) => {
       }
     );
     if (doc) {
-      res.status(200).send('New Genre Succesfully added.');
+      res.status(200).send('New Genre Successfully added.');
     }
-  } catch (err) {
-    res.status(500).send({ error: err });
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+    res.status(500).send({ error: errorMessage });
   }
 };

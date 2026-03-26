@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Country } from '../schemaModels/country';
+import { Country } from '../schemaModels/country.js';
 
 export const getCountryList = async (req: Request, res: Response) => {
   try {
@@ -19,7 +19,7 @@ export const getCountryList = async (req: Request, res: Response) => {
 
 export const addNewCountry = async (req: Request, res: Response) => {
   // get data from the view and add it to mongodb
-  var query = { name: req.body.name };
+  const query = { name: req.body.name };
   const existing = req.body;
   try {
     const doc = await Country.findOneAndUpdate(query, existing, {
@@ -27,9 +27,10 @@ export const addNewCountry = async (req: Request, res: Response) => {
       useFindAndModify: false
     });
     if (doc) {
-      res.status(200).send('New Country Succesfully added.');
+      res.status(200).send('New Country Successfully added.');
     }
-  } catch (err) {
-    res.status(500).send({ error: err });
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+    res.status(500).send({ error: errorMessage });
   }
 };

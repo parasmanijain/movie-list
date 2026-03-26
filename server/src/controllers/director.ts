@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Director } from '../schemaModels/director';
+import { Director } from '../schemaModels/director.js';
 
 export const getDirectorList = async (req: Request, res: Response) => {
   try {

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Language } from '../schemaModels/language';
+import { Language } from '../schemaModels/language.js';
 
 export const getLanguageList = async (req: Request, res: Response) => {
   try {
