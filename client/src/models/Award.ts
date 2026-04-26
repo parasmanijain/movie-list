@@ -1,7 +1,5 @@
-import { Schema } from 'mongoose';
-
 export interface Award {
-  _id: Schema.Types.ObjectId;
+  _id: string;
   name: string;
-  categories: Schema.Types.ObjectId[];
+  categories: string[];
 }

@@ -1,8 +1,6 @@
-import { Schema } from 'mongoose';
-
 export interface Language {
-  _id: Schema.Types.ObjectId;
+  _id: string;
   name: string;
   code: string;
-  movies: Schema.Types.ObjectId[];
+  movies: string[];
 }

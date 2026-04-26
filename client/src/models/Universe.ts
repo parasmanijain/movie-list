@@ -1,7 +1,5 @@
-import { Schema } from 'mongoose';
-
 export interface Universe {
-  _id: Schema.Types.ObjectId;
+  _id: string;
   name: string;
-  franchises: Schema.Types.ObjectId[];
+  franchises: string[];
 }

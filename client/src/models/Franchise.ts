@@ -1,8 +1,6 @@
-import { Schema } from 'mongoose';
-
 export interface Franchise {
-  _id: Schema.Types.ObjectId;
+  _id: string;
   name: string;
-  universe: Schema.Types.ObjectId;
-  movies: Schema.Types.ObjectId[];
+  universe: string;
+  movies: string[];
 }

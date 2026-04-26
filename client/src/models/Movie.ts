@@ -1,15 +1,13 @@
-import { Schema } from 'mongoose';
-
 export interface Movie {
-  _id: Schema.Types.ObjectId;
+  _id: string;
   name: string;
-  language: Schema.Types.ObjectId[];
-  director: Schema.Types.ObjectId[];
+  language: string[];
+  director: string[];
   year: string;
   url: string;
   imdb: string;
   rottenTomatoes?: string;
-  franchise?: Schema.Types.ObjectId | string;
-  genre: Schema.Types.ObjectId[];
-  category?: Schema.Types.ObjectId[];
+  franchise?: string;
+  genre: string[];
+  category?: string[];
 }
