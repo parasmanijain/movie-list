@@ -2,18 +2,25 @@ import { useState } from 'react';
 import type { SetStateAction, ReactElement } from 'react';
 import { BrowserRouter, Routes, Route, Link, Navigate } from 'react-router-dom';
 import './App.css';
-import { AppBar, Box, Tab, Tabs } from './components/lib';
 import { ProtectedRoute, routes } from './components';
 import type { routeProps } from './components/routes/routes';
+import { AppBar, Box, Tab, Tabs } from '@mui/material';
 
 const currentTab = () => {
+  const pathname = window.location.pathname;
+
+  // Handle root path redirect
+  if (pathname === '/') {
+    return '/home';
+  }
+
   if (import.meta.env.NODE_ENV === 'production') {
-    const route = routes.find((ele: routeProps) => ele.path === window.location.pathname);
+    const route = routes.find((ele: routeProps) => ele.path === pathname);
     if (route && !route.production) {
       return '/home';
     }
   }
-  return window.location.pathname;
+  return pathname;
 };
 
 export const App = (): ReactElement => {

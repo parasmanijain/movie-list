@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type JSX } from 'react';
 import { useFormik } from 'formik';
 import * as _ from 'lodash';
 import axiosConfig from '../../helper/axiosConfig';
@@ -11,29 +11,27 @@ import {
   GET_LANGUAGES_URL,
   GET_MOVIE_DETAILS_URL,
   GET_UNIVERSE_FRANCHISES_URL,
-  MenuProps,
   UPDATE_EXISTING_MOVIE_URL
 } from '../../helper/config';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { movieValidationSchema as validationSchema } from '../../helper/validationScehmas';
-import {
-  Box,
-  Button,
-  TextField,
-  Select,
-  CheckBox,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  ListItemText,
-  Divider,
-  OutlinedInput,
-  ListSubheader,
-  FormHelperText
-} from '../lib';
 import type { Language } from '../../models/Language';
+import { Box, Button, Checkbox, Divider, FormControl, FormHelperText, InputLabel, ListItemText, ListSubheader, MenuItem, OutlinedInput, Select, TextField } from '@mui/material';
+import type { SelectProps } from '@mui/material/Select';
+
+// Define MenuProps for MUI v9 compatibility
+const MenuProps = {
+  slotProps: {
+    paper: {
+      style: {
+        maxHeight: 224,
+        width: 250,
+      },
+    },
+  },
+};
 
 interface IFormikValues {
   name: string;
@@ -61,15 +59,38 @@ const initialValues: IFormikValues = {
   category: []
 };
 
-export const AddNewMovie = (props: { selectedMovie?: string }): React.JSX.Element => {
+// Define proper types for the data structures
+interface GenreData {
+  _id: string;
+  name: string;
+}
+
+interface DirectorData {
+  _id: string;
+  name: string;
+}
+
+interface FranchiseData {
+  _id: string;
+  name: string;
+  franchises?: Array<{ _id: string; name: string }>;
+}
+
+interface CategoryData {
+  _id: string;
+  name: string;
+  categories?: Array<{ _id: string; name: string }>;
+}
+
+export const AddNewMovie = (props: { selectedMovie?: string }): JSX.Element => {
   const { selectedMovie } = props;
   const [languageData, setLanguageData] = useState<Language[]>([]);
-  const [genreData, setGenreData] = useState([]);
-  const [franchiseData, setFranchiseData] = useState([]);
-  const [categoryData, setCategoryData] = useState([]);
-  const [directorData, setDirectorData] = useState([]);
-  const [existingValues, setExistingValues] = useState({});
-  const [, setSelectedMovieData] = useState(null);
+  const [genreData, setGenreData] = useState<GenreData[]>([]);
+  const [franchiseData, setFranchiseData] = useState<FranchiseData[]>([]);
+  const [categoryData, setCategoryData] = useState<CategoryData[]>([]);
+  const [directorData, setDirectorData] = useState<DirectorData[]>([]);
+  const [existingValues, setExistingValues] = useState<Partial<IFormikValues>>({});
+  const [, setSelectedMovieData] = useState<any>(null);
 
   const fetchData = () => {
     const languages = axiosConfig.get(`${GET_LANGUAGES_URL}`);
@@ -169,33 +190,40 @@ export const AddNewMovie = (props: { selectedMovie?: string }): React.JSX.Elemen
         apiURL = UPDATE_EXISTING_MOVIE_URL;
         const diff = _.reduce(
           existingValues,
-          (result, value, key: string | number) =>
-            _.isEqual(value, formik.values[key]) ? result : result.concat(key.toString()),
-          []
+          (result: string[], value, key: string | number) => {
+            const formikKey = key as keyof IFormikValues;
+            return _.isEqual(value, formik.values[formikKey]) ? result : result.concat(key.toString());
+          },
+          [] as string[]
         );
         const arrkeys = ['language', 'director', 'genre', 'category'];
         diff.forEach((ele: string) => {
           let obj = {};
           if (arrkeys.includes(ele)) {
-            const removed = existingValues[ele].filter((x) => !formik.values[ele].includes(x));
-            const added = formik.values[ele].filter((x) => !existingValues[ele].includes(x));
+            const eleKey = ele as keyof IFormikValues;
+            const existingValue = existingValues[eleKey] as string[] || [];
+            const formikValue = formik.values[eleKey] as string[] || [];
+            const removed = existingValue.filter((x) => !formikValue.includes(x));
+            const added = formikValue.filter((x) => !existingValue.includes(x));
             obj = {
               [ele]: {
-                value: formik.values[ele],
+                value: formikValue,
                 added,
                 removed
               }
             };
           } else if (ele === 'franchise') {
+            const eleKey = ele as keyof IFormikValues;
             obj = {
               [ele]: {
-                current: existingValues[ele],
-                new: formik.values[ele]
+                current: existingValues[eleKey],
+                new: formik.values[eleKey]
               }
             };
           } else {
+            const eleKey = ele as keyof IFormikValues;
             obj = {
-              [ele]: formik.values[ele]
+              [ele]: formik.values[eleKey]
             };
           }
           request = { ...request, ...obj, id: selectedMovie };
@@ -254,7 +282,7 @@ export const AddNewMovie = (props: { selectedMovie?: string }): React.JSX.Elemen
     return items;
   };
 
-  const makeMultiOptionItems = (data: any, list: string, key: string) => {
+  const makeMultiOptionItems = (data: any, list: string, key: keyof IFormikValues) => {
     const items: React.JSX.Element[] = [];
     data.forEach((element: any, index: number) => {
       if (element[list]) {
@@ -264,9 +292,10 @@ export const AddNewMovie = (props: { selectedMovie?: string }): React.JSX.Elemen
           </ListSubheader>
         );
         element[list].forEach((el: { _id: string; name: string }) => {
+          const formikValue = formik.values[key] as string[];
           items.push(
             <MenuItem key={el._id} value={el._id}>
-              <CheckBox checked={(formik.values as any)[key].indexOf(el._id) > -1} />
+              <Checkbox checked={formikValue.indexOf(el._id) > -1} />
               <ListItemText primary={el.name} />
             </MenuItem>
           );
@@ -311,7 +340,7 @@ export const AddNewMovie = (props: { selectedMovie?: string }): React.JSX.Elemen
           >
             {[...languageData].map((language) => (
               <MenuItem key={language._id} value={language._id}>
-                <CheckBox checked={formik.values.language.indexOf(language._id) > -1} />
+                <Checkbox checked={formik.values.language.indexOf(language._id) > -1} />
                 <ListItemText primary={language.name} />
               </MenuItem>
             ))}
@@ -319,37 +348,32 @@ export const AddNewMovie = (props: { selectedMovie?: string }): React.JSX.Elemen
           <FormHelperText>{formik.touched.language && formik.errors.language}</FormHelperText>
         </FormControl>
         <FormControl sx={{ m: 2, width: 300 }}>
-          {/* <InputLabel id="director-multiple-checkbox-label">Director</InputLabel> */}
-          <TextField
-            select
-            id="director"
-            label="Director"
+          <InputLabel id="director-multiple-checkbox-label">Director</InputLabel>
+          <Select
+            labelId="director-multiple-checkbox-label"
+            id="director-multiple-checkbox"
+            multiple
             name="director"
-            SelectProps={{
-              multiple: true,
-              value: formik.values.director,
-              onChange: formik.handleChange,
-              MenuProps: MenuProps,
-              error: formik.touched.director && Boolean(formik.errors.director),
-              renderValue: (selected: string[]) => {
-                const selectedDirectors = [...directorData]
-                  .filter((director) => selected.includes(director._id))
-                  .map((element) => element.name);
-                return selectedDirectors.join(', ');
-              }
-            }}
+            value={formik.values.director}
+            onChange={formik.handleChange}
             error={formik.touched.director && Boolean(formik.errors.director)}
-            helperText={formik.touched.director && formik.errors.director}
+            input={<OutlinedInput label="Director" />}
+            renderValue={(selected: string[]) => {
+              const selectedDirectors = [...directorData]
+                .filter((director) => selected.includes(director._id))
+                .map((element) => element.name);
+              return selectedDirectors.join(', ');
+            }}
+            MenuProps={MenuProps}
           >
             {[...directorData].map((director) => (
               <MenuItem key={director._id} value={director._id}>
-                <CheckBox checked={formik.values.director.indexOf(director._id) > -1} />
+                <Checkbox checked={formik.values.director.indexOf(director._id) > -1} />
                 <ListItemText primary={director.name} />
               </MenuItem>
             ))}
-          </TextField>
-          {/* </Select> */}
-          {/* <FormHelperText>{formik.touched.director && formik.errors.director}</FormHelperText> */}
+          </Select>
+          <FormHelperText>{formik.touched.director && formik.errors.director}</FormHelperText>
         </FormControl>
         <FormControl sx={{ m: 2, width: 300 }}>
           <InputLabel id="genre-multiple-checkbox-label">Genre</InputLabel>
@@ -372,7 +396,7 @@ export const AddNewMovie = (props: { selectedMovie?: string }): React.JSX.Elemen
           >
             {[...genreData].map((genre) => (
               <MenuItem key={genre._id} value={genre._id}>
-                <CheckBox checked={formik.values.genre.indexOf(genre._id) > -1} />
+                <Checkbox checked={formik.values.genre.indexOf(genre._id) > -1} />
                 <ListItemText primary={genre.name} />
               </MenuItem>
             ))}
@@ -407,7 +431,10 @@ export const AddNewMovie = (props: { selectedMovie?: string }): React.JSX.Elemen
             error={formik.touched.category && Boolean(formik.errors.category)}
             input={<OutlinedInput label="Award" />}
             renderValue={(selected: string[]) => {
-              const awards = [...categoryData].map((ele) => ele.categories).flat();
+              const awards = [...categoryData]
+                .map((ele) => ele.categories || [])
+                .flat()
+                .filter((award): award is { _id: string; name: string } => award != null);
               const selectedAwards = awards
                 .filter((award) => selected.includes(award._id))
                 .map((element) => element.name);
@@ -415,7 +442,7 @@ export const AddNewMovie = (props: { selectedMovie?: string }): React.JSX.Elemen
             }}
             MenuProps={MenuProps}
           >
-            {makeMultiOptionItems([...categoryData], 'categories', 'category')}
+            {makeMultiOptionItems([...categoryData], 'categories', 'category' as keyof IFormikValues)}
           </Select>
           <FormHelperText>{formik.touched.category && formik.errors.category}</FormHelperText>
         </FormControl>
@@ -445,14 +472,16 @@ export const AddNewMovie = (props: { selectedMovie?: string }): React.JSX.Elemen
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DatePicker
               label="Year"
-              value={new Date().setUTCFullYear(formik.values.year)}
-              view={'year'}
+              value={new Date(formik.values.year, 0, 1)}
+              openTo="year"
               views={['year']}
               onChange={(newValue) => {
-                formik.setValues({
-                  ...formik.values,
-                  year: new Date(newValue).getFullYear()
-                });
+                if (newValue) {
+                  formik.setValues({
+                    ...formik.values,
+                    year: new Date(newValue).getFullYear()
+                  });
+                }
               }}
             />
           </LocalizationProvider>

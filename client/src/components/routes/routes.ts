@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import type { FC } from 'react';
 import {
   AddNewCountry,
   AddNewDirector,
@@ -33,8 +33,8 @@ export const routes: routeProps[] = [
   {
     path: '/home',
     label: 'Home',
-    production: true,
-    component: Home
+    component: Home as any,
+    production: true
   },
   {
     path: '/language',

@@ -3,23 +3,8 @@ import type { JSX } from 'react';
 import { styled } from '@mui/material/styles';
 import axiosConfig from '../../helper/axiosConfig';
 import { GET_TOP_RATED_MOVIE_URL } from '../../helper/config';
-import {
-  Box,
-  FormControlLabel,
-  Paper,
-  Switch,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TablePagination,
-  TableRow,
-  TableSortLabel,
-  Toolbar,
-  Typography
-} from '../lib';
 import type { ChangeEvent, MouseEvent } from 'react';
+import { Box, FormControlLabel, Paper, Switch, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TableSortLabel, Toolbar, Typography } from '@mui/material';
 
 // Represents a single movie row in the table
 export interface TopRatedMovie {

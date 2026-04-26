@@ -1,23 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type JSX } from 'react';
 import axiosConfig from '../../helper/axiosConfig';
 import { useFormik } from 'formik';
 import { ADD_NEW_DIRECTOR_URL, GET_COUNTRIES_URL, MenuProps } from '../../helper/config';
 import { directorValidationSchema as validationSchema } from '../../helper/validationScehmas';
-import {
-  Box,
-  Button,
-  TextField,
-  Select,
-  CheckBox,
-  InputLabel,
-  ListItemText,
-  MenuItem,
-  FormControl,
-  OutlinedInput,
-  FormHelperText
-} from '../lib';
+import { Box, Button, Checkbox, FormControl, FormHelperText, InputLabel, ListItemText, MenuItem, OutlinedInput, Select, TextField } from '@mui/material';
 
-export const AddNewDirector = () => {
+export const AddNewDirector = (): JSX.Element => {
   const [countryData, setCountryData] = useState([]);
   const formik = useFormik({
     initialValues: {
@@ -101,7 +89,7 @@ export const AddNewDirector = () => {
           >
             {countryData.map((country) => (
               <MenuItem key={country._id} value={country._id}>
-                <CheckBox checked={formik.values.country.indexOf(country._id) > -1} />
+                <Checkbox checked={formik.values.country.indexOf(country._id) > -1} />
                 <ListItemText primary={country.name} />
               </MenuItem>
             ))}

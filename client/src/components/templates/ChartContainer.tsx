@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type JSX } from 'react';
 import { useWindowDimensions } from '../../hooks/useWindowDimensions';
 import { chartColors } from '../../helper';
 import { RenderChart } from './RenderChart';
-import { Box } from '../lib';
+import { Box } from '@mui/material';
 
 const createChunks = (array, chunk) => {
   const temp = [];
@@ -12,9 +12,9 @@ const createChunks = (array, chunk) => {
   return temp;
 };
 
-export const ChartContainer = (props: { title: string; fullHeight; apiData; stacked }) => {
+export const ChartContainer = (props: { title: string; fullHeight: boolean; apiData: any[]; stacked: boolean }): JSX.Element => {
   const { title, fullHeight, apiData, stacked } = props;
-  const [chartData, setChartData] = useState([]);
+  const [chartData, setChartData] = useState<any[]>([]);
   const [width, height] = useWindowDimensions();
   const chunkSize =
     width >= 1536 ? 50 : width >= 1200 ? 40 : width >= 900 ? 30 : width >= 600 ? 20 : 10;

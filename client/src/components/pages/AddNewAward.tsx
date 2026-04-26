@@ -2,9 +2,10 @@ import { useFormik } from 'formik';
 import axiosConfig from '../../helper/axiosConfig';
 import { ADD_NEW_AWARD_URL } from '../../helper/config';
 import { awardValidationSchema as validationSchema } from '../../helper/validationScehmas';
-import { Box, Button, TextField, FormControl } from '../lib';
+import { Box, Button, FormControl, TextField } from '@mui/material';
+import type { JSX } from 'react';
 
-export const AddNewAward = () => {
+export const AddNewAward = (): JSX.Element => {
   const formik = useFormik({
     initialValues: {
       name: ''

@@ -1,4 +1,4 @@
-import { useState, useEffect, Fragment } from 'react';
+import { useState, useEffect, Fragment, type FC } from 'react';
 import { styled } from '@mui/material/styles';
 import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -15,14 +15,14 @@ import {
   Box,
   Button,
   Typography,
-  Progress,
   Pagination,
   Grid,
   Accordion,
   AccordionSummary,
   AccordionDetails,
-  Badge
-} from '../lib';
+  Badge,
+  CircularProgress
+} from '@mui/material';
 import { useWindowDimensions } from '../../hooks/useWindowDimensions';
 
 const StyledAccordion = styled(Accordion)(() => ({
@@ -35,52 +35,52 @@ interface HomeProps {
   handleMovieUpdateSelection: (a: unknown) => void;
 }
 
-export const Home = ({ handleMovieUpdateSelection }: HomeProps) => {
+export const Home = ({ handleMovieUpdateSelection }: HomeProps): FC => {
   const [searchParams] = useSearchParams();
   const [width, height] = useWindowDimensions();
   const { pathname } = useLocation();
   let limit = 0;
-  const [page, setPage] = useState(searchParams.get('page') ? +searchParams.get('page') : 1);
+  const [page, setPage] = useState(searchParams.get('page') ? +searchParams.get('page')! : 1);
   const [count, setCount] = useState(1);
   const [total, setTotal] = useState(0);
   const [environment] = useState(import.meta.env.NODE_ENV);
-  const [movieData, setMovieData] = useState([]);
-  const [topDirectorData, setTopDirectorData] = useState([]);
-  const [topLanguageData, setTopLanguageData] = useState([]);
-  const [topGenreData, setTopGenreData] = useState([]);
-  const [topYearData, setTopYearData] = useState([]);
+  const [movieData, setMovieData] = useState<any[]>([]);
+  const [topDirectorData, setTopDirectorData] = useState<any[]>([]);
+  const [topLanguageData, setTopLanguageData] = useState<any[]>([]);
+  const [topGenreData, setTopGenreData] = useState<any[]>([]);
+  const [topYearData, setTopYearData] = useState<any[]>([]);
   const [filterLoading, setFilterLoading] = useState(false);
   const [dataLoading, setDataLoading] = useState(false);
-  if (width >= 1536) {
-    if (height >= 1000) {
+  if (width && width >= 1536) {
+    if (height && height >= 1000) {
       limit = 36;
-    } else if (height >= 900) {
+    } else if (height && height >= 900) {
       limit = 32;
     } else {
       limit = 28;
     }
-  } else if (width >= 1200) {
-    if (height >= 800) {
+  } else if (width && width >= 1200) {
+    if (height && height >= 800) {
       limit = 28;
     } else {
       limit = 24;
     }
-  } else if (width >= 900) {
-    if (height >= 800) {
+  } else if (width && width >= 900) {
+    if (height && height >= 800) {
       limit = 28;
-    } else if (height >= 700) {
+    } else if (height && height >= 700) {
       limit = 24;
     } else {
       limit = 20;
     }
-  } else if (width >= 600) {
-    if (height >= 700) {
+  } else if (width && width >= 600) {
+    if (height && height >= 700) {
       limit = 18;
     } else {
       limit = 12;
     }
   } else {
-    if (height >= 700) {
+    if (height && height >= 700) {
       limit = 12;
     } else {
       limit = 8;
@@ -136,10 +136,10 @@ export const Home = ({ handleMovieUpdateSelection }: HomeProps) => {
     fetchData();
   }, [page]);
 
-  const otherMovies = (movies, name, arr) => {
+  const otherMovies = (movies: any[], name: string, arr: any[]) => {
     return arr.length > 1 ? (
       <Fragment key={name}>
-        <Typography variant="button" display="block">
+        <Typography variant="button" component="div">
           {name}
         </Typography>
         {displayOtherMovies(movies)}
@@ -149,12 +149,12 @@ export const Home = ({ handleMovieUpdateSelection }: HomeProps) => {
     );
   };
 
-  const displayOtherMovies = (movies) =>
+  const displayOtherMovies = (movies: any[]) =>
     movies.map((otherMovie) => {
       return otherMovieLinks(otherMovie);
     });
 
-  const otherMovieLinks = (otherMovie) => {
+  const otherMovieLinks = (otherMovie: any) => {
     return (
       <Box key={otherMovie._id}>
         <Button href={otherMovie.url} target="_blank" rel="noreferrer" sx={{ padding: '4px 0px' }}>
@@ -164,7 +164,7 @@ export const Home = ({ handleMovieUpdateSelection }: HomeProps) => {
     );
   };
 
-  const directorURL = (url, name, id, index, length) => (
+  const directorURL = (url: string, name: string, id: string, index: number, length: number) => (
     <Fragment key={id}>
       <Button
         href={url}
@@ -179,7 +179,7 @@ export const Home = ({ handleMovieUpdateSelection }: HomeProps) => {
     </Fragment>
   );
 
-  const renderAwards = (category) => {
+  const renderAwards = (category: any[]) => {
     const awards = category.map((ele) => {
       return { id: ele.award._id, name: ele.award.name };
     });
@@ -194,9 +194,9 @@ export const Home = ({ handleMovieUpdateSelection }: HomeProps) => {
               <EmojiEventsIcon style={{ color: 'gold', marginLeft: '10px', fontSize: '32px' }} />
             </Badge>
           </Typography>
-          {categories.map((ele, i) => {
+          {categories.map((ele: any, i: number) => {
             return (
-              <Typography key={i} display="block" sx={{ padding: '2px 0px' }}>
+              <Typography key={i} component="div" sx={{ padding: '2px 0px' }}>
                 {ele.name}
               </Typography>
             );
@@ -206,7 +206,7 @@ export const Home = ({ handleMovieUpdateSelection }: HomeProps) => {
     });
   };
 
-  const directorName = (director, index, length) =>
+  const directorName = (director: any, index: number, length: number) =>
     directorURL(director.url, director.name, director._id, index, length);
 
   const movieList = movieData?.map((movie) => (
@@ -245,7 +245,7 @@ export const Home = ({ handleMovieUpdateSelection }: HomeProps) => {
               <Typography
                 key={element._id}
                 variant="button"
-                display="span"
+                component="span"
                 sx={{ padding: '4px 0px' }}
               >
                 {element.name} {index !== arr.length - 1 ? ', ' : null}
@@ -261,7 +261,7 @@ export const Home = ({ handleMovieUpdateSelection }: HomeProps) => {
               <Typography
                 key={element._id}
                 variant="button"
-                display="span"
+                component="span"
                 sx={{ padding: '4px 0px' }}
               >
                 {element.name} {index !== arr.length - 1 ? ', ' : null}
@@ -281,7 +281,7 @@ export const Home = ({ handleMovieUpdateSelection }: HomeProps) => {
                   <Typography component="span" sx={{ padding: '4px 0px' }}>
                     Franchise:
                   </Typography>
-                  <Typography variant="button" display="span" sx={{ padding: '4px 0px' }}>
+                  <Typography variant="button" component="span" sx={{ padding: '4px 0px' }}>
                     {movie.franchise.name}
                   </Typography>
                 </Box>
@@ -289,7 +289,7 @@ export const Home = ({ handleMovieUpdateSelection }: HomeProps) => {
                   <Box sx={{ padding: '0px' }}>
                     <Typography component="span" sx={{ padding: '4px 0px' }}>
                       Universe:
-                      <Typography variant="button" display="span" sx={{ padding: '4px 0px' }}>
+                      <Typography variant="button" component="span" sx={{ padding: '4px 0px' }}>
                         {movie.franchise.universe.name}
                       </Typography>
                     </Typography>
@@ -332,29 +332,29 @@ export const Home = ({ handleMovieUpdateSelection }: HomeProps) => {
   ));
 
   const topDirectorsList = topDirectorData.map((director) => (
-    <Typography variant="button" display="span" key={director._id}>
+    <Typography variant="button" component="span" key={director._id}>
       {director.name} ({director.length}){' '}
     </Typography>
   ));
   const topYearsList = topYearData.map((year) => (
-    <Typography variant="button" display="span" key={year._id}>
+    <Typography variant="button" component="span" key={year._id}>
       {year._id} ({year.count}){' '}
     </Typography>
   ));
 
   const topLanguagesList = topLanguageData.map((language) => (
-    <Typography variant="button" display="span" key={language._id}>
+    <Typography variant="button" component="span" key={language._id}>
       {language.name} ({language.length}){' '}
     </Typography>
   ));
 
   const topGenresList = topGenreData.map((genre) => (
-    <Typography variant="button" display="span" key={genre._id}>
+    <Typography variant="button" component="span" key={genre._id}>
       {genre.name} ({genre.length}){' '}
     </Typography>
   ));
 
-  const handleChange = (event, value) => {
+  const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
     navigate(
       `${pathname}?page=${value}`, // inject code value into template
@@ -383,7 +383,7 @@ export const Home = ({ handleMovieUpdateSelection }: HomeProps) => {
             alignItems: 'center'
           }}
         >
-          <Progress />
+          <CircularProgress />
         </Box>
       ) : (
         <Fragment>

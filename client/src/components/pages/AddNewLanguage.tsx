@@ -2,9 +2,10 @@ import { useFormik } from 'formik';
 import axiosConfig from '../../helper/axiosConfig';
 import { languageValidationSchema as validationSchema } from '../../helper/validationScehmas';
 import { ADD_NEW_LANGUAGE_URL } from '../../helper/config';
-import { Box, Button, TextField, FormControl } from '../lib';
+import { Box, Button, FormControl, TextField } from '@mui/material';
+import type { FC } from 'react';
 
-export const AddNewLanguage = () => {
+export const AddNewLanguage = (): FC => {
   const formik = useFormik({
     initialValues: {
       name: '',

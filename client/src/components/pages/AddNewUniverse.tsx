@@ -1,11 +1,11 @@
-import React from 'react';
+import { type FC } from 'react';
 import { useFormik } from 'formik';
 import axiosConfig from '../../helper/axiosConfig';
 import { ADD_NEW_UNIVERSE_URL } from '../../helper/config';
 import { universeValidationSchema as validationSchema } from '../../helper/validationScehmas';
-import { Box, Button, TextField, FormControl } from '../lib';
+import { Box, Button, FormControl, TextField } from '@mui/material';
 
-export const AddNewUniverse = () => {
+export const AddNewUniverse = (): FC => {
   const formik = useFormik({
     initialValues: {
       name: ''

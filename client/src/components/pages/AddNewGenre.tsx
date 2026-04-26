@@ -2,9 +2,10 @@ import { useFormik } from 'formik';
 import axiosConfig from '../../helper/axiosConfig';
 import { ADD_NEW_GENRE_URL } from '../../helper/config';
 import { genreValidationSchema as validationSchema } from '../../helper/validationScehmas';
-import { Box, Button, TextField, FormControl } from '../lib';
+import type { JSX } from 'react';
+import { Box, Button, FormControl, TextField } from '@mui/material';
 
-export const AddNewGenre = () => {
+export const AddNewGenre = (): JSX.Element => {
   const formik = useFormik({
     initialValues: {
       name: ''

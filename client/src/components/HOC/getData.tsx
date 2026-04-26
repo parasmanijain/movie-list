@@ -1,7 +1,7 @@
+import { Box, LinearProgress } from '@mui/material';
 import { axiosConfig } from '../../helper';
 import { useEffect, useState } from 'react';
 import type { ComponentType } from 'react';
-import { Box, Progress } from '../lib';
 
 interface GetDataProps {
   apiUrl: string;
@@ -51,7 +51,7 @@ export const getData = (
           alignItems: 'center'
         }}
       >
-        <Progress />
+        <LinearProgress />
       </Box>
     ) : (
       <WrappedComponent apiData={data} title={title} {...props} />

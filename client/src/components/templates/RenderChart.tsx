@@ -1,5 +1,6 @@
-import React from 'react';
-import { Bar, Box } from '../lib';
+import { Box } from '@mui/material';
+import { type JSX } from 'react';
+import { Bar } from '../lib/organisms/Bar';
 
 const renderOptions = (title, subtitle?, stacked?) => {
   let options = {
@@ -51,7 +52,7 @@ export const RenderChart = (props: {
   canvasHeight;
   index: number;
   stacked;
-}) => {
+}): JSX.Element => {
   const { title, subtitle, width, data, canvasHeight, index, stacked } = props;
   return (
     <Box key={index} sx={{ display: 'inline-block' }}>

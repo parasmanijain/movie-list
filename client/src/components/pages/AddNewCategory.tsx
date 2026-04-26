@@ -1,22 +1,11 @@
-import { useEffect, useState } from 'react';
+import { type JSX, useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import axiosConfig from '../../helper/axiosConfig';
 import { ADD_NEW_CATEGORY_URL, GET_AWARDS_URL, MenuProps } from '../../helper/config';
 import { categoryValidationSchema as validationSchema } from '../../helper/validationScehmas';
-import {
-  Box,
-  Button,
-  TextField,
-  Select,
-  InputLabel,
-  ListItemText,
-  FormControl,
-  MenuItem,
-  OutlinedInput,
-  FormHelperText
-} from '../lib';
+import { Box, Button, FormControl, FormHelperText, InputLabel, ListItemText, MenuItem, OutlinedInput, Select, TextField } from '@mui/material';
 
-export const AddNewCategory = () => {
+export const AddNewCategory = (): JSX.Element => {
   const [awardData, setAwardData] = useState([]);
   const formik = useFormik({
     initialValues: {

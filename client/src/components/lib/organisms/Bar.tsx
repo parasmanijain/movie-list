@@ -13,14 +13,12 @@ import {
 } from 'chart.js';
 
 ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    BarElement,
-    Title,
-    Tooltip,
-    Legend,
-    SubTitle
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  SubTitle
 );
-export const Bar = (props) => <ChartJSBar {...props}/>;
-
-
+export const Bar = (props: any): React.JSX.Element => <ChartJSBar {...props} />;
