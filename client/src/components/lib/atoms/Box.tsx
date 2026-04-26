@@ -1,2 +1,5 @@
 import { Box as MaterialBox } from '@mui/material';
-export const Box = (props) => <MaterialBox {...props} />;
+import type { BoxProps } from '@mui/material';
+import type { ReactElement } from 'react';
+
+export const Box = (props: BoxProps): ReactElement => <MaterialBox {...props} />;

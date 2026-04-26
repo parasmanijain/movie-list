@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import type { JSX } from 'react';
 import { styled } from '@mui/material/styles';
 import axiosConfig from '../../helper/axiosConfig';
 import { GET_TOP_RATED_MOVIE_URL } from '../../helper/config';
@@ -18,6 +19,7 @@ import {
   Toolbar,
   Typography
 } from '../lib';
+import type { ChangeEvent, MouseEvent } from 'react';
 
 // Represents a single movie row in the table
 export interface TopRatedMovie {
@@ -40,7 +42,7 @@ export interface HeadCell {
 export interface EnhancedTableHeadProps {
   order: 'asc' | 'desc';
   orderBy: keyof TopRatedMovie;
-  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof TopRatedMovie) => void;
+  onRequestSort: (event: MouseEvent<unknown>, property: keyof TopRatedMovie) => void;
   numSelected: number;
   rowCount: number;
 }
@@ -50,7 +52,7 @@ export interface EnhancedTableToolbarProps {
   numSelected: number;
 }
 
-const descendingComparator = (a, b, orderBy) => {
+const descendingComparator = (a: TopRatedMovie, b: TopRatedMovie, orderBy: keyof TopRatedMovie) => {
   if (b[orderBy] < a[orderBy]) {
     return -1;
   }
@@ -60,13 +62,13 @@ const descendingComparator = (a, b, orderBy) => {
   return 0;
 };
 
-const getComparator = (order, orderBy) =>
+const getComparator = (order: 'asc' | 'desc', orderBy: keyof TopRatedMovie) =>
   order === 'desc'
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
+    ? (a: TopRatedMovie, b: TopRatedMovie) => descendingComparator(a, b, orderBy)
+    : (a: TopRatedMovie, b: TopRatedMovie) => -descendingComparator(a, b, orderBy);
 
-const stableSort = (array, comparator) => {
-  const stabilizedThis = array.map((el, index) => [el, index]);
+const stableSort = (array: TopRatedMovie[], comparator: (a: TopRatedMovie, b: TopRatedMovie) => number) => {
+  const stabilizedThis = array.map((el: TopRatedMovie, index: number) => [el, index] as const);
   stabilizedThis.sort((a, b) => {
     const order = comparator(a[0], b[0]);
     if (order !== 0) return order;
@@ -75,16 +77,16 @@ const stableSort = (array, comparator) => {
   return stabilizedThis.map((el) => el[0]);
 };
 
-const headCells = [
+const headCells: HeadCell[] = [
   { id: 'name', numeric: false, disablePadding: true, label: 'Name', minWidth: 300 },
   { id: 'year', numeric: true, disablePadding: false, label: 'Year' },
   { id: 'imdb', numeric: true, disablePadding: false, label: 'IMDB Rating (10)' },
   { id: 'rottenTomatoes', numeric: true, disablePadding: false, label: 'Rotten Tomatoes (%)' }
 ];
 
-const EnhancedTableHead = (props) => {
+const EnhancedTableHead = (props: EnhancedTableHeadProps): JSX.Element => {
   const { order, orderBy, onRequestSort } = props;
-  const createSortHandler = (property) => (event) => {
+  const createSortHandler = (property: keyof TopRatedMovie) => (event: MouseEvent<unknown>) => {
     onRequestSort(event, property);
   };
 
@@ -116,7 +118,7 @@ const EnhancedTableHead = (props) => {
   );
 };
 
-const EnhancedTableToolbar = () => {
+const EnhancedTableToolbar = (): JSX.Element => {
   return (
     <Toolbar>
       <Typography sx={{ flex: '1 1 100%' }} variant="h6" id="tableTitle" component="div">
@@ -147,30 +149,31 @@ const StyledVisuallyHidden = styled('span')(() => ({
   width: 1
 }));
 
-export const TopRatedMovies = () => {
-  const [topMovieList, setTopMovieList] = useState([]);
-  const [order, setOrder] = useState('asc');
-  const [orderBy, setOrderBy] = useState('calories');
-  const [selected] = useState([]);
+export const TopRatedMovies = (): JSX.Element => {
+  const [topMovieList, setTopMovieList] = useState<TopRatedMovie[]>([]);
+  const [order, setOrder] = useState<'asc' | 'desc'>('asc');
+  const [orderBy, setOrderBy] = useState<keyof TopRatedMovie>('name');
+  const [selected] = useState<readonly string[]>([]);
   const [page, setPage] = useState(0);
   const [dense, setDense] = useState(false);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const handleRequestSort = (event, property) => {
+
+  const handleRequestSort = (event: MouseEvent<unknown>, property: keyof TopRatedMovie) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
 
-  const handleChangePage = (event, newPage) => {
+  const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event) => {
+  const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
 
-  const handleChangeDense = (event) => {
+  const handleChangeDense = (event: ChangeEvent<HTMLInputElement>) => {
     setDense(event.target.checked);
   };
 
@@ -212,7 +215,7 @@ export const TopRatedMovies = () => {
             <TableBody>
               {stableSort(topMovieList, getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row, index) => {
+                .map((row: TopRatedMovie, index: number) => {
                   return (
                     <TableRow key={index}>
                       <TableCell align="left">{row.name}</TableCell>

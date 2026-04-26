@@ -1,15 +1,14 @@
 {
   "compilerOptions": {
     "lib": ["dom", "dom.iterable", "esnext"],
-    "target": "ES2022",
+    "target": "ES2023",
     "types": ["vite/client"],
     "isolatedModules": true,
     "outDir": "./dist/",
     "noImplicitAny": true,
     "module": "esnext",
     "jsx": "react-jsx",
-    "allowJs": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "skipLibCheck": true,
@@ -25,7 +24,10 @@
     "verbatimModuleSyntax": true,
     "allowImportingTsExtensions": true,
     "noImplicitOverride": true,
-    "ignoreDeprecations": "6.0"
+    "declaration": true,
+    "isolatedDeclarations": true,
+    "noErrorTruncation": true
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["node_modules", "dist", "build"]
 }

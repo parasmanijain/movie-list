@@ -1,9 +1,10 @@
-import { SetStateAction, useState } from 'react';
+import { useState } from 'react';
+import type { SetStateAction, ReactElement } from 'react';
 import { BrowserRouter, Routes, Route, Link, Navigate } from 'react-router-dom';
 import './App.css';
 import { AppBar, Box, Tab, Tabs } from './components/lib';
 import { ProtectedRoute, routes } from './components';
-import { routeProps } from './components/routes/routes';
+import type { routeProps } from './components/routes/routes';
 
 const currentTab = () => {
   if (import.meta.env.NODE_ENV === 'production') {
@@ -15,12 +16,12 @@ const currentTab = () => {
   return window.location.pathname;
 };
 
-export const App = () => {
-  const [selectedMovie, setSelectedMovie] = useState(null);
+export const App = (): ReactElement => {
+  const [selectedMovie, setSelectedMovie] = useState<string | null>(null);
   const [environment] = useState(import.meta.env.NODE_ENV || 'development'); // Default to 'development'
   const [value, setValue] = useState(currentTab());
 
-  const renderTabs = (label, value, index) => (
+  const renderTabs = (label: string, value: string, index: number) => (
     <Tab
       key={index}
       value={value}
@@ -31,11 +32,11 @@ export const App = () => {
     />
   );
 
-  const handleMovieUpdateSelection = (movie: unknown) => {
+  const handleMovieUpdateSelection = (movie: string) => {
     setSelectedMovie(movie);
   };
 
-  const renderRoutes = (index, production, route: routeProps) => {
+  const renderRoutes = (index: number, production: boolean, route: routeProps) => {
     const { component: FC, path } = route;
     let componentProps = {};
     if (!production) {
@@ -92,8 +93,8 @@ export const App = () => {
             const { production } = route;
             return renderRoutes(index, production, route);
           })}
-          <Route path="/" element={<Navigate to={routes[0].path} replace />} />
-          <Route path="*" element={<Navigate to={routes[0].path} replace />} />
+          <Route path="/" element={<Navigate to={routes[0]?.path || '/home'} replace />} />
+          <Route path="*" element={<Navigate to={routes[0]?.path || '/home'} replace />} />
         </Routes>
       </Box>
     </BrowserRouter>

@@ -1,9 +1,26 @@
 import { axiosConfig } from '../../helper';
 import { useEffect, useState } from 'react';
+import type { ComponentType } from 'react';
 import { Box, Progress } from '../lib';
-export const getData = (WrappedComponent, { apiUrl, title, ...props }) => {
+
+interface GetDataProps {
+  apiUrl: string;
+  title: string;
+  [key: string]: unknown;
+}
+
+interface WrappedComponentProps {
+  apiData: unknown[];
+  title: string;
+  [key: string]: unknown;
+}
+
+export const getData = (
+  WrappedComponent: ComponentType<WrappedComponentProps>,
+  { apiUrl, title, ...props }: GetDataProps
+): React.FC => {
   const Component = () => {
-    const [data, setData] = useState([]);
+    const [data, setData] = useState<unknown[]>([]);
     const [loading, setLoading] = useState(false);
     const fetchData = () => {
       const list = axiosConfig.get(apiUrl);
