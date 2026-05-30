@@ -6,19 +6,21 @@ The backend REST API for the Movie List application, built with **Node.js**, **E
 
 ## 🛠️ Tech Stack
 
-| Category            | Technology / Library | Version  | Purpose                                          |
-|---------------------|----------------------|----------|--------------------------------------------------|
-| Runtime             | Node.js              | >=18.x   | JavaScript server-side runtime                   |
-| Language            | TypeScript           | ^5.x     | Static typing and developer experience           |
-| Web Framework       | Express              | ^4.x     | HTTP routing and middleware                      |
-| ODM                 | Mongoose             | ^8.x     | MongoDB object modeling and schema validation    |
-| Database            | MongoDB              | >=6.x    | NoSQL document database                          |
-| Environment Config  | dotenv               | ^16.x    | Environment variable management                  |
-| CORS                | cors                 | ^2.x     | Cross-Origin Resource Sharing middleware         |
-| TS Execution        | ts-node              | ^10.x    | Run TypeScript directly in Node.js               |
-| Package Manager     | pnpm                 | ^8.x     | Fast, disk-efficient package management          |
-| Linting             | ESLint               | ^9.x     | Code quality enforcement                         |
-| Git Hooks           | Husky                | latest   | Pre-commit linting hooks                         |
+| Category            | Technology / Library | Version   | Purpose                                          |
+|---------------------|----------------------|-----------|--------------------------------------------------|
+| Runtime             | Node.js              | >=18.x    | JavaScript server-side runtime                   |
+| Language            | TypeScript           | ^6.0.3    | Static typing and developer experience           |
+| Web Framework       | Express              | ^5.2.1    | HTTP routing and middleware                      |
+| ODM                 | Mongoose             | ^9.6.3    | MongoDB object modeling and schema validation    |
+| Database            | MongoDB              | >=6.x     | NoSQL document database                          |
+| Environment Config  | dotenv               | ^17.4.2   | Environment variable management                  |
+| CORS                | cors                 | ^2.8.6    | Cross-Origin Resource Sharing middleware         |
+| TS Execution        | tsx                  | ^4.22.3   | Run TypeScript directly in Node.js (ESM support) |
+| TS Execution (dev)  | ts-node              | ^10.9.2   | TypeScript execution for development             |
+| Package Manager     | pnpm                 | ^11.5.0   | Fast, disk-efficient package management          |
+| Linting             | ESLint               | ^10.4.0   | Code quality enforcement                         |
+| Formatting          | Prettier             | ^3.8.3    | Code formatting                                  |
+| Git Hooks           | Husky                | ^9.1.7    | Pre-commit linting hooks                         |
 
 ---
 

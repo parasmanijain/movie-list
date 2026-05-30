@@ -1,25 +1,28 @@
 # 🎬 Movie List — Client Application
 
-The frontend of the Movie List application, built with **React 18**, **TypeScript**, and **Vite**. It provides an interactive dashboard for browsing movie statistics, visualizing data through charts, filtering by various dimensions, and managing movie-related entities through validated forms.
+The frontend of the Movie List application, built with **React 19**, **TypeScript**, and **Vite**. It provides an interactive dashboard for browsing movie statistics, visualizing data through charts, filtering by various dimensions, and managing movie-related entities through validated forms.
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Category              | Technology / Library              | Version   | Purpose                                      |
-|-----------------------|-----------------------------------|-----------|----------------------------------------------|
-| UI Framework          | React                             | ^18.x     | Component-based UI rendering                 |
-| Language              | TypeScript                        | ^5.x      | Static typing and developer experience       |
-| Build Tool            | Vite                              | ^5.x      | Fast dev server and optimized production build|
-| Routing               | React Router DOM                  | ^6.x      | Client-side SPA routing                      |
-| HTTP Client           | Axios                             | ^1.x      | REST API communication with the server       |
-| Data Visualization    | Recharts                          | ^2.x      | Bar, Line, and Pie charts                    |
-| Form Management       | Formik                            | ^2.x      | Form state management and submission         |
-| Form Validation       | Yup                               | ^1.x      | Schema-based form validation                 |
-| UI Component Library  | Material UI (MUI)                 | ^5.x      | Pre-built accessible UI components           |
-| Package Manager       | pnpm                              | ^8.x      | Fast, disk-efficient package management      |
-| Linting               | ESLint                            | ^9.x      | Code quality enforcement                     |
-| Git Hooks             | Husky                             | latest    | Pre-commit linting hooks                     |
+| Category              | Technology / Library              | Version    | Purpose                                      |
+|-----------------------|-----------------------------------|------------|----------------------------------------------|
+| UI Framework          | React                             | ^19.2.6    | Component-based UI rendering                 |
+| Language              | TypeScript                        | ^6.0.3     | Static typing and developer experience       |
+| Build Tool            | Vite                              | ^8.0.14    | Fast dev server and optimized production build|
+| Routing               | React Router DOM                  | ^7.16.0    | Client-side SPA routing                      |
+| HTTP Client           | Axios                             | ^1.16.1    | REST API communication with the server       |
+| Data Visualization    | Chart.js + react-chartjs-2        | ^4.5.1 / ^5.3.1 | Bar, Line, and Pie charts              |
+| Form Management       | Formik                            | ^2.4.9     | Form state management and submission         |
+| Form Validation       | Yup                               | ^1.7.1     | Schema-based form validation                 |
+| UI Component Library  | Material UI (MUI)                 | ^9.0.1     | Pre-built accessible UI components           |
+| Date Utilities        | date-fns                          | ^4.3.0     | Date formatting and manipulation             |
+| Utility Library       | Lodash                            | ^4.18.1    | General-purpose utility functions            |
+| Package Manager       | pnpm                              | ^11.5.0    | Fast, disk-efficient package management      |
+| Linting               | ESLint                            | ^10.4.0    | Code quality enforcement                     |
+| Formatting            | Prettier                          | ^3.8.3     | Code formatting                              |
+| Git Hooks             | Husky                             | ^9.1.7     | Pre-commit linting hooks                     |
 
 ---
 
