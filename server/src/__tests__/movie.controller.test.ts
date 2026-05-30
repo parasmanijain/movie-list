@@ -972,3 +972,246 @@ describe('updateExistingMovie - bulkWrite error callbacks', () => {
     expect(res.status).toHaveBeenCalledWith(200);
   });
 });
+
+// ─── getMovieList - non-Error exception branch ────────────────────────────────
+
+describe('getMovieList - non-Error exception branch', () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  /**
+   * Verifies that getMovieList handles a non-Error thrown value (string) and
+   * returns 500 with 'Unknown error occurred'.
+   */
+  it('should return 500 with Unknown error when a non-Error is thrown', async () => {
+    mockMovieFind.mockImplementation(() => {
+      throw 'string error';
+    });
+    const req = makeReq({ query: {} as any });
+    const res = makeRes();
+
+    await getMovieList(req as any, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({ error: 'Unknown error occurred' });
+  });
+});
+
+// ─── getMovieDetails - non-Error exception branch ─────────────────────────────
+
+describe('getMovieDetails - non-Error exception branch', () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  /**
+   * Verifies that getMovieDetails handles a non-Error thrown value and
+   * returns 500 with 'Unknown error occurred'.
+   */
+  it('should return 500 with Unknown error when a non-Error is thrown', async () => {
+    mockMovieFindById.mockImplementation(() => {
+      throw { code: 'ENOTFOUND' };
+    });
+    const req = makeReq({ query: { movieID: 'bad-id' } as any });
+    const res = makeRes();
+
+    await getMovieDetails(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.send).toHaveBeenCalledWith({ error: 'Unknown error occurred' });
+  });
+});
+
+// ─── addNewMovie - non-Error exception branch ─────────────────────────────────
+
+describe('addNewMovie - non-Error exception branch', () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  /**
+   * Verifies that addNewMovie handles a non-Error thrown value and
+   * returns 400 with 'Unknown error occurred'.
+   */
+  it('should return 400 with Unknown error when a non-Error is thrown', async () => {
+    mockMovieCreate.mockRejectedValue('string rejection' as any);
+    const req = makeReq({ body: { name: 'Test' } });
+    const res = makeRes();
+
+    await addNewMovie(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ error: 'Unknown error occurred' });
+  });
+
+  /**
+   * Verifies that addNewMovie handles the case where Movie.create returns null/falsy
+   * (throws 'Failed to create movie') and returns 400.
+   */
+  it('should return 400 when Movie.create returns falsy (null)', async () => {
+    mockMovieCreate.mockResolvedValue(null as any);
+    const req = makeReq({ body: { name: 'Test', language: [], director: [], genre: [] } });
+    const res = makeRes();
+
+    await addNewMovie(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ error: 'Failed to create movie' });
+  });
+});
+
+// ─── updateExistingMovie - non-Error exception branch ────────────────────────
+
+describe('updateExistingMovie - non-Error exception branch', () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  /**
+   * Verifies that updateExistingMovie handles a non-Error thrown value and
+   * returns 400 with 'Unknown error occurred'.
+   */
+  it('should return 400 with Unknown error when a non-Error is thrown', async () => {
+    mockMovieFindByIdAndUpdate.mockRejectedValue('string rejection' as any);
+    const req = makeReq({ body: { id: 'movie1', name: 'Test' } });
+    const res = makeRes();
+
+    await updateExistingMovie(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ error: 'Unknown error occurred' });
+  });
+});
+
+// ─── updateExistingMovie - language/director/genre with only added or only removed ──
+
+describe('updateExistingMovie - partial added/removed arrays', () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  const existingMovieDoc3 = { _id: 'movie1', name: 'Updated Movie' };
+
+  /**
+   * Verifies that updateExistingMovie handles language with only added (no removed).
+   */
+  it('should handle language with only added items (no removed)', async () => {
+    mockMovieFindByIdAndUpdate.mockResolvedValue(existingMovieDoc3 as any);
+    mockLanguageBulkWrite.mockResolvedValue({} as any);
+
+    const req = makeReq({
+      body: {
+        id: 'movie1',
+        language: { value: ['lang2'], added: ['lang2'], removed: [] }
+      }
+    });
+    const res = makeRes();
+
+    await updateExistingMovie(req, res);
+
+    expect(mockLanguageBulkWrite).toHaveBeenCalledOnce();
+    expect(res.status).toHaveBeenCalledWith(200);
+  });
+
+  /**
+   * Verifies that updateExistingMovie handles director with only removed (no added).
+   */
+  it('should handle director with only removed items (no added)', async () => {
+    mockMovieFindByIdAndUpdate.mockResolvedValue(existingMovieDoc3 as any);
+    mockDirectorBulkWrite.mockResolvedValue({} as any);
+
+    const req = makeReq({
+      body: {
+        id: 'movie1',
+        director: { value: [], added: [], removed: ['dir1'] }
+      }
+    });
+    const res = makeRes();
+
+    await updateExistingMovie(req, res);
+
+    expect(mockDirectorBulkWrite).toHaveBeenCalledOnce();
+    expect(res.status).toHaveBeenCalledWith(200);
+  });
+
+  /**
+   * Verifies that updateExistingMovie handles genre with null added/removed (uses || []).
+   */
+  it('should handle genre with undefined added/removed (fallback to empty array)', async () => {
+    mockMovieFindByIdAndUpdate.mockResolvedValue(existingMovieDoc3 as any);
+    mockGenreBulkWrite.mockResolvedValue({} as any);
+
+    const req = makeReq({
+      body: {
+        id: 'movie1',
+        genre: { value: ['genre1'] }
+      }
+    });
+    const res = makeRes();
+
+    await updateExistingMovie(req, res);
+
+    expect(mockGenreBulkWrite).toHaveBeenCalledOnce();
+    expect(res.status).toHaveBeenCalledWith(200);
+  });
+
+  /**
+   * Verifies that updateExistingMovie handles language where added is undefined
+   * (triggers the optional chaining ?.map fallback to || [] at line 259).
+   */
+  it('should handle language where added is undefined (optional chain fallback)', async () => {
+    mockMovieFindByIdAndUpdate.mockResolvedValue(existingMovieDoc3 as any);
+    mockLanguageBulkWrite.mockResolvedValue({} as any);
+
+    const req = makeReq({
+      body: {
+        id: 'movie1',
+        // added is undefined - triggers language.added?.map fallback to || []
+        language: { value: ['lang2'], removed: ['lang1'] }
+      }
+    });
+    const res = makeRes();
+
+    await updateExistingMovie(req, res);
+
+    expect(mockLanguageBulkWrite).toHaveBeenCalledOnce();
+    expect(res.status).toHaveBeenCalledWith(200);
+  });
+
+  /**
+   * Verifies that updateExistingMovie handles director where removed is undefined
+   * (triggers the optional chaining ?.map fallback to || [] at line 295).
+   */
+  it('should handle director where removed is undefined (optional chain fallback)', async () => {
+    mockMovieFindByIdAndUpdate.mockResolvedValue(existingMovieDoc3 as any);
+    mockDirectorBulkWrite.mockResolvedValue({} as any);
+
+    const req = makeReq({
+      body: {
+        id: 'movie1',
+        // removed is undefined - triggers director.removed?.map fallback to || []
+        director: { value: ['dir2'], added: ['dir2'] }
+      }
+    });
+    const res = makeRes();
+
+    await updateExistingMovie(req, res);
+
+    expect(mockDirectorBulkWrite).toHaveBeenCalledOnce();
+    expect(res.status).toHaveBeenCalledWith(200);
+  });
+
+  /**
+   * Verifies that updateExistingMovie handles genre where added is undefined
+   * (triggers the optional chaining ?.map fallback to || []).
+   */
+  it('should handle genre where added is undefined (optional chain fallback)', async () => {
+    mockMovieFindByIdAndUpdate.mockResolvedValue(existingMovieDoc3 as any);
+    mockGenreBulkWrite.mockResolvedValue({} as any);
+
+    const req = makeReq({
+      body: {
+        id: 'movie1',
+        // added is undefined - triggers genre.added?.map fallback to || []
+        genre: { value: ['genre2'], removed: ['genre1'] }
+      }
+    });
+    const res = makeRes();
+
+    await updateExistingMovie(req, res);
+
+    expect(mockGenreBulkWrite).toHaveBeenCalledOnce();
+    expect(res.status).toHaveBeenCalledWith(200);
+  });
+});

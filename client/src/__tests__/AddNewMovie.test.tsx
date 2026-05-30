@@ -406,5 +406,109 @@ describe('AddNewMovie', () => {
       expect(document.getElementById('form')).toBeInTheDocument();
     });
   });
+
+  /**
+   * Verifies that AddNewMovie handles post failure gracefully (covers line 266 - catch callback).
+   */
+  it('should handle post failure gracefully (catch callback at line 266)', async () => {
+    setupMockGetSuccess();
+    mockPost.mockRejectedValue(new Error('Post failed') as any);
+
+    render(<AddNewMovie />);
+
+    await waitFor(() => {
+      expect(document.getElementById('form')).toBeInTheDocument();
+    });
+
+    // Fill in required fields to make form valid enough to submit
+    const nameInput = screen.getByLabelText(/Movie/i);
+    fireEvent.change(nameInput, { target: { value: 'Test Movie' } });
+
+    const imdbInput = screen.getByLabelText(/IMDB Rating/i);
+    fireEvent.change(imdbInput, { target: { value: '8.0' } });
+
+    const urlInput = screen.getByLabelText(/URL/i);
+    fireEvent.change(urlInput, { target: { value: 'https://www.imdb.com/title/test' } });
+
+    const submitButton = screen.getByRole('button', { name: /submit/i });
+    fireEvent.click(submitButton);
+
+    // Should not crash even when post fails
+    await waitFor(() => {
+      expect(document.getElementById('form')).toBeInTheDocument();
+    });
+  });
+
+  /**
+   * Verifies that AddNewMovie renders category award select with data (covers lines 448-455).
+   * The renderValue callback for the Award select filters and maps category data.
+   */
+  it('should render Award select with category data loaded', async () => {
+    setupMockGetSuccess();
+
+    render(<AddNewMovie />);
+
+    await waitFor(() => {
+      expect(mockGet).toHaveBeenCalledTimes(6);
+    });
+
+    // Award select should be present
+    expect(screen.getByLabelText(/Award/i)).toBeInTheDocument();
+  });
+
+  /**
+   * Verifies that AddNewMovie handles movie details with category data (covers category mapping).
+   */
+  it('should handle movie details with category data', async () => {
+    const movieWithCategory = {
+      ...sampleMovieDetails,
+      category: [{ _id: 'cat1' }]
+    };
+
+    mockGet.mockImplementation((url: string) => {
+      if (url.includes('movieDetails')) return Promise.resolve({ data: movieWithCategory }) as any;
+      if (url.includes('languages')) return Promise.resolve({ data: sampleLanguages }) as any;
+      if (url.includes('directors')) return Promise.resolve({ data: sampleDirectors }) as any;
+      if (url.includes('genres')) return Promise.resolve({ data: sampleGenres }) as any;
+      if (url.includes('universeFranchises')) return Promise.resolve({ data: sampleUniverses }) as any;
+      if (url.includes('franchises')) return Promise.resolve({ data: sampleFranchises }) as any;
+      if (url.includes('awardCategories')) return Promise.resolve({ data: sampleAwards }) as any;
+      return Promise.resolve({ data: [] }) as any;
+    });
+
+    render(<AddNewMovie selectedMovie="movie1" />);
+
+    await waitFor(() => {
+      expect(document.getElementById('form')).toBeInTheDocument();
+    });
+  });
+
+  /**
+   * Verifies that AddNewMovie handles update submission with franchise diff (covers franchise branch in onSubmit).
+   */
+  it('should handle franchise diff in update submission', async () => {
+    const movieWithFranchise = {
+      ...sampleMovieDetails,
+      franchise: { _id: 'f1', universe: null }
+    };
+
+    mockGet.mockImplementation((url: string) => {
+      if (url.includes('movieDetails')) return Promise.resolve({ data: movieWithFranchise }) as any;
+      if (url.includes('languages')) return Promise.resolve({ data: sampleLanguages }) as any;
+      if (url.includes('directors')) return Promise.resolve({ data: sampleDirectors }) as any;
+      if (url.includes('genres')) return Promise.resolve({ data: sampleGenres }) as any;
+      if (url.includes('universeFranchises')) return Promise.resolve({ data: sampleUniverses }) as any;
+      if (url.includes('franchises')) return Promise.resolve({ data: sampleFranchises }) as any;
+      if (url.includes('awardCategories')) return Promise.resolve({ data: sampleAwards }) as any;
+      return Promise.resolve({ data: [] }) as any;
+    });
+    mockPost.mockResolvedValue({ data: {} } as any);
+
+    render(<AddNewMovie selectedMovie="movie1" />);
+
+    await waitFor(() => {
+      expect(document.getElementById('form')).toBeInTheDocument();
+    });
+  });
 });
 

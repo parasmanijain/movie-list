@@ -56,7 +56,7 @@ describe('getData HOC', () => {
    */
   it('should show loading state while fetching data', async () => {
     // Never resolves during this test
-    mockAxiosGet.mockReturnValue(new Promise(() => {}) as any);
+    mockAxiosGet.mockReturnValue(new Promise(() => { }) as any);
 
     const WrappedComponent = getData(DummyComponent, { apiUrl: '/movies', title: 'Movies' });
     render(<WrappedComponent />);
@@ -141,5 +141,45 @@ describe('getData HOC', () => {
 
     // No content rendered after unmount
     expect(screen.queryByTestId('title')).not.toBeInTheDocument();
+  });
+
+  /**
+   * Verifies that the getData HOC uses the component name fallback for displayName
+   * when WrappedComponent has no displayName but has a name (covers line 104 branch).
+   */
+  it('should set displayName using component name when displayName is not set', () => {
+    function NamedComponent({ apiData, title }: { apiData: unknown[]; title: string }) {
+      return <div>{title}</div>;
+    }
+    // Explicitly remove displayName to test the name fallback
+    delete (NamedComponent as any).displayName;
+
+    const WrappedComponent = getData(NamedComponent, { apiUrl: '/test', title: 'Test' });
+    expect(WrappedComponent.displayName).toBe('getData(NamedComponent)');
+  });
+
+  /**
+   * Verifies that the getData HOC does not update error state when
+   * the component is unmounted before a failed request completes.
+   */
+  it('should not update error state when unmounted before failed request completes', async () => {
+    let rejectRequest!: (err: unknown) => void;
+    mockAxiosGet.mockReturnValue(
+      new Promise((_, reject) => { rejectRequest = reject; }) as any
+    );
+    vi.spyOn(axios, 'isCancel').mockReturnValue(false);
+
+    const WrappedComponent = getData(DummyComponent, { apiUrl: '/movies', title: 'Movies' });
+    const { unmount } = render(<WrappedComponent />);
+
+    // Unmount before the request rejects
+    unmount();
+
+    // Reject after unmount - should not cause state update errors
+    rejectRequest(new Error('Network error'));
+    await new Promise((r) => setTimeout(r, 50));
+
+    // No error message should be rendered after unmount
+    expect(screen.queryByText('Failed to load data. Please try again.')).not.toBeInTheDocument();
   });
 });

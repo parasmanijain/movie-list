@@ -276,5 +276,141 @@ describe('TopRatedMovies sorting behavior', () => {
       expect(denseCheckbox).toBeChecked();
     }
   });
+
+  /**
+   * Verifies that TopRatedMovies handles fetch error gracefully (covers lines 180-182).
+   * When fetch fails with a non-cancel error, console.error is called.
+   */
+  it('should handle fetch error gracefully and log error', async () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
+    mockGet.mockRejectedValue(new Error('Network error') as any);
+
+    await act(async () => {
+      render(<TopRatedMovies />);
+    });
+
+    await waitFor(() => {
+      expect(consoleSpy).toHaveBeenCalled();
+    });
+
+    consoleSpy.mockRestore();
+  });
+
+  /**
+   * Verifies that TopRatedMovies does not log error for cancelled requests (covers line 180 isCancel branch).
+   */
+  it('should not log error for cancelled requests (isCancel branch)', async () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => { });
+    // Mock axiosConfig.isCancel to return true
+    const cancelError = new Error('cancelled');
+    mockGet.mockRejectedValue(cancelError as any);
+
+    // Mock the isCancel method on the axiosConfig instance
+    const axiosConfigModule = await import('../helper/axiosConfig');
+    const originalIsCancel = (axiosConfigModule.default as any).isCancel;
+    (axiosConfigModule.default as any).isCancel = vi.fn(() => true);
+
+    await act(async () => {
+      render(<TopRatedMovies />);
+    });
+
+    await new Promise((r) => setTimeout(r, 50));
+
+    // console.error should NOT be called for cancelled requests
+    expect(consoleSpy).not.toHaveBeenCalled();
+
+    // Restore
+    (axiosConfigModule.default as any).isCancel = originalIsCancel;
+    consoleSpy.mockRestore();
+  });
+
+  /**
+   * Verifies that TopRatedMovies does not update state after unmount (covers lines 157-158).
+   */
+  it('should not update state after component unmounts', async () => {
+    let resolveRequest!: (value: unknown) => void;
+    mockGet.mockReturnValue(
+      new Promise((resolve) => { resolveRequest = resolve; }) as any
+    );
+
+    const { unmount } = render(<TopRatedMovies />);
+
+    // Unmount before request resolves
+    unmount();
+
+    // Resolve after unmount - should not cause state update errors
+    resolveRequest({ data: sampleMovies });
+    await new Promise((r) => setTimeout(r, 50));
+
+    // No table rows should be rendered after unmount
+    expect(screen.queryByText('Inception')).not.toBeInTheDocument();
+  });
+
+  /**
+   * Verifies that descendingComparator returns 0 when both values are equal (line 47).
+   * This is triggered by stableSort when two movies have the same value for orderBy.
+   */
+  it('should handle equal values in sort (descendingComparator returns 0)', async () => {
+    // Two movies with the same imdb rating to trigger the return 0 branch
+    const moviesWithEqualRating: TopRatedMovie[] = [
+      { name: 'Movie A', year: 2010, imdb: 8.0, rottenTomatoes: 80 },
+      { name: 'Movie B', year: 2010, imdb: 8.0, rottenTomatoes: 90 }
+    ];
+
+    mockGet.mockResolvedValue({ data: moviesWithEqualRating } as any);
+    render(<TopRatedMovies />);
+
+    await waitFor(() => screen.getByText('Movie A'));
+
+    // Sort by imdb (both equal) - triggers return 0 in descendingComparator
+    await act(async () => {
+      fireEvent.click(screen.getByText('IMDB Rating (10)'));
+    });
+
+    // Both movies should still be visible
+    expect(screen.getByText('Movie A')).toBeInTheDocument();
+    expect(screen.getByText('Movie B')).toBeInTheDocument();
+  });
+
+  /**
+   * Verifies that getComparator returns the ascending comparator (line 60 asc branch).
+   * Clicking a column once sets it to asc (since default is asc for a new column).
+   */
+  it('should use ascending comparator when order is asc (getComparator asc branch)', async () => {
+    mockGet.mockResolvedValue({ data: sampleMovies } as any);
+    render(<TopRatedMovies />);
+
+    await waitFor(() => screen.getByText('Inception'));
+
+    // Click Year column once - activates asc sort (new column, starts asc)
+    await act(async () => {
+      fireEvent.click(screen.getByText('Year'));
+    });
+
+    await waitFor(() => {
+      const rows = screen.getAllByRole('row');
+      // Sorted ascending by year: Zodiac(2007) first
+      expect(rows[1]).toHaveTextContent('Zodiac');
+    });
+  });
+
+  /**
+   * Verifies that stableSort uses index as tiebreaker when comparator returns 0 (line 60).
+   * This covers the `return a[1] - b[1]` branch in stableSort.
+   */
+  it('should use index as tiebreaker in stableSort when comparator returns 0', async () => {
+    const moviesWithSameName: TopRatedMovie[] = [
+      { name: 'Same Movie', year: 2010, imdb: 8.0, rottenTomatoes: 80 },
+      { name: 'Same Movie', year: 2011, imdb: 8.0, rottenTomatoes: 90 }
+    ];
+
+    mockGet.mockResolvedValue({ data: moviesWithSameName } as any);
+    render(<TopRatedMovies />);
+
+    await waitFor(() => {
+      const cells = screen.getAllByText('Same Movie');
+      expect(cells.length).toBe(2);
+    });
+  });
 });
 

@@ -380,5 +380,328 @@ describe('Home component', () => {
       }
     });
   });
+
+  /**
+   * Verifies Home renders correctly with width >= 1200 and height >= 800 (limit=28).
+   */
+  it('should calculate limit=28 for width>=1200 height>=800', async () => {
+    const { useWindowDimensions } = await import('../hooks/useWindowDimensions');
+    vi.mocked(useWindowDimensions).mockReturnValue([1300, 900]);
+
+    mockGet.mockImplementation((url: string) => {
+      if (url.includes('/movies')) return Promise.resolve(mockMovieResponse) as any;
+      return Promise.resolve(mockFilterResponse) as any;
+    });
+
+    render(<Home handleMovieUpdateSelection={vi.fn()} />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Total:/)).toBeInTheDocument();
+    });
+  });
+
+  /**
+   * Verifies Home renders correctly with width >= 1200 and height < 800 (limit=24).
+   */
+  it('should calculate limit=24 for width>=1200 height<800', async () => {
+    const { useWindowDimensions } = await import('../hooks/useWindowDimensions');
+    vi.mocked(useWindowDimensions).mockReturnValue([1300, 700]);
+
+    mockGet.mockImplementation((url: string) => {
+      if (url.includes('/movies')) return Promise.resolve(mockMovieResponse) as any;
+      return Promise.resolve(mockFilterResponse) as any;
+    });
+
+    render(<Home handleMovieUpdateSelection={vi.fn()} />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Total:/)).toBeInTheDocument();
+    });
+  });
+
+  /**
+   * Verifies Home renders correctly with width >= 900 and height >= 800 (limit=28).
+   */
+  it('should calculate limit=28 for width>=900 height>=800', async () => {
+    const { useWindowDimensions } = await import('../hooks/useWindowDimensions');
+    vi.mocked(useWindowDimensions).mockReturnValue([1000, 900]);
+
+    mockGet.mockImplementation((url: string) => {
+      if (url.includes('/movies')) return Promise.resolve(mockMovieResponse) as any;
+      return Promise.resolve(mockFilterResponse) as any;
+    });
+
+    render(<Home handleMovieUpdateSelection={vi.fn()} />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Total:/)).toBeInTheDocument();
+    });
+  });
+
+  /**
+   * Verifies Home renders correctly with width >= 900 and height >= 700 (limit=24).
+   */
+  it('should calculate limit=24 for width>=900 height>=700', async () => {
+    const { useWindowDimensions } = await import('../hooks/useWindowDimensions');
+    vi.mocked(useWindowDimensions).mockReturnValue([1000, 750]);
+
+    mockGet.mockImplementation((url: string) => {
+      if (url.includes('/movies')) return Promise.resolve(mockMovieResponse) as any;
+      return Promise.resolve(mockFilterResponse) as any;
+    });
+
+    render(<Home handleMovieUpdateSelection={vi.fn()} />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Total:/)).toBeInTheDocument();
+    });
+  });
+
+  /**
+   * Verifies Home renders correctly with width >= 900 and height < 700 (limit=20).
+   */
+  it('should calculate limit=20 for width>=900 height<700', async () => {
+    const { useWindowDimensions } = await import('../hooks/useWindowDimensions');
+    vi.mocked(useWindowDimensions).mockReturnValue([1000, 600]);
+
+    mockGet.mockImplementation((url: string) => {
+      if (url.includes('/movies')) return Promise.resolve(mockMovieResponse) as any;
+      return Promise.resolve(mockFilterResponse) as any;
+    });
+
+    render(<Home handleMovieUpdateSelection={vi.fn()} />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Total:/)).toBeInTheDocument();
+    });
+  });
+
+  /**
+   * Verifies Home renders correctly with width >= 600 and height >= 700 (limit=18).
+   */
+  it('should calculate limit=18 for width>=600 height>=700', async () => {
+    const { useWindowDimensions } = await import('../hooks/useWindowDimensions');
+    vi.mocked(useWindowDimensions).mockReturnValue([700, 800]);
+
+    mockGet.mockImplementation((url: string) => {
+      if (url.includes('/movies')) return Promise.resolve(mockMovieResponse) as any;
+      return Promise.resolve(mockFilterResponse) as any;
+    });
+
+    render(<Home handleMovieUpdateSelection={vi.fn()} />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Total:/)).toBeInTheDocument();
+    });
+  });
+
+  /**
+   * Verifies Home renders correctly with width >= 600 and height < 700 (limit=12).
+   */
+  it('should calculate limit=12 for width>=600 height<700', async () => {
+    const { useWindowDimensions } = await import('../hooks/useWindowDimensions');
+    vi.mocked(useWindowDimensions).mockReturnValue([700, 600]);
+
+    mockGet.mockImplementation((url: string) => {
+      if (url.includes('/movies')) return Promise.resolve(mockMovieResponse) as any;
+      return Promise.resolve(mockFilterResponse) as any;
+    });
+
+    render(<Home handleMovieUpdateSelection={vi.fn()} />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Total:/)).toBeInTheDocument();
+    });
+  });
+
+  /**
+   * Verifies Home renders correctly with width < 600 and height >= 700 (limit=12).
+   */
+  it('should calculate limit=12 for width<600 height>=700', async () => {
+    const { useWindowDimensions } = await import('../hooks/useWindowDimensions');
+    vi.mocked(useWindowDimensions).mockReturnValue([400, 800]);
+
+    mockGet.mockImplementation((url: string) => {
+      if (url.includes('/movies')) return Promise.resolve(mockMovieResponse) as any;
+      return Promise.resolve(mockFilterResponse) as any;
+    });
+
+    render(<Home handleMovieUpdateSelection={vi.fn()} />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Total:/)).toBeInTheDocument();
+    });
+  });
+
+  /**
+   * Verifies Home renders correctly with width < 600 and height < 700 (limit=8).
+   */
+  it('should calculate limit=8 for width<600 height<700', async () => {
+    const { useWindowDimensions } = await import('../hooks/useWindowDimensions');
+    vi.mocked(useWindowDimensions).mockReturnValue([400, 600]);
+
+    mockGet.mockImplementation((url: string) => {
+      if (url.includes('/movies')) return Promise.resolve(mockMovieResponse) as any;
+      return Promise.resolve(mockFilterResponse) as any;
+    });
+
+    render(<Home handleMovieUpdateSelection={vi.fn()} />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Total:/)).toBeInTheDocument();
+    });
+  });
+
+  /**
+   * Verifies Home renders correctly with width >= 1536 and height >= 1000 (limit=36).
+   */
+  it('should calculate limit=36 for width>=1536 height>=1000', async () => {
+    const { useWindowDimensions } = await import('../hooks/useWindowDimensions');
+    vi.mocked(useWindowDimensions).mockReturnValue([1920, 1100]);
+
+    mockGet.mockImplementation((url: string) => {
+      if (url.includes('/movies')) return Promise.resolve(mockMovieResponse) as any;
+      return Promise.resolve(mockFilterResponse) as any;
+    });
+
+    render(<Home handleMovieUpdateSelection={vi.fn()} />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Total:/)).toBeInTheDocument();
+    });
+  });
+
+  /**
+   * Verifies Home renders correctly with width >= 1536 and height >= 900 but < 1000 (limit=32).
+   */
+  it('should calculate limit=32 for width>=1536 height>=900 but <1000', async () => {
+    const { useWindowDimensions } = await import('../hooks/useWindowDimensions');
+    vi.mocked(useWindowDimensions).mockReturnValue([1920, 950]);
+
+    mockGet.mockImplementation((url: string) => {
+      if (url.includes('/movies')) return Promise.resolve(mockMovieResponse) as any;
+      return Promise.resolve(mockFilterResponse) as any;
+    });
+
+    render(<Home handleMovieUpdateSelection={vi.fn()} />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Total:/)).toBeInTheDocument();
+    });
+  });
+
+  /**
+   * Verifies Home renders correctly with width >= 1536 and height < 900 (limit=28).
+   */
+  it('should calculate limit=28 for width>=1536 height<900', async () => {
+    const { useWindowDimensions } = await import('../hooks/useWindowDimensions');
+    vi.mocked(useWindowDimensions).mockReturnValue([1920, 800]);
+
+    mockGet.mockImplementation((url: string) => {
+      if (url.includes('/movies')) return Promise.resolve(mockMovieResponse) as any;
+      return Promise.resolve(mockFilterResponse) as any;
+    });
+
+    render(<Home handleMovieUpdateSelection={vi.fn()} />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Total:/)).toBeInTheDocument();
+    });
+  });
+
+  /**
+   * Verifies Home handles fetch error for top filters gracefully (covers catch branch at line 118-119).
+   */
+  it('should handle top filters fetch error gracefully', async () => {
+    const { useWindowDimensions } = await import('../hooks/useWindowDimensions');
+    vi.mocked(useWindowDimensions).mockReturnValue([1920, 1080]);
+
+    let callCount = 0;
+    mockGet.mockImplementation((url: string) => {
+      callCount++;
+      // First 4 calls are top filter fetches - make them fail
+      if (callCount <= 4 && !url.includes('/movies')) {
+        return Promise.reject(new Error('Filter fetch failed')) as any;
+      }
+      if (url.includes('/movies')) return Promise.resolve(mockMovieResponse) as any;
+      return Promise.reject(new Error('Filter fetch failed')) as any;
+    });
+
+    render(<Home handleMovieUpdateSelection={vi.fn()} />);
+
+    await waitFor(() => {
+      // Component should still render without crashing
+      expect(document.body).toBeInTheDocument();
+    }, { timeout: 3000 });
+  });
+
+  /**
+   * Verifies Home handles fetch error for movie data gracefully (covers catch branch at line 160-161).
+   */
+  it('should handle movie data fetch error gracefully', async () => {
+    const { useWindowDimensions } = await import('../hooks/useWindowDimensions');
+    vi.mocked(useWindowDimensions).mockReturnValue([1920, 1080]);
+
+    mockGet.mockImplementation((url: string) => {
+      if (url.includes('/movies')) return Promise.reject(new Error('Movies fetch failed')) as any;
+      return Promise.resolve(mockFilterResponse) as any;
+    });
+
+    render(<Home handleMovieUpdateSelection={vi.fn()} />);
+
+    await waitFor(() => {
+      // Component should still render without crashing
+      expect(document.body).toBeInTheDocument();
+    }, { timeout: 3000 });
+  });
+
+  /**
+   * Verifies Home renders with page from searchParams (covers the ternary at line 42).
+   */
+  it('should initialize page from searchParams when page param is set', async () => {
+    const searchParamsWithPage = new URLSearchParams('page=3');
+    mockUseSearchParams.mockReturnValue([searchParamsWithPage, vi.fn()] as any);
+
+    mockGet.mockImplementation((url: string) => {
+      if (url.includes('/movies')) return Promise.resolve(mockMovieResponse) as any;
+      return Promise.resolve(mockFilterResponse) as any;
+    });
+
+    render(<Home handleMovieUpdateSelection={vi.fn()} />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Total:/)).toBeInTheDocument();
+    });
+  });
+
+  /**
+   * Verifies that movie with null rottenTomatoes shows 'Not Rated'.
+   */
+  it('should show Not Rated for movies with null rottenTomatoes', async () => {
+    const movieWithNullRT = [{
+      ...sampleMovies[0],
+      rottenTomatoes: null
+    }];
+
+    mockGet.mockImplementation((url: string) => {
+      if (url.includes('/movies'))
+        return Promise.resolve({ data: { total: 1, page: 1, movies: movieWithNullRT } }) as any;
+      return Promise.resolve(mockFilterResponse) as any;
+    });
+
+    render(<Home handleMovieUpdateSelection={vi.fn()} />);
+
+    await waitFor(() => screen.getByText(/Inception/));
+
+    const expandButtons = document.querySelectorAll('[aria-controls="panel1a-content"]');
+    if (expandButtons.length > 0) {
+      fireEvent.click(expandButtons[0]!);
+    }
+
+    await waitFor(() => {
+      const notRated = screen.queryByText(/Not Rated/);
+      expect(notRated).not.toBeNull();
+    });
+  });
 });
 

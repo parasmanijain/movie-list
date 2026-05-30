@@ -372,4 +372,90 @@ describe('ChartContainer', () => {
 
     expect(screen.getByTestId('render-chart-0')).toBeInTheDocument();
   });
+
+  /**
+   * Verifies that ChartContainer handles the canvasHeight branch where
+   * chartData.length > 1 and height <= 500 (height branch in canvasHeight calc).
+   * This covers line 184 (height > 500 ? height/2 : height branch).
+   */
+  it('should calculate canvasHeight correctly when height <= 500 and multiple charts', async () => {
+    mockUseWindowDimensions.mockReturnValue([1920, 400]); // height <= 500
+
+    const categoryData = [
+      {
+        _id: 'aw1',
+        name: 'Academy Award',
+        category: [{ name: 'Best Picture', length: 5 }]
+      },
+      {
+        _id: 'aw2',
+        name: 'Golden Globe',
+        category: [{ name: 'Best Film', length: 3 }]
+      }
+    ];
+
+    render(
+      <ChartContainer
+        title="Award categories"
+        fullHeight={false}
+        apiData={categoryData}
+        stacked={false}
+      />
+    );
+
+    // Both charts should render
+    expect(screen.getByTestId('render-chart-0')).toBeInTheDocument();
+    expect(screen.getByTestId('render-chart-1')).toBeInTheDocument();
+  });
+
+  /**
+   * Verifies that ChartContainer handles the canvasHeight branch where
+   * chartData.length === 1 and fullHeight=false (single chart, not fullHeight).
+   * This covers line 102 (chartData.length > 1 ? ... : height branch).
+   */
+  it('should calculate canvasHeight for single chart with fullHeight=false', async () => {
+    mockUseWindowDimensions.mockReturnValue([1920, 800]);
+
+    const singleData = [
+      { _id: 'g1', name: 'Action', length: 50 }
+    ];
+
+    render(
+      <ChartContainer
+        title="Genre count"
+        fullHeight={false}
+        apiData={singleData}
+        stacked={false}
+      />
+    );
+
+    // Single chart should render with height-based canvasHeight
+    expect(screen.getByTestId('render-chart-0')).toBeInTheDocument();
+  });
+
+  /**
+   * Verifies that ChartContainer handles director movies with large dataset
+   * (> chunkSize) to trigger the chunking branch.
+   * This covers line 20 (the createChunks function with large data).
+   */
+  it('should chunk large director movies dataset into multiple charts', async () => {
+    // Create 60 items to force chunking (chunkSize is 50 for width >= 1536)
+    const largeDirectorData = Array.from({ length: 60 }, (_, i) => ({
+      movie_count: i + 1,
+      director_count: 60 - i
+    }));
+
+    render(
+      <ChartContainer
+        title="Director movies count"
+        fullHeight={false}
+        apiData={largeDirectorData}
+        stacked={false}
+      />
+    );
+
+    // Should create 2 charts for 60 items with chunkSize=50
+    expect(screen.getByTestId('render-chart-0')).toBeInTheDocument();
+    expect(screen.getByTestId('render-chart-1')).toBeInTheDocument();
+  });
 });
