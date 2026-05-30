@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { Franchise } from '../schemaModels/franchise.js';
 import { Universe } from '../schemaModels/universe.js';
+import { logInfo, logError } from '../utils/logger.js';
 
 export const getFranchiseList = async (req: Request, res: Response) => {
   try {
@@ -95,12 +96,20 @@ export const addNewFranchise = async (req: Request, res: Response) => {
       ];
 
       const operation = await Universe.bulkWrite(bulkUniverseOps)
-        .then((bulkWriteOpResult) => console.log('Universe BULK update OK:', bulkWriteOpResult))
-        .catch(console.error.bind(console, 'Universe BULK update error:'));
+        .then((bulkWriteOpResult) =>
+          logInfo(
+            'POST /franchise [addNewFranchise]',
+            `Universe BULK update OK: ${JSON.stringify(bulkWriteOpResult)}`
+          )
+        )
+        .catch((err) =>
+          logError('POST /franchise [addNewFranchise]', 'Universe BULK update error', 500, err)
+        );
     }
     res.status(200).json({ message: 'Records updated successfully' });
   } catch (err: unknown) {
     const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+    logError('POST /franchise [addNewFranchise]', errorMessage, 400, err);
     res.status(400).json({ error: errorMessage });
   }
 };

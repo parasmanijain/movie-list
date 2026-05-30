@@ -6,6 +6,7 @@ import { Movie } from '../schemaModels/movie.js';
 import { Franchise } from '../schemaModels/franchise.js';
 import { Category } from '../schemaModels/category.js';
 import { Genre } from '../schemaModels/genre.js';
+import { logInfo, logError } from '../utils/logger.js';
 
 export const getMovieList = async (
   req: Request<{}, {}, {}, { page: string; limit: string }>,
@@ -143,14 +144,33 @@ export const addNewMovie = async (req: Request, res: Response) => {
       }
     }));
     const directorOption = await Director.bulkWrite(bulkDirectorOps)
-      .then((bulkWriteOpResult) => console.log('Director BULK update OK:', bulkWriteOpResult))
-      .catch(console.error.bind(console, 'Director BULK update error:'));
+      .then((bulkWriteOpResult) =>
+        logInfo(
+          'POST /movie [addNewMovie]',
+          `Director BULK update OK: ${JSON.stringify(bulkWriteOpResult)}`
+        )
+      )
+      .catch((err) =>
+        logError('POST /movie [addNewMovie]', 'Director BULK update error', 500, err)
+      );
     const languageOperation = await Language.bulkWrite(bulkLanguageOps)
-      .then((bulkWriteOpResult) => console.log('Language BULK update OK:', bulkWriteOpResult))
-      .catch(console.error.bind(console, 'Language BULK update error:'));
+      .then((bulkWriteOpResult) =>
+        logInfo(
+          'POST /movie [addNewMovie]',
+          `Language BULK update OK: ${JSON.stringify(bulkWriteOpResult)}`
+        )
+      )
+      .catch((err) =>
+        logError('POST /movie [addNewMovie]', 'Language BULK update error', 500, err)
+      );
     const genreOperation = await Genre.bulkWrite(bulkGenreOps)
-      .then((bulkWriteOpResult) => console.log('Genre BULK update OK:', bulkWriteOpResult))
-      .catch(console.error.bind(console, 'Genre BULK update error:'));
+      .then((bulkWriteOpResult) =>
+        logInfo(
+          'POST /movie [addNewMovie]',
+          `Genre BULK update OK: ${JSON.stringify(bulkWriteOpResult)}`
+        )
+      )
+      .catch((err) => logError('POST /movie [addNewMovie]', 'Genre BULK update error', 500, err));
     if (newMovie.franchise) {
       const bulkFranchiseOps = [
         {
@@ -163,8 +183,15 @@ export const addNewMovie = async (req: Request, res: Response) => {
         }
       ];
       const franchiseOperation = await Franchise.bulkWrite(bulkFranchiseOps)
-        .then((bulkWriteOpResult) => console.log('Franchise BULK update OK:', bulkWriteOpResult))
-        .catch(console.error.bind(console, 'Franchise BULK update error:'));
+        .then((bulkWriteOpResult) =>
+          logInfo(
+            'POST /movie [addNewMovie]',
+            `Franchise BULK update OK: ${JSON.stringify(bulkWriteOpResult)}`
+          )
+        )
+        .catch((err) =>
+          logError('POST /movie [addNewMovie]', 'Franchise BULK update error', 500, err)
+        );
     }
     if (newMovie.category) {
       const bulkCategoryOps = newMovie.category.map((doc) => ({
@@ -176,12 +203,20 @@ export const addNewMovie = async (req: Request, res: Response) => {
         }
       }));
       const categoryOperation = await Category.bulkWrite(bulkCategoryOps)
-        .then((bulkWriteOpResult) => console.log('Category BULK update OK:', bulkWriteOpResult))
-        .catch(console.error.bind(console, 'Category BULK update error:'));
+        .then((bulkWriteOpResult) =>
+          logInfo(
+            'POST /movie [addNewMovie]',
+            `Category BULK update OK: ${JSON.stringify(bulkWriteOpResult)}`
+          )
+        )
+        .catch((err) =>
+          logError('POST /movie [addNewMovie]', 'Category BULK update error', 500, err)
+        );
     }
     res.status(200).json({ message: 'Records updated successfully' });
   } catch (err: unknown) {
     const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+    logError('POST /movie [addNewMovie]', errorMessage, 400, err);
     res.status(400).json({ error: errorMessage });
   }
 };
@@ -224,8 +259,20 @@ export const updateExistingMovie = async (req: Request, res: Response) => {
         })) || [];
       languageOperations.push(...languageAddOperations, ...languageRemoveOperations);
       const languageOperation = await Language.bulkWrite(languageOperations)
-        .then((bulkWriteOpResult) => console.log('Language BULK update OK:', bulkWriteOpResult))
-        .catch(console.error.bind(console, 'Language BULK update error:'));
+        .then((bulkWriteOpResult) =>
+          logInfo(
+            'POST /updateMovie [updateExistingMovie]',
+            `Language BULK update OK: ${JSON.stringify(bulkWriteOpResult)}`
+          )
+        )
+        .catch((err) =>
+          logError(
+            'POST /updateMovie [updateExistingMovie]',
+            'Language BULK update error',
+            500,
+            err
+          )
+        );
     }
     if (director) {
       const directorOperations = [];
@@ -248,8 +295,20 @@ export const updateExistingMovie = async (req: Request, res: Response) => {
         })) || [];
       directorOperations.push(...directorAddOperations, ...directorRemoveOperations);
       const directorOperation = await Director.bulkWrite(directorOperations)
-        .then((bulkWriteOpResult) => console.log('Director BULK update OK:', bulkWriteOpResult))
-        .catch(console.error.bind(console, 'Director BULK update error:'));
+        .then((bulkWriteOpResult) =>
+          logInfo(
+            'POST /updateMovie [updateExistingMovie]',
+            `Director BULK update OK: ${JSON.stringify(bulkWriteOpResult)}`
+          )
+        )
+        .catch((err) =>
+          logError(
+            'POST /updateMovie [updateExistingMovie]',
+            'Director BULK update error',
+            500,
+            err
+          )
+        );
     }
     if (genre) {
       const genreOperations = [];
@@ -272,8 +331,15 @@ export const updateExistingMovie = async (req: Request, res: Response) => {
         })) || [];
       genreOperations.push(...genreAddOperations, ...genreRemoveOperations);
       const genreOperation = await Genre.bulkWrite(genreOperations)
-        .then((bulkWriteOpResult) => console.log('Genre BULK update OK:', bulkWriteOpResult))
-        .catch(console.error.bind(console, 'Genre BULK update error:'));
+        .then((bulkWriteOpResult) =>
+          logInfo(
+            'POST /updateMovie [updateExistingMovie]',
+            `Genre BULK update OK: ${JSON.stringify(bulkWriteOpResult)}`
+          )
+        )
+        .catch((err) =>
+          logError('POST /updateMovie [updateExistingMovie]', 'Genre BULK update error', 500, err)
+        );
     }
     if (franchise) {
       const franchiseOperations = [];
@@ -298,12 +364,25 @@ export const updateExistingMovie = async (req: Request, res: Response) => {
       ];
       franchiseOperations.push(...franchiseAddOperations, ...franchiseRemoveOperations);
       const franchiseOperation = await Franchise.bulkWrite(franchiseOperations)
-        .then((bulkWriteOpResult) => console.log('Franchise BULK update OK:', bulkWriteOpResult))
-        .catch(console.error.bind(console, 'Franchise BULK update error:'));
+        .then((bulkWriteOpResult) =>
+          logInfo(
+            'POST /updateMovie [updateExistingMovie]',
+            `Franchise BULK update OK: ${JSON.stringify(bulkWriteOpResult)}`
+          )
+        )
+        .catch((err) =>
+          logError(
+            'POST /updateMovie [updateExistingMovie]',
+            'Franchise BULK update error',
+            500,
+            err
+          )
+        );
     }
     res.status(200).json({ message: 'Records updated successfully' });
   } catch (err: unknown) {
     const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+    logError('POST /updateMovie [updateExistingMovie]', errorMessage, 400, err);
     res.status(400).json({ error: errorMessage });
   }
 };

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { Category } from '../schemaModels/category.js';
 import { Award } from '../schemaModels/award.js';
+import { logInfo, logError } from '../utils/logger.js';
 
 export const getCategoryList = async (req: Request, res: Response) => {
   // get data from the view and add it to mongodb
@@ -88,14 +89,22 @@ export const addNewCategory = async (req: Request, res: Response) => {
         }
       ];
       const operation = await Award.bulkWrite(bulkAwardOps)
-        .then((bulkWriteOpResult) => console.log('Award BULK update OK:', bulkWriteOpResult))
-        .catch(console.error.bind(console, 'Award BULK update error:'));
+        .then((bulkWriteOpResult) =>
+          logInfo(
+            'POST /category [addNewCategory]',
+            `Award BULK update OK: ${JSON.stringify(bulkWriteOpResult)}`
+          )
+        )
+        .catch((err) =>
+          logError('POST /category [addNewCategory]', 'Award BULK update error', 500, err)
+        );
       res.status(200).json({ message: 'Record updated successfully' });
     } else {
       res.status(200).send('Category Successfully Added');
     }
   } catch (err: unknown) {
     const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+    logError('POST /category [addNewCategory]', errorMessage, 400, err);
     res.status(400).json({ error: errorMessage });
   }
 };

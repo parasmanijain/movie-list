@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express, { json, urlencoded, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import { connect } from 'mongoose';
+import { logInfo } from './utils/logger.js';
 
 // Connect to the database
 connect(process.env.DATABASE_URL as string);
@@ -134,5 +135,5 @@ app.all(/.*/, setupCORS);
 
 // Start the server
 app.listen(process.env.API_PORT, () => {
-  console.log(`Server has started at port ${process.env.API_PORT}`);
+  logInfo('SERVER_START', `Server has started at port ${process.env.API_PORT}`);
 });
