@@ -1,14 +1,28 @@
-// First we need to import axios.js
 import axios from 'axios';
-// Next we make an 'instance' of it
+
+// Create a shared axios instance with base configuration
 const instance = axios.create({
-  // .. where we make our configurations
-  baseURL: `${import.meta.env.VITE_APP_API_URL}`
+  baseURL: import.meta.env.VITE_APP_API_URL as string,
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  // Set a sensible timeout to prevent hanging requests
+  timeout: 30000
 });
 
-// Where you would set stuff like your 'Authorization' header, etc ...
-instance.defaults.headers.post['Content-Type'] = 'application/json';
-
-// Also add/ configure interceptors && all the other cool stuff
+// Response interceptor: surface errors consistently
+instance.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    // Do not log cancelled requests as errors
+    if (axios.isCancel(error)) {
+      return Promise.reject(error);
+    }
+    const status = error.response?.status;
+    const message = error.response?.data?.error || error.message || 'Unknown error';
+    console.error(`[Axios] ${status ?? 'Network'} error: ${message}`);
+    return Promise.reject(error);
+  }
+);
 
 export default instance;

@@ -1,4 +1,4 @@
-import { useState, useEffect, Fragment, type FC } from 'react';
+import { useState, useEffect, useRef, Fragment, type FC } from 'react';
 import { styled } from '@mui/material/styles';
 import { useSearchParams, useNavigate, useLocation } from 'react-router-dom';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -88,53 +88,90 @@ export const Home = ({ handleMovieUpdateSelection }: HomeProps): FC => {
   }
   const navigate = useNavigate();
 
-  const fetchTopFilters = () => {
-    const topDirectors = axiosConfig.get(`${GET_TOP_DIRECTOR_URL}`);
-    const topLanguages = axiosConfig.get(`${GET_TOP_LANGUAGE_URL}`);
-    const topYear = axiosConfig.get(`${GET_TOP_YEAR_URL}`);
-    const topGenre = axiosConfig.get(`${GET_TOP_GENRE_URL}`);
-    setFilterLoading(true);
-    Promise.all([topDirectors, topLanguages, topYear, topGenre])
-      .then((responses) => {
-        setTopDirectorData(responses[0].data.slice(0, 1));
-        setTopLanguageData(responses[1].data.slice(0, 1));
-        setTopYearData(responses[2].data.slice(0, 1));
-        setTopGenreData(responses[3].data.slice(0, 1));
-        setFilterLoading(false);
-      })
-      .catch(() => {
-        setFilterLoading(false);
-      });
-  };
+  // Ref to track if top filters have been fetched once (avoid re-fetching on every searchParams change)
+  const filtersFetchedRef = useRef(false);
 
   useEffect(() => {
+    // Only fetch top filters once on mount
+    if (filtersFetchedRef.current) return;
+    filtersFetchedRef.current = true;
+
+    const abortController = new AbortController();
+    let isMounted = true;
+
+    const fetchTopFilters = async () => {
+      setFilterLoading(true);
+      try {
+        const [topDirectors, topLanguages, topYear, topGenre] = await Promise.all([
+          axiosConfig.get(`${GET_TOP_DIRECTOR_URL}`, { signal: abortController.signal }),
+          axiosConfig.get(`${GET_TOP_LANGUAGE_URL}`, { signal: abortController.signal }),
+          axiosConfig.get(`${GET_TOP_YEAR_URL}`, { signal: abortController.signal }),
+          axiosConfig.get(`${GET_TOP_GENRE_URL}`, { signal: abortController.signal })
+        ]);
+        if (isMounted) {
+          setTopDirectorData(topDirectors.data.slice(0, 1));
+          setTopLanguageData(topLanguages.data.slice(0, 1));
+          setTopYearData(topYear.data.slice(0, 1));
+          setTopGenreData(topGenre.data.slice(0, 1));
+        }
+      } catch (err) {
+        if (!isMounted) return;
+        console.error('[Home] Failed to fetch top filters:', err);
+      } finally {
+        if (isMounted) setFilterLoading(false);
+      }
+    };
+
     fetchTopFilters();
+
+    return () => {
+      isMounted = false;
+      abortController.abort();
+    };
+  }, []);
+
+  // Sync URL with current page on searchParams change
+  useEffect(() => {
     navigate(
-      `${pathname}?page=${searchParams.get('page') ? searchParams.get('page') : 1}`, // inject code value into template
+      `${pathname}?page=${searchParams.get('page') ?? 1}`,
       { replace: true }
     );
   }, [searchParams]);
 
-  const fetchData = () => {
-    const moviesUrl = axiosConfig.get(`${GET_MOVIES_URL}`, { params: { page, limit } });
-    setDataLoading(true);
-    Promise.all([moviesUrl])
-      .then((responses) => {
-        const { total, page, movies } = responses[0].data;
-        setMovieData(movies);
-        setTotal(total);
-        setPage(page);
-        setCount(Math.ceil(total / limit));
-        setDataLoading(false);
-      })
-      .catch(() => {
-        setDataLoading(false);
-      });
-  };
-
   useEffect(() => {
+    const abortController = new AbortController();
+    let isMounted = true;
+
+    const fetchData = async () => {
+      setDataLoading(true);
+      try {
+        const response = await axiosConfig.get(`${GET_MOVIES_URL}`, {
+          params: { page, limit },
+          signal: abortController.signal
+        });
+        if (isMounted) {
+          const { total, page: responsePage, movies } = response.data;
+          setMovieData(movies ?? []);
+          setTotal(total ?? 0);
+          setPage(responsePage ?? 1);
+          setCount(Math.ceil((total ?? 0) / limit));
+        }
+      } catch (err) {
+        if (!isMounted) return;
+        console.error('[Home] Failed to fetch movies:', err);
+      } finally {
+        if (isMounted) setDataLoading(false);
+      }
+    };
+
     fetchData();
-  }, [page]);
+
+    // Cancel in-flight request when page changes or component unmounts
+    return () => {
+      isMounted = false;
+      abortController.abort();
+    };
+  }, [page, limit]);
 
   const otherMovies = (movies: any[], name: string, arr: any[]) => {
     return arr.length > 1 ? (
@@ -232,8 +269,8 @@ export const Home = ({ handleMovieUpdateSelection }: HomeProps): FC => {
             sx={{ margin: '0px', width: '100%', display: 'flex', alignItems: 'center' }}
           >
             {movie.name} ({movie.year}){' '}
-            {movie.category.length ? (
-              <Badge badgeContent={movie.category.length} color="primary">
+            {(movie.category ?? []).length ? (
+              <Badge badgeContent={(movie.category ?? []).length} color="primary">
                 <EmojiEventsIcon style={{ color: 'gold', marginLeft: '10px', fontSize: '32px' }} />
               </Badge>
             ) : null}
@@ -241,7 +278,7 @@ export const Home = ({ handleMovieUpdateSelection }: HomeProps): FC => {
         </AccordionSummary>
         <AccordionDetails>
           <Box sx={{ padding: '0px' }}>
-            {movie.language.map((element, index, arr) => (
+            {(movie.language ?? []).map((element, index, arr) => (
               <Typography
                 key={element._id}
                 variant="button"
@@ -253,11 +290,11 @@ export const Home = ({ handleMovieUpdateSelection }: HomeProps): FC => {
             ))}
 
             <Box>
-              {movie.director.map((element, index, arr) =>
+              {(movie.director ?? []).map((element, index, arr) =>
                 directorName(element, index, arr.length)
               )}
             </Box>
-            {movie.genre.map((element, index, arr) => (
+            {(movie.genre ?? []).map((element, index, arr) => (
               <Typography
                 key={element._id}
                 variant="button"
@@ -297,7 +334,7 @@ export const Home = ({ handleMovieUpdateSelection }: HomeProps): FC => {
                 )}
               </Fragment>
             ) : null}
-            {movie.category.length ? renderAwards(movie.category) : null}
+            {(movie.category ?? []).length ? renderAwards(movie.category ?? []) : null}
             {environment?.toLowerCase() === 'development' && (
               <Box>
                 <Button
@@ -320,9 +357,9 @@ export const Home = ({ handleMovieUpdateSelection }: HomeProps): FC => {
             <Typography component="h6" sx={{ padding: '4px 0px' }}>
               Other Movies from Same Director:
             </Typography>
-            {movie.director.map((element, index, arr) => {
+            {(movie.director ?? []).map((element, index, arr) => {
               const { movies, name } = element;
-              const otherMovieList = movies.filter((otherMovie) => otherMovie._id !== movie._id);
+              const otherMovieList = (movies ?? []).filter((otherMovie) => otherMovie._id !== movie._id);
               return otherMovies(otherMovieList, name, arr);
             })}
           </Box>

@@ -4,8 +4,11 @@ import cors from 'cors';
 import { connect } from 'mongoose';
 import { logInfo } from './utils/logger.js';
 
-// Connect to the database
-connect(process.env.DATABASE_URL as string);
+// Connect to the database with proper error handling
+connect(process.env.DATABASE_URL as string).catch((err) => {
+  logError('DB_CONNECT', 'Failed to connect to MongoDB', 500, err);
+  process.exit(1);
+});
 
 // Initialize Express app
 const app = express();

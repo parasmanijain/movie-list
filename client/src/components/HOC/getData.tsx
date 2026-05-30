@@ -1,7 +1,8 @@
 import { Box, LinearProgress } from '@mui/material';
 import { axiosConfig } from '../../helper';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import type { ComponentType } from 'react';
+import axios from 'axios';
 
 interface GetDataProps {
   apiUrl: string;
@@ -22,41 +23,84 @@ export const getData = (
   const Component = () => {
     const [data, setData] = useState<unknown[]>([]);
     const [loading, setLoading] = useState(false);
-    const fetchData = () => {
-      const list = axiosConfig.get(apiUrl);
-      setLoading(true);
-      Promise.all([list])
-        .then((responses) => {
-          setLoading(false);
-          setData(responses[0].data);
-        })
-        .catch((errors) => {
-          setLoading(false);
-          console.log(errors);
-        });
-    };
+    const [error, setError] = useState<string | null>(null);
+    // Use a ref to track if the component is still mounted
+    const isMountedRef = useRef(true);
+
     useEffect(() => {
+      isMountedRef.current = true;
+      // Create an AbortController for cancelling the request on unmount
+      const abortController = new AbortController();
+
+      const fetchData = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+          const response = await axiosConfig.get(apiUrl, {
+            signal: abortController.signal
+          });
+          if (isMountedRef.current) {
+            setData(response.data);
+          }
+        } catch (err) {
+          if (axios.isCancel(err)) {
+            // Request was cancelled — not an error
+            return;
+          }
+          if (isMountedRef.current) {
+            setError('Failed to load data. Please try again.');
+            console.error('[getData HOC] Fetch error:', err);
+          }
+        } finally {
+          if (isMountedRef.current) {
+            setLoading(false);
+          }
+        }
+      };
+
       fetchData();
+
       return () => {
-        setData([]);
+        isMountedRef.current = false;
+        abortController.abort();
       };
     }, []);
-    return loading ? (
-      <Box
-        sx={{
-          height: '100vh',
-          width: '100vw',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center'
-        }}
-      >
-        <LinearProgress />
-      </Box>
-    ) : (
-      <WrappedComponent apiData={data} title={title} {...props} />
-    );
+
+    if (loading) {
+      return (
+        <Box
+          sx={{
+            height: '100vh',
+            width: '100vw',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+        >
+          <LinearProgress />
+        </Box>
+      );
+    }
+
+    if (error) {
+      return (
+        <Box
+          sx={{
+            height: '100vh',
+            width: '100vw',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+        >
+          {error}
+        </Box>
+      );
+    }
+
+    return <WrappedComponent apiData={data} title={title} {...props} />;
   };
-  Component.displayName = 'test';
+
+  Component.displayName = `getData(${WrappedComponent.displayName || WrappedComponent.name || 'Component'})`;
   return Component;
 };

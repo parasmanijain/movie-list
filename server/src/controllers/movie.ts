@@ -12,43 +12,58 @@ export const getMovieList = async (
   req: Request<{}, {}, {}, { page: string; limit: string }>,
   res: Response
 ) => {
-  let page = parseInt(req.query.page) || 1;
-  let limit = parseInt(req.query.limit) || 36;
-  // get data from the view and add it to mongodb
+  const page = Math.max(1, parseInt(req.query.page) || 1);
+  const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 36));
+  const skip = (page - 1) * limit;
+
   try {
-    const results = await Movie.find({}, null, {
-      sort: { name: 1 },
-      collation: { locale: 'en_US', numericOrdering: true }
-    })
-      .skip((page - 1) * limit)
-      .limit(limit)
-      .populate('language')
-      .populate('genre')
-      .populate({
-        path: 'franchise',
-        populate: [{ path: 'universe' }]
-      })
-      .populate({
-        path: 'category',
-        populate: [{ path: 'award' }]
-      })
-      .populate({
-        path: 'director',
-        populate: [{ path: 'country' }, { path: 'movies', options: { sort: { year: 1 } } }]
-      });
-    if (results) {
-      const count = await Movie.countDocuments({});
-      if (count) {
-        res.json({
-          total: count,
-          page: page,
-          pageSize: results.length,
-          movies: results
-        });
-      }
-    }
-  } catch (err) {
-    res.status(500).send({ error: err });
+    // Run the data query and count in parallel to halve round-trip time
+    const [results, count] = await Promise.all([
+      Movie.find(
+        {},
+        // Lean projection — only fetch fields needed for the list view
+        'name year imdb rottenTomatoes url language genre franchise category director',
+        {
+          sort: { name: 1 },
+          collation: { locale: 'en_US', numericOrdering: true },
+          skip,
+          limit
+        }
+      )
+        .populate('language', 'name')
+        .populate('genre', 'name')
+        .populate({
+          path: 'franchise',
+          select: 'name universe',
+          populate: [{ path: 'universe', select: 'name' }]
+        })
+        .populate({
+          path: 'category',
+          select: 'name award',
+          populate: [{ path: 'award', select: 'name' }]
+        })
+        .populate({
+          path: 'director',
+          select: 'name url country movies',
+          populate: [
+            { path: 'country', select: 'name' },
+            { path: 'movies', select: 'name year url', options: { sort: { year: 1 } } }
+          ]
+        })
+        .lean(),
+      Movie.countDocuments({})
+    ]);
+
+    res.json({
+      total: count,
+      page,
+      pageSize: results.length,
+      movies: results
+    });
+  } catch (err: unknown) {
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred';
+    logError('GET /movies [getMovieList]', errorMessage, 500, err);
+    res.status(500).json({ error: errorMessage });
   }
 };
 

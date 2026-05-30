@@ -165,16 +165,30 @@ export const TopRatedMovies = (): JSX.Element => {
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, topMovieList.length - page * rowsPerPage);
 
   useEffect(() => {
-    const topMovieUrl = axiosConfig.get(`${GET_TOP_RATED_MOVIE_URL}`);
-    Promise.all([topMovieUrl])
-      .then((responses) => {
-        setTopMovieList(responses[0].data);
-      })
-      .catch((errors) => {
-        console.log(errors);
-      });
+    const abortController = new AbortController();
+    let isMounted = true;
+
+    const fetchTopMovies = async () => {
+      try {
+        const response = await axiosConfig.get(`${GET_TOP_RATED_MOVIE_URL}`, {
+          signal: abortController.signal
+        });
+        if (isMounted) {
+          setTopMovieList(response.data);
+        }
+      } catch (err) {
+        if (axiosConfig.isCancel?.(err)) return;
+        if (isMounted) {
+          console.error('[TopRatedMovies] Failed to fetch top movies:', err);
+        }
+      }
+    };
+
+    fetchTopMovies();
+
     return () => {
-      setTopMovieList([]);
+      isMounted = false;
+      abortController.abort();
     };
   }, []);
 

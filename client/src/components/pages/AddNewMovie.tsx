@@ -92,93 +92,107 @@ export const AddNewMovie = (props: { selectedMovie?: string }): JSX.Element => {
   const [existingValues, setExistingValues] = useState<Partial<IFormikValues>>({});
   const [, setSelectedMovieData] = useState<any>(null);
 
-  const fetchData = () => {
-    const languages = axiosConfig.get(`${GET_LANGUAGES_URL}`);
-    const directors = axiosConfig.get(`${GET_DIRECTORS_URL}`);
-    const genres = axiosConfig.get(`${GET_GENRES_URL}`);
-    const franchises = axiosConfig.get(`${GET_FRANCHISES_URL}`);
-    const universes = axiosConfig.get(`${GET_UNIVERSE_FRANCHISES_URL}`);
-    const awards = axiosConfig.get(`${GET_AWARD_CATEGORIES_URL}`);
-    Promise.all([languages, directors, genres, universes, franchises, awards])
-      .then((responses) => {
-        setLanguageData(responses[0].data);
-        setDirectorData(responses[1].data);
-        setGenreData(responses[2].data);
-        const franchiseList = [...responses[3].data, ...responses[4].data];
-        setFranchiseData(franchiseList);
-        setCategoryData(responses[5].data);
-        if (selectedMovie) {
-          fetchSelectedMovieDetails(franchiseList);
-        }
-      })
-      .catch((errors) => {
-        console.log(errors);
-      });
-  };
-
-  const fetchSelectedMovieDetails = (franchiseList: any) => {
-    const selectedMovieDetails = axiosConfig.get(`${GET_MOVIE_DETAILS_URL}`, {
-      params: { movieID: selectedMovie }
-    });
-    Promise.all([selectedMovieDetails])
-      .then((responses) => {
-        if (responses[0].data) {
-          setSelectedMovieData(responses[0].data);
-          const {
-            name,
-            language,
-            director,
-            imdb,
-            rottenTomatoes,
-            url,
-            year,
-            genre,
-            franchise,
-            category
-          } = responses[0].data;
-          const languageValues: string[] = language.map(
-            (element: { _id: string }) => element._id
-          );
-          const directorValues: string[] = director.map(
-            (element: { _id: string }) => element._id
-          );
-          const genreValues: string[] = genre.map(
-            (element: { _id: string }) => element._id
-          );
-          let categoryValues: string[] = [];
-          if (category) {
-            categoryValues = category.map((element: { _id: string }) => element._id);
-          }
-          let franchiseValue: { _id: string }[] = [];
-          if (franchise && franchise.universe) {
-            franchiseValue = franchiseList
-              .find((ele: { _id: string }) => ele._id === franchise.universe)
-              .franchises.filter((x: { _id: string }) => x._id === franchise._id);
-          }
-          const obj = {
-            name,
-            language: languageValues,
-            director: directorValues,
-            imdb,
-            rottenTomatoes,
-            url,
-            year,
-            genre: genreValues,
-            franchise: franchise && franchiseValue.length > 0 ? franchiseValue[0]?._id || '' : '',
-            category: categoryValues
-          };
-          formik.setValues(obj, true);
-          setExistingValues(obj);
-        }
-      })
-      .catch((errors) => {
-        console.log(errors);
-      });
-  };
-
   useEffect(() => {
+    const abortController = new AbortController();
+    let isMounted = true;
+
+    const fetchSelectedMovieDetails = async (franchiseList: any) => {
+      try {
+        const response = await axiosConfig.get(`${GET_MOVIE_DETAILS_URL}`, {
+          params: { movieID: selectedMovie },
+          signal: abortController.signal
+        });
+        if (!isMounted || !response.data) return;
+
+        setSelectedMovieData(response.data);
+        const {
+          name,
+          language,
+          director,
+          imdb,
+          rottenTomatoes,
+          url,
+          year,
+          genre,
+          franchise,
+          category
+        } = response.data;
+
+        const languageValues: string[] = language.map((element: { _id: string }) => element._id);
+        const directorValues: string[] = director.map((element: { _id: string }) => element._id);
+        const genreValues: string[] = genre.map((element: { _id: string }) => element._id);
+        const categoryValues: string[] = category
+          ? category.map((element: { _id: string }) => element._id)
+          : [];
+
+        let franchiseValue: { _id: string }[] = [];
+        if (franchise && franchise.universe) {
+          const universeEntry = franchiseList.find(
+            (ele: { _id: string }) => ele._id === franchise.universe
+          );
+          if (universeEntry) {
+            franchiseValue = universeEntry.franchises.filter(
+              (x: { _id: string }) => x._id === franchise._id
+            );
+          }
+        }
+
+        const obj = {
+          name,
+          language: languageValues,
+          director: directorValues,
+          imdb,
+          rottenTomatoes,
+          url,
+          year,
+          genre: genreValues,
+          franchise: franchise && franchiseValue.length > 0 ? franchiseValue[0]?._id || '' : '',
+          category: categoryValues
+        };
+        formik.setValues(obj, true);
+        setExistingValues(obj);
+      } catch (err) {
+        if (!isMounted) return;
+        console.error('[AddNewMovie] Failed to fetch movie details:', err);
+      }
+    };
+
+    const fetchData = async () => {
+      try {
+        const [languages, directors, genres, universes, franchises, awards] = await Promise.all([
+          axiosConfig.get(`${GET_LANGUAGES_URL}`, { signal: abortController.signal }),
+          axiosConfig.get(`${GET_DIRECTORS_URL}`, { signal: abortController.signal }),
+          axiosConfig.get(`${GET_GENRES_URL}`, { signal: abortController.signal }),
+          axiosConfig.get(`${GET_UNIVERSE_FRANCHISES_URL}`, { signal: abortController.signal }),
+          axiosConfig.get(`${GET_FRANCHISES_URL}`, { signal: abortController.signal }),
+          axiosConfig.get(`${GET_AWARD_CATEGORIES_URL}`, { signal: abortController.signal })
+        ]);
+
+        if (!isMounted) return;
+
+        setLanguageData(languages.data);
+        setDirectorData(directors.data);
+        setGenreData(genres.data);
+        const franchiseList = [...universes.data, ...franchises.data];
+        setFranchiseData(franchiseList);
+        setCategoryData(awards.data);
+
+        if (selectedMovie) {
+          await fetchSelectedMovieDetails(franchiseList);
+        }
+      } catch (err) {
+        if (!isMounted) return;
+        console.error('[AddNewMovie] Failed to fetch form data:', err);
+      }
+    };
+
     fetchData();
-  }, []);
+
+    return () => {
+      isMounted = false;
+      abortController.abort();
+    };
+  }, [selectedMovie]);
 
   const formik = useFormik({
     initialValues,
