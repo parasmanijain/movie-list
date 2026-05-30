@@ -7,7 +7,9 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
+    "test:watch:coverage": "vitest --coverage",
     "prepare": "[ -d '.husky' ] && (husky install && shx rm -rf .git/hooks && shx ln -s ../.husky .git/hooks) || true",
     "prettier": "prettier '**/*.{js,jsx,ts,tsx}' --write",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx src --color"
@@ -47,6 +49,7 @@
     "@types/react-router-dom": "^5.3.3",
     "@typescript-eslint/eslint-plugin": "^8.60.0",
     "@typescript-eslint/parser": "^8.60.0",
+    "@vitest/coverage-v8": "^4.1.7",
     "@vitest/ui": "^4.1.7",
     "babel-loader": "^10.1.1",
     "clean-webpack-plugin": "^4.0.0",

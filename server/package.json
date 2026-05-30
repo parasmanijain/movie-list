@@ -7,7 +7,9 @@
     "dev": "kill -9 $(lsof -i :4100) &>/dev/null || true && tsx --watch src/app.ts",
     "start": "tsx src/app.ts",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
+    "test:watch:coverage": "vitest --coverage",
     "prepare": "[ -d '.husky' ] && (husky install && shx rm -rf .git/hooks && shx ln -s ../.husky .git/hooks) || true",
     "prettier": "prettier '**/*.{js,jsx,ts,tsx}' --write",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx src --color"
@@ -25,6 +27,7 @@
     "@types/express": "^5.0.6",
     "@types/node": "^25.9.1",
     "@types/supertest": "^7.2.0",
+    "@vitest/coverage-v8": "^4.1.7",
     "eslint": "^10.4.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.6",
