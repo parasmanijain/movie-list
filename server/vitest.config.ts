@@ -6,6 +6,7 @@ export default defineConfig({
     environment: 'node',
     include: ['src/**/*.{test,spec}.{ts,tsx}'],
     coverage: {
+      enabled: true,
       provider: 'v8',
       reporter: ['text', 'json', 'html', 'lcov'],
       reportsDirectory: './coverage',
@@ -18,10 +19,10 @@ export default defineConfig({
         'src/schemaModels/**'
       ],
       thresholds: {
-        lines: 80,
-        functions: 70,
-        branches: 60,
-        statements: 80
+        lines: 95,
+        functions: 95,
+        branches: 95,
+        statements: 95
       }
     }
   }

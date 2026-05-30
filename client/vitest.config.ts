@@ -11,6 +11,7 @@ export default defineConfig({
     include: ['src/**/*.{test,spec}.{ts,tsx}'],
     css: false,
     coverage: {
+      enabled: true,
       provider: 'v8',
       reporter: ['text', 'json', 'html', 'lcov'],
       reportsDirectory: './coverage',
@@ -33,10 +34,10 @@ export default defineConfig({
         'src/helper/index.ts'
       ],
       thresholds: {
-        lines: 70,
-        functions: 55,
-        branches: 45,
-        statements: 70
+        lines: 95,
+        functions: 95,
+        branches: 95,
+        statements: 95
       }
     }
   }

@@ -6,10 +6,8 @@
     "start": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "test": "vitest run",
-    "test:coverage": "vitest run --coverage",
-    "test:watch": "vitest",
-    "test:watch:coverage": "vitest --coverage",
+    "test": "vitest run --coverage",
+    "test:watch": "vitest --coverage",
     "prepare": "[ -d '.husky' ] && (husky install && shx rm -rf .git/hooks && shx ln -s ../.husky .git/hooks) || true",
     "prettier": "prettier '**/*.{js,jsx,ts,tsx}' --write",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx src --color"
