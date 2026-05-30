@@ -16,7 +16,9 @@ export default defineConfig({
         'src/__tests__/**',
         'src/app.ts',
         'src/env.d.ts',
-        'src/schemaModels/**'
+        'src/schemaModels/**',
+        // database.ts is an empty file with no executable code
+        'src/database.ts'
       ],
       thresholds: {
         lines: 95,

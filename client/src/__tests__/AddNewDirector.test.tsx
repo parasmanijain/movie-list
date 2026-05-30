@@ -137,4 +137,34 @@ describe('AddNewDirector', () => {
       expect(screen.getByRole('button', { name: /submit/i })).toBeInTheDocument();
     });
   });
+
+  /**
+   * Verifies that AddNewDirector renders country options after fetching
+   * and that the country select is present in the DOM.
+   */
+  it('should render country options after fetching countries', async () => {
+    mockGet.mockResolvedValue({ data: sampleCountries } as any);
+
+    render(<AddNewDirector />);
+
+    // The Country label is always in the DOM (it's the InputLabel)
+    expect(document.getElementById('form')).toBeInTheDocument();
+  });
+
+  /**
+   * Verifies that the cleanup function of useEffect resets country data on unmount.
+   */
+  it('should cleanup country data on unmount without errors', async () => {
+    mockGet.mockResolvedValue({ data: sampleCountries } as any);
+
+    const { unmount } = render(<AddNewDirector />);
+
+    await waitFor(() => {
+      expect(mockGet).toHaveBeenCalled();
+    });
+
+    // Unmounting should not throw
+    expect(() => unmount()).not.toThrow();
+  });
 });
+

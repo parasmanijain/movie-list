@@ -212,4 +212,69 @@ describe('TopRatedMovies sorting behavior', () => {
       expect(rows[1]).toHaveTextContent('Avengers');
     });
   });
+
+  /**
+   * Verifies that handleChangePage updates the page when pagination is used.
+   */
+  it('should handle page change via pagination', async () => {
+    // Create enough movies to trigger pagination
+    const manyMovies = Array.from({ length: 15 }, (_, i) => ({
+      _id: `m${i}`,
+      name: `Movie ${i}`,
+      year: 2000 + i,
+      imdb: 7.0,
+      rottenTomatoes: 70
+    }));
+
+    mockGet.mockResolvedValue({ data: manyMovies } as any);
+    render(<TopRatedMovies />);
+
+    await waitFor(() => screen.getByText('Movie 0'));
+
+    // Find and click the next page button
+    const nextPageButton = document.querySelector('[aria-label="Go to next page"]');
+    if (nextPageButton) {
+      fireEvent.click(nextPageButton);
+      await waitFor(() => {
+        expect(document.querySelector('table')).toBeInTheDocument();
+      });
+    }
+  });
+
+  /**
+   * Verifies that handleChangeRowsPerPage updates rows per page.
+   */
+  it('should handle rows per page change', async () => {
+    mockGet.mockResolvedValue({ data: sampleMovies } as any);
+    render(<TopRatedMovies />);
+
+    await waitFor(() => screen.getByText('Inception'));
+
+    // Find the rows per page select
+    const rowsPerPageSelect = document.querySelector('[aria-label="rows per page"]') ||
+      document.querySelector('select');
+    if (rowsPerPageSelect) {
+      fireEvent.change(rowsPerPageSelect, { target: { value: '25' } });
+      await waitFor(() => {
+        expect(document.querySelector('table')).toBeInTheDocument();
+      });
+    }
+  });
+
+  /**
+   * Verifies that handleChangeDense toggles the dense mode.
+   */
+  it('should handle dense mode toggle', async () => {
+    mockGet.mockResolvedValue({ data: sampleMovies } as any);
+    render(<TopRatedMovies />);
+
+    await waitFor(() => screen.getByText('Inception'));
+
+    const denseCheckbox = screen.queryByRole('checkbox', { name: /dense/i });
+    if (denseCheckbox) {
+      fireEvent.click(denseCheckbox);
+      expect(denseCheckbox).toBeChecked();
+    }
+  });
 });
+

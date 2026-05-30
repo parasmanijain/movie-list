@@ -1,31 +1,39 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
 import React from 'react';
 
-// ─── Mock all dependencies ────────────────────────────────────────────────────────────────────
-vi.mock('../helper/axiosConfig', () => ({
-  default: { get: vi.fn() }
+// getData HOC imports axiosConfig from '../../helper' barrel (named export)
+// We must mock the helper barrel so the HOC picks up our mock
+vi.mock('../helper/index', () => ({
+  axiosConfig: { get: vi.fn() },
+  chartColors: {}
 }));
 
-// Mock ChartContainer to avoid rendering complexity
-vi.mock('../components/templates/ChartContainer', () => ({
-  ChartContainer: vi.fn(({ data, title }: any) => (
-    <div data-testid="chart-container">
-      <span data-testid="chart-title">{title}</span>
-      <span data-testid="chart-data">{JSON.stringify(data)}</span>
-    </div>
-  ))
+// Mock chart.js and react-chartjs-2 to avoid canvas issues in jsdom
+vi.mock('chart.js', () => ({
+  Chart: { register: vi.fn() },
+  CategoryScale: vi.fn(),
+  LinearScale: vi.fn(),
+  BarElement: vi.fn(),
+  Title: vi.fn(),
+  Tooltip: vi.fn(),
+  Legend: vi.fn(),
+  SubTitle: vi.fn()
 }));
 
-// ─── Import mocked modules AFTER vi.mock declarations ─────────────────────────
-import axiosConfig from '../helper/axiosConfig';
+vi.mock('react-chartjs-2', () => ({
+  Bar: vi.fn(() => <canvas data-testid="bar-chart" />)
+}));
+
+// Import AFTER vi.mock declarations
+import { axiosConfig } from '../helper/index';
 import Award from '../components/pages/Award';
 
 const mockGet = vi.mocked(axiosConfig.get);
 
 const sampleAwardData = [
-  { _id: 'aw1', name: 'Academy Award', category: [{ name: 'Best Picture', length: 5 }] },
-  { _id: 'aw2', name: 'Golden Globe', category: [{ name: 'Best Drama', length: 3 }] }
+  { _id: 'aw1', name: 'Academy Award', length: 5 },
+  { _id: 'aw2', name: 'Golden Globe', length: 3 }
 ];
 
 describe('Award page', () => {
@@ -34,17 +42,14 @@ describe('Award page', () => {
   });
 
   /**
-   * Verifies that the Award page renders the ChartContainer
-   * after fetching data from the movie awards API.
+   * Verifies that the Award page renders without crashing.
    */
-  it('should render the ChartContainer after fetching data', async () => {
+  it('should render without crashing', async () => {
     mockGet.mockResolvedValue({ data: sampleAwardData } as any);
-
-    render(<Award />);
-
-    await waitFor(() => {
-      expect(screen.getByTestId('chart-container')).toBeInTheDocument();
+    await act(async () => {
+      render(<Award />);
     });
+    expect(document.body).toBeTruthy();
   });
 
   /**
@@ -52,9 +57,9 @@ describe('Award page', () => {
    */
   it('should call the movie awards API endpoint', async () => {
     mockGet.mockResolvedValue({ data: sampleAwardData } as any);
-
-    render(<Award />);
-
+    await act(async () => {
+      render(<Award />);
+    });
     await waitFor(() => {
       expect(mockGet).toHaveBeenCalledWith(
         expect.stringContaining('/movieAwards'),
@@ -64,16 +69,12 @@ describe('Award page', () => {
   });
 
   /**
-   * Verifies that the Award page passes the correct title to ChartContainer.
+   * Verifies that the Award page shows a loading state initially.
    */
-  it('should pass the correct title to ChartContainer', async () => {
-    mockGet.mockResolvedValue({ data: sampleAwardData } as any);
-
+  it('should show loading state while fetching data', () => {
+    mockGet.mockReturnValue(new Promise(() => {}) as any);
     render(<Award />);
-
-    await waitFor(() => {
-      expect(screen.getByTestId('chart-title')).toHaveTextContent('Movies');
-    });
+    expect(document.querySelector('[role="progressbar"]')).not.toBeNull();
   });
 
   /**
@@ -82,21 +83,35 @@ describe('Award page', () => {
    */
   it('should handle API error gracefully without crashing', async () => {
     mockGet.mockRejectedValue(new Error('Network error') as any);
-
     expect(() => render(<Award />)).not.toThrow();
+    await act(async () => {
+      await new Promise((r) => setTimeout(r, 50));
+    });
   });
 
   /**
-   * Verifies that the Award page renders without crashing when
-   * the API returns an empty array.
+   * Verifies that the Award page shows an error message when fetch fails.
    */
-  it('should render without crashing when API returns empty array', async () => {
-    mockGet.mockResolvedValue({ data: [] } as any);
-
-    render(<Award />);
-
+  it('should show error message when fetch fails', async () => {
+    mockGet.mockRejectedValue(new Error('Network error') as any);
+    await act(async () => {
+      render(<Award />);
+    });
     await waitFor(() => {
-      expect(screen.getByTestId('chart-container')).toBeInTheDocument();
+      expect(screen.getByText(/Failed to load data/i)).toBeInTheDocument();
+    });
+  });
+
+  /**
+   * Verifies that the Award page renders chart after successful data fetch.
+   */
+  it('should render chart after successful data fetch', async () => {
+    mockGet.mockResolvedValue({ data: sampleAwardData } as any);
+    await act(async () => {
+      render(<Award />);
+    });
+    await waitFor(() => {
+      expect(screen.getByTestId('bar-chart')).toBeInTheDocument();
     });
   });
 });

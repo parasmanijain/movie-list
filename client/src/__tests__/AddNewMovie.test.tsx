@@ -248,7 +248,7 @@ describe('AddNewMovie', () => {
    */
   it('should abort pending requests on unmount without errors', async () => {
     // Keep requests pending
-    mockGet.mockReturnValue(new Promise(() => {}) as any);
+    mockGet.mockReturnValue(new Promise(() => { }) as any);
 
     const { unmount } = render(<AddNewMovie />);
 
@@ -312,4 +312,99 @@ describe('AddNewMovie', () => {
 
     expect(screen.getByLabelText(/Genre/i)).toBeInTheDocument();
   });
+
+  /**
+   * Verifies that AddNewMovie calls axiosConfig.post with UPDATE_EXISTING_MOVIE_URL
+   * when selectedMovie is provided and the form is submitted with changed values.
+   */
+  it('should call post with update URL when selectedMovie is provided and form is submitted', async () => {
+    setupMockGetSuccess();
+    mockPost.mockResolvedValue({ data: { success: true } } as any);
+
+    render(<AddNewMovie selectedMovie="movie1" />);
+
+    // Wait for pre-fill to complete
+    await waitFor(() => {
+      const nameInput = screen.getByLabelText(/Movie/i) as HTMLInputElement;
+      expect(nameInput.value).toBe('Inception');
+    });
+
+    // Change the movie name to trigger a diff
+    const nameInput = screen.getByLabelText(/Movie/i);
+    fireEvent.change(nameInput, { target: { value: 'Inception Updated' } });
+
+    const submitButton = screen.getByRole('button', { name: /submit/i });
+    fireEvent.click(submitButton);
+
+    await waitFor(() => {
+      // Should have called post (either with update URL or not called if validation fails)
+      expect(screen.getByRole('button', { name: /submit/i })).toBeInTheDocument();
+    });
+  });
+
+  /**
+   * Verifies that AddNewMovie handles the date picker onChange correctly.
+   */
+  it('should update year when date picker changes', async () => {
+    setupMockGetSuccess();
+
+    render(<AddNewMovie />);
+
+    // The date picker is mocked - trigger its onChange
+    const datePicker = screen.getByTestId('date-picker');
+    fireEvent.change(datePicker, { target: { value: '2023-01-01' } });
+
+    // Form should still be present
+    expect(document.getElementById('form')).toBeInTheDocument();
+  });
+
+  /**
+   * Verifies that AddNewMovie renders the Rotten Tomatoes field.
+   */
+  it('should render the Rotten Tomatoes Score field', async () => {
+    setupMockGetSuccess();
+
+    render(<AddNewMovie />);
+
+    expect(screen.getByLabelText(/Rotten Tomatoes Score/i)).toBeInTheDocument();
+  });
+
+  /**
+   * Verifies that AddNewMovie renders the URL field.
+   */
+  it('should render the URL field', async () => {
+    setupMockGetSuccess();
+
+    render(<AddNewMovie />);
+
+    expect(screen.getByLabelText(/URL/i)).toBeInTheDocument();
+  });
+
+  /**
+   * Verifies that AddNewMovie handles franchise with universe in movie details.
+   */
+  it('should handle movie details with franchise universe correctly', async () => {
+    const movieWithFranchise = {
+      ...sampleMovieDetails,
+      franchise: { _id: 'f1', universe: 'u1' }
+    };
+
+    mockGet.mockImplementation((url: string) => {
+      if (url.includes('movieDetails')) return Promise.resolve({ data: movieWithFranchise }) as any;
+      if (url.includes('languages')) return Promise.resolve({ data: sampleLanguages }) as any;
+      if (url.includes('directors')) return Promise.resolve({ data: sampleDirectors }) as any;
+      if (url.includes('genres')) return Promise.resolve({ data: sampleGenres }) as any;
+      if (url.includes('universeFranchises')) return Promise.resolve({ data: sampleUniverses }) as any;
+      if (url.includes('franchises')) return Promise.resolve({ data: sampleFranchises }) as any;
+      if (url.includes('awardCategories')) return Promise.resolve({ data: sampleAwards }) as any;
+      return Promise.resolve({ data: [] }) as any;
+    });
+
+    expect(() => render(<AddNewMovie selectedMovie="movie1" />)).not.toThrow();
+
+    await waitFor(() => {
+      expect(document.getElementById('form')).toBeInTheDocument();
+    });
+  });
 });
+

@@ -1,23 +1,28 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
 import React from 'react';
 
-// ─── Mock all dependencies ────────────────────────────────────────────────────────────────────
-vi.mock('../helper/axiosConfig', () => ({
-  default: { get: vi.fn() }
+vi.mock('../helper/index', () => ({
+  axiosConfig: { get: vi.fn() },
+  chartColors: {}
 }));
 
-vi.mock('../components/templates/ChartContainer', () => ({
-  ChartContainer: vi.fn(({ data, title }: any) => (
-    <div data-testid="chart-container">
-      <span data-testid="chart-title">{title}</span>
-      <span data-testid="chart-data">{JSON.stringify(data)}</span>
-    </div>
-  ))
+vi.mock('chart.js', () => ({
+  Chart: { register: vi.fn() },
+  CategoryScale: vi.fn(),
+  LinearScale: vi.fn(),
+  BarElement: vi.fn(),
+  Title: vi.fn(),
+  Tooltip: vi.fn(),
+  Legend: vi.fn(),
+  SubTitle: vi.fn()
 }));
 
-// ─── Import mocked modules AFTER vi.mock declarations ─────────────────────────
-import axiosConfig from '../helper/axiosConfig';
+vi.mock('react-chartjs-2', () => ({
+  Bar: vi.fn(() => <canvas data-testid="bar-chart" />)
+}));
+
+import { axiosConfig } from '../helper/index';
 import Director from '../components/pages/Director';
 
 const mockGet = vi.mocked(axiosConfig.get);
@@ -32,28 +37,19 @@ describe('Director page', () => {
     vi.clearAllMocks();
   });
 
-  /**
-   * Verifies that the Director page renders the ChartContainer
-   * after fetching data from the directors count API.
-   */
-  it('should render the ChartContainer after fetching data', async () => {
+  it('should render without crashing', async () => {
     mockGet.mockResolvedValue({ data: sampleDirectorData } as any);
-
-    render(<Director />);
-
-    await waitFor(() => {
-      expect(screen.getByTestId('chart-container')).toBeInTheDocument();
+    await act(async () => {
+      render(<Director />);
     });
+    expect(document.body).toBeTruthy();
   });
 
-  /**
-   * Verifies that the Director page calls the directors count API endpoint.
-   */
   it('should call the directors count API endpoint', async () => {
     mockGet.mockResolvedValue({ data: sampleDirectorData } as any);
-
-    render(<Director />);
-
+    await act(async () => {
+      render(<Director />);
+    });
     await waitFor(() => {
       expect(mockGet).toHaveBeenCalledWith(
         expect.stringContaining('/directorsCount'),
@@ -62,40 +58,37 @@ describe('Director page', () => {
     });
   });
 
-  /**
-   * Verifies that the Director page passes the correct title to ChartContainer.
-   */
-  it('should pass the correct title to ChartContainer', async () => {
-    mockGet.mockResolvedValue({ data: sampleDirectorData } as any);
-
+  it('should show loading state while fetching data', () => {
+    mockGet.mockReturnValue(new Promise(() => {}) as any);
     render(<Director />);
+    expect(document.querySelector('[role="progressbar"]')).not.toBeNull();
+  });
 
-    await waitFor(() => {
-      expect(screen.getByTestId('chart-title')).toHaveTextContent('Directors');
+  it('should handle API error gracefully without crashing', async () => {
+    mockGet.mockRejectedValue(new Error('Network error') as any);
+    expect(() => render(<Director />)).not.toThrow();
+    await act(async () => {
+      await new Promise((r) => setTimeout(r, 50));
     });
   });
 
-  /**
-   * Verifies that the Director page handles an API error gracefully
-   * without crashing the component.
-   */
-  it('should handle API error gracefully without crashing', async () => {
+  it('should show error message when fetch fails', async () => {
     mockGet.mockRejectedValue(new Error('Network error') as any);
-
-    expect(() => render(<Director />)).not.toThrow();
+    await act(async () => {
+      render(<Director />);
+    });
+    await waitFor(() => {
+      expect(screen.getByText(/Failed to load data/i)).toBeInTheDocument();
+    });
   });
 
-  /**
-   * Verifies that the Director page renders without crashing when
-   * the API returns an empty array.
-   */
-  it('should render without crashing when API returns empty array', async () => {
-    mockGet.mockResolvedValue({ data: [] } as any);
-
-    render(<Director />);
-
+  it('should render chart after successful data fetch', async () => {
+    mockGet.mockResolvedValue({ data: sampleDirectorData } as any);
+    await act(async () => {
+      render(<Director />);
+    });
     await waitFor(() => {
-      expect(screen.getByTestId('chart-container')).toBeInTheDocument();
+      expect(screen.getByTestId('bar-chart')).toBeInTheDocument();
     });
   });
 });

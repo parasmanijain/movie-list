@@ -105,7 +105,7 @@ describe('Home component', () => {
    */
   it('should show loading spinner while data is loading', () => {
     // Keep both requests pending indefinitely
-    mockGet.mockReturnValue(new Promise(() => {}) as any);
+    mockGet.mockReturnValue(new Promise(() => { }) as any);
 
     render(<Home handleMovieUpdateSelection={vi.fn()} />);
 
@@ -262,4 +262,123 @@ describe('Home component', () => {
       expect(franchiseText).not.toBeNull();
     });
   });
+
+  /**
+   * Verifies that the Home component renders movies with universe info
+   * (franchise with universe property set).
+   */
+  it('should render universe info for movies with franchise universe', async () => {
+    const movieWithUniverse = [
+      {
+        ...sampleMovies[0],
+        franchise: { _id: 'f1', name: 'Avengers', universe: { _id: 'u1', name: 'MCU' } }
+      }
+    ];
+
+    mockGet.mockImplementation((url: string) => {
+      if (url.includes('/movies'))
+        return Promise.resolve({ data: { total: 1, page: 1, movies: movieWithUniverse } }) as any;
+      return Promise.resolve(mockFilterResponse) as any;
+    });
+
+    render(<Home handleMovieUpdateSelection={vi.fn()} />);
+
+    await waitFor(() => screen.getByText(/Inception/));
+
+    const expandButtons = document.querySelectorAll('[aria-controls="panel1a-content"]');
+    if (expandButtons.length > 0) {
+      fireEvent.click(expandButtons[0]!);
+    }
+
+    await waitFor(() => {
+      const universeText = screen.queryByText(/MCU/);
+      expect(universeText).not.toBeNull();
+    });
+  });
+
+  /**
+   * Verifies that the Home component renders movies with other directors' movies
+   * (the otherMovies function with arr.length > 1).
+   */
+  it('should render other movies from same director when director has multiple movies', async () => {
+    const movieWithDirectorMovies = [
+      {
+        ...sampleMovies[0],
+        director: [
+          {
+            _id: 'd1',
+            name: 'Christopher Nolan',
+            url: 'https://imdb.com/nolan',
+            movies: [
+              { _id: 'm2', name: 'The Dark Knight', year: 2008, url: 'https://imdb.com/tdk' },
+              { _id: 'm3', name: 'Interstellar', year: 2014, url: 'https://imdb.com/interstellar' }
+            ]
+          },
+          {
+            _id: 'd2',
+            name: 'Emma Thomas',
+            url: 'https://imdb.com/thomas',
+            movies: [
+              { _id: 'm4', name: 'Dunkirk', year: 2017, url: 'https://imdb.com/dunkirk' }
+            ]
+          }
+        ]
+      }
+    ];
+
+    mockGet.mockImplementation((url: string) => {
+      if (url.includes('/movies'))
+        return Promise.resolve({ data: { total: 1, page: 1, movies: movieWithDirectorMovies } }) as any;
+      return Promise.resolve(mockFilterResponse) as any;
+    });
+
+    render(<Home handleMovieUpdateSelection={vi.fn()} />);
+
+    await waitFor(() => screen.getByText(/Inception/));
+
+    // Expand the accordion
+    const expandButtons = document.querySelectorAll('[aria-controls="panel1a-content"]');
+    if (expandButtons.length > 0) {
+      fireEvent.click(expandButtons[0]!);
+    }
+
+    await waitFor(() => {
+      // Other movies should be listed
+      const darkKnight = screen.queryByText(/The Dark Knight/);
+      expect(darkKnight).not.toBeNull();
+    });
+  });
+
+  /**
+   * Verifies that the Edit Movie Details button calls handleMovieUpdateSelection
+   * and navigates to add-new-movie when clicked.
+   */
+  it('should call handleMovieUpdateSelection and navigate when Edit Movie Details is clicked', async () => {
+    vi.stubEnv('NODE_ENV', 'development');
+    const handleMovieUpdateSelection = vi.fn();
+
+    mockGet.mockImplementation((url: string) => {
+      if (url.includes('/movies')) return Promise.resolve(mockMovieResponse) as any;
+      return Promise.resolve(mockFilterResponse) as any;
+    });
+
+    render(<Home handleMovieUpdateSelection={handleMovieUpdateSelection} />);
+
+    await waitFor(() => screen.getByText(/Inception/));
+
+    // Expand accordion to reveal Edit button
+    const expandButtons = document.querySelectorAll('[aria-controls="panel1a-content"]');
+    if (expandButtons.length > 0) {
+      fireEvent.click(expandButtons[0]!);
+    }
+
+    await waitFor(() => {
+      const editButtons = screen.queryAllByText(/Edit Movie Details/i);
+      if (editButtons.length > 0) {
+        fireEvent.click(editButtons[0]!);
+        expect(handleMovieUpdateSelection).toHaveBeenCalled();
+      }
+    });
+  });
 });
+

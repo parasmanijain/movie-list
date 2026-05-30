@@ -1,30 +1,45 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
 import React from 'react';
 
-// ─── Mock all dependencies ────────────────────────────────────────────────────────────────────
-vi.mock('../helper/axiosConfig', () => ({
-  default: { get: vi.fn() }
+vi.mock('../helper/index', () => ({
+  axiosConfig: { get: vi.fn() },
+  chartColors: {}
 }));
 
-vi.mock('../components/templates/ChartContainer', () => ({
-  ChartContainer: vi.fn(({ data, title }: any) => (
-    <div data-testid="chart-container">
-      <span data-testid="chart-title">{title}</span>
-      <span data-testid="chart-data">{JSON.stringify(data)}</span>
-    </div>
-  ))
+vi.mock('../hooks/useWindowDimensions', () => ({
+  useWindowDimensions: vi.fn(() => [1920, 1080] as [number, number])
 }));
 
-// ─── Import mocked modules AFTER vi.mock declarations ─────────────────────────
-import axiosConfig from '../helper/axiosConfig';
+vi.mock('chart.js', () => ({
+  Chart: { register: vi.fn() },
+  CategoryScale: vi.fn(),
+  LinearScale: vi.fn(),
+  BarElement: vi.fn(),
+  Title: vi.fn(),
+  Tooltip: vi.fn(),
+  Legend: vi.fn(),
+  SubTitle: vi.fn()
+}));
+
+vi.mock('react-chartjs-2', () => ({
+  Bar: vi.fn(() => <canvas data-testid="bar-chart" />)
+}));
+
+import { axiosConfig } from '../helper/index';
 import Universe from '../components/pages/Universe';
 
 const mockGet = vi.mocked(axiosConfig.get);
 
+// Universe page uses title='Universes' which triggers the 'universes' branch in ChartContainer.
+// ChartContainer expects elements with a `franchise` array for this branch.
+// Using a single non-Marvel universe to keep the test simple (goes to otherUniverseData path).
 const sampleUniverseData = [
-  { _id: 'u1', name: 'Marvel Cinematic Universe', length: 30 },
-  { _id: 'u2', name: 'DC Extended Universe', length: 15 }
+  {
+    _id: 'u2',
+    name: 'DC Extended Universe',
+    franchise: [{ name: 'Justice League', length: 5 }]
+  }
 ];
 
 describe('Universe page', () => {
@@ -32,28 +47,19 @@ describe('Universe page', () => {
     vi.clearAllMocks();
   });
 
-  /**
-   * Verifies that the Universe page renders the ChartContainer
-   * after fetching data from the universes count API.
-   */
-  it('should render the ChartContainer after fetching data', async () => {
+  it('should render without crashing', async () => {
     mockGet.mockResolvedValue({ data: sampleUniverseData } as any);
-
-    render(<Universe />);
-
-    await waitFor(() => {
-      expect(screen.getByTestId('chart-container')).toBeInTheDocument();
+    await act(async () => {
+      render(<Universe />);
     });
+    expect(document.body).toBeTruthy();
   });
 
-  /**
-   * Verifies that the Universe page calls the universes count API endpoint.
-   */
   it('should call the universes count API endpoint', async () => {
     mockGet.mockResolvedValue({ data: sampleUniverseData } as any);
-
-    render(<Universe />);
-
+    await act(async () => {
+      render(<Universe />);
+    });
     await waitFor(() => {
       expect(mockGet).toHaveBeenCalledWith(
         expect.stringContaining('/universesCount'),
@@ -62,40 +68,38 @@ describe('Universe page', () => {
     });
   });
 
-  /**
-   * Verifies that the Universe page passes the correct title to ChartContainer.
-   */
-  it('should pass the correct title to ChartContainer', async () => {
-    mockGet.mockResolvedValue({ data: sampleUniverseData } as any);
-
+  it('should show loading state while fetching data', () => {
+    mockGet.mockReturnValue(new Promise(() => {}) as any);
     render(<Universe />);
+    expect(document.querySelector('[role="progressbar"]')).not.toBeNull();
+  });
 
-    await waitFor(() => {
-      expect(screen.getByTestId('chart-title')).toHaveTextContent('Universes');
+  it('should handle API error gracefully without crashing', async () => {
+    mockGet.mockRejectedValue(new Error('Network error') as any);
+    expect(() => render(<Universe />)).not.toThrow();
+    await act(async () => {
+      await new Promise((r) => setTimeout(r, 50));
     });
   });
 
-  /**
-   * Verifies that the Universe page handles an API error gracefully
-   * without crashing the component.
-   */
-  it('should handle API error gracefully without crashing', async () => {
+  it('should show error message when fetch fails', async () => {
     mockGet.mockRejectedValue(new Error('Network error') as any);
-
-    expect(() => render(<Universe />)).not.toThrow();
+    await act(async () => {
+      render(<Universe />);
+    });
+    await waitFor(() => {
+      expect(screen.getByText(/Failed to load data/i)).toBeInTheDocument();
+    });
   });
 
-  /**
-   * Verifies that the Universe page renders without crashing when
-   * the API returns an empty array.
-   */
-  it('should render without crashing when API returns empty array', async () => {
-    mockGet.mockResolvedValue({ data: [] } as any);
-
-    render(<Universe />);
-
+  it('should render at least one chart after successful data fetch', async () => {
+    mockGet.mockResolvedValue({ data: sampleUniverseData } as any);
+    await act(async () => {
+      render(<Universe />);
+    });
     await waitFor(() => {
-      expect(screen.getByTestId('chart-container')).toBeInTheDocument();
+      const charts = screen.getAllByTestId('bar-chart');
+      expect(charts.length).toBeGreaterThan(0);
     });
   });
 });

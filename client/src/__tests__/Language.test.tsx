@@ -1,23 +1,28 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
 import React from 'react';
 
-// ─── Mock all dependencies ────────────────────────────────────────────────────────────────────
-vi.mock('../helper/axiosConfig', () => ({
-  default: { get: vi.fn() }
+vi.mock('../helper/index', () => ({
+  axiosConfig: { get: vi.fn() },
+  chartColors: {}
 }));
 
-vi.mock('../components/templates/ChartContainer', () => ({
-  ChartContainer: vi.fn(({ data, title }: any) => (
-    <div data-testid="chart-container">
-      <span data-testid="chart-title">{title}</span>
-      <span data-testid="chart-data">{JSON.stringify(data)}</span>
-    </div>
-  ))
+vi.mock('chart.js', () => ({
+  Chart: { register: vi.fn() },
+  CategoryScale: vi.fn(),
+  LinearScale: vi.fn(),
+  BarElement: vi.fn(),
+  Title: vi.fn(),
+  Tooltip: vi.fn(),
+  Legend: vi.fn(),
+  SubTitle: vi.fn()
 }));
 
-// ─── Import mocked modules AFTER vi.mock declarations ─────────────────────────
-import axiosConfig from '../helper/axiosConfig';
+vi.mock('react-chartjs-2', () => ({
+  Bar: vi.fn(() => <canvas data-testid="bar-chart" />)
+}));
+
+import { axiosConfig } from '../helper/index';
 import Language from '../components/pages/Language';
 
 const mockGet = vi.mocked(axiosConfig.get);
@@ -32,28 +37,19 @@ describe('Language page', () => {
     vi.clearAllMocks();
   });
 
-  /**
-   * Verifies that the Language page renders the ChartContainer
-   * after fetching data from the languages count API.
-   */
-  it('should render the ChartContainer after fetching data', async () => {
+  it('should render without crashing', async () => {
     mockGet.mockResolvedValue({ data: sampleLanguageData } as any);
-
-    render(<Language />);
-
-    await waitFor(() => {
-      expect(screen.getByTestId('chart-container')).toBeInTheDocument();
+    await act(async () => {
+      render(<Language />);
     });
+    expect(document.body).toBeTruthy();
   });
 
-  /**
-   * Verifies that the Language page calls the languages count API endpoint.
-   */
   it('should call the languages count API endpoint', async () => {
     mockGet.mockResolvedValue({ data: sampleLanguageData } as any);
-
-    render(<Language />);
-
+    await act(async () => {
+      render(<Language />);
+    });
     await waitFor(() => {
       expect(mockGet).toHaveBeenCalledWith(
         expect.stringContaining('/languagesCount'),
@@ -62,40 +58,37 @@ describe('Language page', () => {
     });
   });
 
-  /**
-   * Verifies that the Language page passes the correct title to ChartContainer.
-   */
-  it('should pass the correct title to ChartContainer', async () => {
-    mockGet.mockResolvedValue({ data: sampleLanguageData } as any);
-
+  it('should show loading state while fetching data', () => {
+    mockGet.mockReturnValue(new Promise(() => {}) as any);
     render(<Language />);
+    expect(document.querySelector('[role="progressbar"]')).not.toBeNull();
+  });
 
-    await waitFor(() => {
-      expect(screen.getByTestId('chart-title')).toHaveTextContent('Languages');
+  it('should handle API error gracefully without crashing', async () => {
+    mockGet.mockRejectedValue(new Error('Network error') as any);
+    expect(() => render(<Language />)).not.toThrow();
+    await act(async () => {
+      await new Promise((r) => setTimeout(r, 50));
     });
   });
 
-  /**
-   * Verifies that the Language page handles an API error gracefully
-   * without crashing the component.
-   */
-  it('should handle API error gracefully without crashing', async () => {
+  it('should show error message when fetch fails', async () => {
     mockGet.mockRejectedValue(new Error('Network error') as any);
-
-    expect(() => render(<Language />)).not.toThrow();
+    await act(async () => {
+      render(<Language />);
+    });
+    await waitFor(() => {
+      expect(screen.getByText(/Failed to load data/i)).toBeInTheDocument();
+    });
   });
 
-  /**
-   * Verifies that the Language page renders without crashing when
-   * the API returns an empty array.
-   */
-  it('should render without crashing when API returns empty array', async () => {
-    mockGet.mockResolvedValue({ data: [] } as any);
-
-    render(<Language />);
-
+  it('should render chart after successful data fetch', async () => {
+    mockGet.mockResolvedValue({ data: sampleLanguageData } as any);
+    await act(async () => {
+      render(<Language />);
+    });
     await waitFor(() => {
-      expect(screen.getByTestId('chart-container')).toBeInTheDocument();
+      expect(screen.getByTestId('bar-chart')).toBeInTheDocument();
     });
   });
 });

@@ -54,6 +54,7 @@ import {
   getMovieDetails,
   getTopMovie,
   addNewMovie,
+  updateExistingMovie,
   getTopYear,
   getYearCount,
   getMovieAwards
@@ -90,8 +91,8 @@ const makeReq = (overrides: Partial<Request> = {}): Request =>
 const makePopulateChain = (resolvedValue: unknown) => {
   const chain: Record<string, unknown> = {};
   const populateFn = vi.fn(() => chain);
-  chain.populate = populateFn;
-  chain.lean = vi.fn(() => Promise.resolve(resolvedValue));
+  chain['populate'] = populateFn;
+  chain['lean'] = vi.fn(() => Promise.resolve(resolvedValue));
   return chain;
 };
 
@@ -190,7 +191,9 @@ describe('getMovieList', () => {
    * Verifies that a 500 error response is returned when Movie.find throws.
    */
   it('should return 500 on database error', async () => {
-    mockMovieFind.mockImplementation(() => { throw new Error('DB error'); });
+    mockMovieFind.mockImplementation(() => {
+      throw new Error('DB error');
+    });
     const req = makeReq({ query: {} as any });
     const res = makeRes();
 
@@ -218,7 +221,7 @@ describe('getMovieDetails', () => {
       if (callCount >= 5) return Promise.resolve(result);
       return chain;
     });
-    chain.populate = populateFn;
+    chain['populate'] = populateFn;
     mockMovieFindById.mockReturnValue(chain as any);
   };
 
@@ -244,7 +247,9 @@ describe('getMovieDetails', () => {
    * when Movie.findById throws an exception.
    */
   it('should return 500 when Movie.findById throws', async () => {
-    mockMovieFindById.mockImplementation(() => { throw new Error('Not found'); });
+    mockMovieFindById.mockImplementation(() => {
+      throw new Error('Not found');
+    });
     const req = makeReq({ query: { movieID: 'bad-id' } as any });
     const res = makeRes();
 
@@ -265,7 +270,9 @@ describe('getTopMovie', () => {
    * $project pipeline and returns a 200 response with the results.
    */
   it('should return 200 with aggregated top movies', async () => {
-    const aggregateResult = [{ _id: 'm1', name: 'Inception', year: 2010, imdb: 8.8, rottenTomatoes: 87 }];
+    const aggregateResult = [
+      { _id: 'm1', name: 'Inception', year: 2010, imdb: 8.8, rottenTomatoes: 87 }
+    ];
     mockMovieAggregate.mockResolvedValue(aggregateResult as any);
     const req = makeReq();
     const res = makeRes();
@@ -274,7 +281,9 @@ describe('getTopMovie', () => {
 
     expect(mockMovieAggregate).toHaveBeenCalledWith(
       expect.arrayContaining([
-        expect.objectContaining({ $project: expect.objectContaining({ name: 1, year: 1, imdb: 1 }) })
+        expect.objectContaining({
+          $project: expect.objectContaining({ name: 1, year: 1, imdb: 1 })
+        })
       ])
     );
     expect(res.status).toHaveBeenCalledWith(200);
@@ -450,7 +459,10 @@ describe('getYearCount', () => {
    * from the aggregate pipeline.
    */
   it('should return 200 with year counts from aggregate', async () => {
-    const result = [{ _id: 2020, name: 2020, length: 10 }, { _id: 2021, name: 2021, length: 15 }];
+    const result = [
+      { _id: 2020, name: 2020, length: 10 },
+      { _id: 2021, name: 2021, length: 15 }
+    ];
     mockMovieAggregate.mockResolvedValue(result as any);
     const req = makeReq();
     const res = makeRes();
@@ -493,9 +505,7 @@ describe('getMovieAwards', () => {
     await getMovieAwards(req, res);
 
     expect(mockMovieAggregate).toHaveBeenCalledWith(
-      expect.arrayContaining([
-        expect.objectContaining({ $match: { category: { $ne: null } } })
-      ])
+      expect.arrayContaining([expect.objectContaining({ $match: { category: { $ne: null } } })])
     );
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.send).toHaveBeenCalledWith(result);
@@ -512,5 +522,453 @@ describe('getMovieAwards', () => {
     await getMovieAwards(req, res);
 
     expect(res.status).toHaveBeenCalledWith(500);
+  });
+});
+
+// ─── updateExistingMovie ─────────────────────────────────────────────────────
+
+const mockMovieFindByIdAndUpdate = vi.mocked(Movie.findByIdAndUpdate);
+
+describe('updateExistingMovie', () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  const existingMovieDoc = { _id: 'movie1', name: 'Updated Movie' };
+
+  /**
+   * Verifies that updateExistingMovie updates a movie and returns 200
+   * when no language/director/genre/franchise changes are provided.
+   */
+  it('should update movie and return 200 with no relationship changes', async () => {
+    mockMovieFindByIdAndUpdate.mockResolvedValue(existingMovieDoc as any);
+
+    const req = makeReq({
+      body: { id: 'movie1', name: 'Updated Movie' }
+    });
+    const res = makeRes();
+
+    await updateExistingMovie(req, res);
+
+    expect(mockMovieFindByIdAndUpdate).toHaveBeenCalledWith('movie1', req.body, { new: true });
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({ message: 'Records updated successfully' });
+  });
+
+  /**
+   * Verifies that updateExistingMovie runs Language.bulkWrite for added/removed languages.
+   */
+  it('should run Language.bulkWrite when language changes are provided', async () => {
+    mockMovieFindByIdAndUpdate.mockResolvedValue(existingMovieDoc as any);
+    mockLanguageBulkWrite.mockResolvedValue({} as any);
+
+    const req = makeReq({
+      body: {
+        id: 'movie1',
+        language: { value: ['lang2'], added: ['lang2'], removed: ['lang1'] }
+      }
+    });
+    const res = makeRes();
+
+    await updateExistingMovie(req, res);
+
+    expect(mockLanguageBulkWrite).toHaveBeenCalledOnce();
+    expect(res.status).toHaveBeenCalledWith(200);
+  });
+
+  /**
+   * Verifies that updateExistingMovie runs Director.bulkWrite for added/removed directors.
+   */
+  it('should run Director.bulkWrite when director changes are provided', async () => {
+    mockMovieFindByIdAndUpdate.mockResolvedValue(existingMovieDoc as any);
+    mockDirectorBulkWrite.mockResolvedValue({} as any);
+
+    const req = makeReq({
+      body: {
+        id: 'movie1',
+        director: { value: ['dir2'], added: ['dir2'], removed: ['dir1'] }
+      }
+    });
+    const res = makeRes();
+
+    await updateExistingMovie(req, res);
+
+    expect(mockDirectorBulkWrite).toHaveBeenCalledOnce();
+    expect(res.status).toHaveBeenCalledWith(200);
+  });
+
+  /**
+   * Verifies that updateExistingMovie runs Genre.bulkWrite for added/removed genres.
+   */
+  it('should run Genre.bulkWrite when genre changes are provided', async () => {
+    mockMovieFindByIdAndUpdate.mockResolvedValue(existingMovieDoc as any);
+    mockGenreBulkWrite.mockResolvedValue({} as any);
+
+    const req = makeReq({
+      body: {
+        id: 'movie1',
+        genre: { value: ['genre2'], added: ['genre2'], removed: ['genre1'] }
+      }
+    });
+    const res = makeRes();
+
+    await updateExistingMovie(req, res);
+
+    expect(mockGenreBulkWrite).toHaveBeenCalledOnce();
+    expect(res.status).toHaveBeenCalledWith(200);
+  });
+
+  /**
+   * Verifies that updateExistingMovie runs Franchise.bulkWrite when franchise changes.
+   */
+  it('should run Franchise.bulkWrite when franchise changes are provided', async () => {
+    mockMovieFindByIdAndUpdate.mockResolvedValue(existingMovieDoc as any);
+    mockFranchiseBulkWrite.mockResolvedValue({} as any);
+
+    const req = makeReq({
+      body: {
+        id: 'movie1',
+        franchise: { current: 'franchise1', new: 'franchise2' }
+      }
+    });
+    const res = makeRes();
+
+    await updateExistingMovie(req, res);
+
+    expect(mockFranchiseBulkWrite).toHaveBeenCalledOnce();
+    expect(res.status).toHaveBeenCalledWith(200);
+  });
+
+  /**
+   * Verifies that updateExistingMovie returns 400 when Movie.findByIdAndUpdate throws.
+   */
+  it('should return 400 when Movie.findByIdAndUpdate throws', async () => {
+    mockMovieFindByIdAndUpdate.mockRejectedValue(new Error('Update failed') as any);
+
+    const req = makeReq({ body: { id: 'movie1', name: 'Bad Update' } });
+    const res = makeRes();
+
+    await updateExistingMovie(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.json).toHaveBeenCalledWith({ error: 'Update failed' });
+  });
+
+  /**
+   * Verifies that updateExistingMovie returns 400 when movie is not found (null result).
+   */
+  it('should return 400 when movie is not found (findByIdAndUpdate returns null)', async () => {
+    mockMovieFindByIdAndUpdate.mockResolvedValue(null as any);
+
+    const req = makeReq({ body: { id: 'nonexistent', name: 'Ghost Movie' } });
+    const res = makeRes();
+
+    await updateExistingMovie(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+  });
+
+  /**
+   * Verifies that updateExistingMovie handles all relationship changes simultaneously.
+   */
+  it('should handle all relationship changes (language, director, genre, franchise) simultaneously', async () => {
+    mockMovieFindByIdAndUpdate.mockResolvedValue(existingMovieDoc as any);
+    mockLanguageBulkWrite.mockResolvedValue({} as any);
+    mockDirectorBulkWrite.mockResolvedValue({} as any);
+    mockGenreBulkWrite.mockResolvedValue({} as any);
+    mockFranchiseBulkWrite.mockResolvedValue({} as any);
+
+    const req = makeReq({
+      body: {
+        id: 'movie1',
+        language: { value: ['lang2'], added: ['lang2'], removed: ['lang1'] },
+        director: { value: ['dir2'], added: ['dir2'], removed: ['dir1'] },
+        genre: { value: ['genre2'], added: ['genre2'], removed: ['genre1'] },
+        franchise: { current: 'franchise1', new: 'franchise2' }
+      }
+    });
+    const res = makeRes();
+
+    await updateExistingMovie(req, res);
+
+    expect(mockLanguageBulkWrite).toHaveBeenCalledOnce();
+    expect(mockDirectorBulkWrite).toHaveBeenCalledOnce();
+    expect(mockGenreBulkWrite).toHaveBeenCalledOnce();
+    expect(mockFranchiseBulkWrite).toHaveBeenCalledOnce();
+    expect(res.status).toHaveBeenCalledWith(200);
+  });
+
+  /**
+   * Verifies that updateExistingMovie handles bulkWrite errors for language gracefully.
+   */
+  it('should handle Language.bulkWrite error gracefully', async () => {
+    mockMovieFindByIdAndUpdate.mockResolvedValue(existingMovieDoc as any);
+    mockLanguageBulkWrite.mockRejectedValue(new Error('BulkWrite failed') as any);
+
+    const req = makeReq({
+      body: {
+        id: 'movie1',
+        language: { value: ['lang2'], added: ['lang2'], removed: ['lang1'] }
+      }
+    });
+    const res = makeRes();
+
+    await updateExistingMovie(req, res);
+
+    // Should still return 200 since bulkWrite errors are caught in .catch()
+    expect(res.status).toHaveBeenCalledWith(200);
+  });
+});
+
+// ─── addNewMovie - additional coverage for then() callbacks ──────────────────────
+
+describe('addNewMovie - bulkWrite then/catch callbacks', () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  const baseMovieDocWithAll = {
+    _id: 'newMovieId',
+    director: ['dir1'],
+    language: ['lang1'],
+    genre: ['genre1'],
+    franchise: 'franchise1',
+    category: ['cat1', 'cat2']
+  };
+
+  /**
+   * Verifies that addNewMovie handles Franchise.bulkWrite error in the catch callback.
+   */
+  it('should handle Franchise.bulkWrite error gracefully (catch callback)', async () => {
+    mockMovieCreate.mockResolvedValue(baseMovieDocWithAll as any);
+    mockDirectorBulkWrite.mockResolvedValue({} as any);
+    mockLanguageBulkWrite.mockResolvedValue({} as any);
+    mockGenreBulkWrite.mockResolvedValue({} as any);
+    mockFranchiseBulkWrite.mockRejectedValue(new Error('Franchise bulkWrite error') as any);
+    mockCategoryBulkWrite.mockResolvedValue({} as any);
+
+    const req = makeReq({
+      body: {
+        name: 'Test',
+        language: ['lang1'],
+        director: ['dir1'],
+        imdb: 8.0,
+        year: 2021,
+        url: 'http://test.com',
+        genre: ['genre1'],
+        franchise: 'franchise1',
+        category: ['cat1']
+      }
+    });
+    const res = makeRes();
+
+    await addNewMovie(req, res);
+
+    expect(mockFranchiseBulkWrite).toHaveBeenCalledOnce();
+    expect(res.status).toHaveBeenCalledWith(200);
+  });
+
+  /**
+   * Verifies that addNewMovie handles Category.bulkWrite error in the catch callback.
+   */
+  it('should handle Category.bulkWrite error gracefully (catch callback)', async () => {
+    mockMovieCreate.mockResolvedValue(baseMovieDocWithAll as any);
+    mockDirectorBulkWrite.mockResolvedValue({} as any);
+    mockLanguageBulkWrite.mockResolvedValue({} as any);
+    mockGenreBulkWrite.mockResolvedValue({} as any);
+    mockFranchiseBulkWrite.mockResolvedValue({} as any);
+    mockCategoryBulkWrite.mockRejectedValue(new Error('Category bulkWrite error') as any);
+
+    const req = makeReq({
+      body: {
+        name: 'Test',
+        language: ['lang1'],
+        director: ['dir1'],
+        imdb: 8.0,
+        year: 2021,
+        url: 'http://test.com',
+        genre: ['genre1'],
+        franchise: 'franchise1',
+        category: ['cat1']
+      }
+    });
+    const res = makeRes();
+
+    await addNewMovie(req, res);
+
+    expect(mockCategoryBulkWrite).toHaveBeenCalledOnce();
+    expect(res.status).toHaveBeenCalledWith(200);
+  });
+
+  /**
+   * Verifies that addNewMovie handles Director.bulkWrite error in the catch callback.
+   */
+  it('should handle Director.bulkWrite error gracefully (catch callback)', async () => {
+    mockMovieCreate.mockResolvedValue({
+      _id: 'newMovieId',
+      director: ['dir1'],
+      language: ['lang1'],
+      genre: ['genre1'],
+      franchise: null,
+      category: null
+    } as any);
+    mockDirectorBulkWrite.mockRejectedValue(new Error('Director bulkWrite error') as any);
+    mockLanguageBulkWrite.mockResolvedValue({} as any);
+    mockGenreBulkWrite.mockResolvedValue({} as any);
+
+    const req = makeReq({
+      body: {
+        name: 'Test',
+        language: ['lang1'],
+        director: ['dir1'],
+        imdb: 8.0,
+        year: 2021,
+        url: 'http://test.com',
+        genre: ['genre1']
+      }
+    });
+    const res = makeRes();
+
+    await addNewMovie(req, res);
+
+    expect(mockDirectorBulkWrite).toHaveBeenCalledOnce();
+    expect(res.status).toHaveBeenCalledWith(200);
+  });
+
+  /**
+   * Verifies that addNewMovie handles Language.bulkWrite error in the catch callback.
+   */
+  it('should handle Language.bulkWrite error gracefully (catch callback)', async () => {
+    mockMovieCreate.mockResolvedValue({
+      _id: 'newMovieId',
+      director: ['dir1'],
+      language: ['lang1'],
+      genre: ['genre1'],
+      franchise: null,
+      category: null
+    } as any);
+    mockDirectorBulkWrite.mockResolvedValue({} as any);
+    mockLanguageBulkWrite.mockRejectedValue(new Error('Language bulkWrite error') as any);
+    mockGenreBulkWrite.mockResolvedValue({} as any);
+
+    const req = makeReq({
+      body: {
+        name: 'Test',
+        language: ['lang1'],
+        director: ['dir1'],
+        imdb: 8.0,
+        year: 2021,
+        url: 'http://test.com',
+        genre: ['genre1']
+      }
+    });
+    const res = makeRes();
+
+    await addNewMovie(req, res);
+
+    expect(mockLanguageBulkWrite).toHaveBeenCalledOnce();
+    expect(res.status).toHaveBeenCalledWith(200);
+  });
+
+  /**
+   * Verifies that addNewMovie handles Genre.bulkWrite error in the catch callback (line 188).
+   */
+  it('should handle Genre.bulkWrite error gracefully (catch callback)', async () => {
+    mockMovieCreate.mockResolvedValue({
+      _id: 'newMovieId',
+      director: ['dir1'],
+      language: ['lang1'],
+      genre: ['genre1'],
+      franchise: null,
+      category: null
+    } as any);
+    mockDirectorBulkWrite.mockResolvedValue({} as any);
+    mockLanguageBulkWrite.mockResolvedValue({} as any);
+    mockGenreBulkWrite.mockRejectedValue(new Error('Genre bulkWrite error') as any);
+
+    const req = makeReq({
+      body: {
+        name: 'Test',
+        language: ['lang1'],
+        director: ['dir1'],
+        imdb: 8.0,
+        year: 2021,
+        url: 'http://test.com',
+        genre: ['genre1']
+      }
+    });
+    const res = makeRes();
+
+    await addNewMovie(req, res);
+
+    expect(mockGenreBulkWrite).toHaveBeenCalledOnce();
+    expect(res.status).toHaveBeenCalledWith(200);
+  });
+});
+
+// ─── updateExistingMovie - bulkWrite error callbacks ──────────────────────
+
+describe('updateExistingMovie - bulkWrite error callbacks', () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  const existingMovieDoc2 = { _id: 'movie1', name: 'Updated Movie' };
+
+  /**
+   * Verifies that updateExistingMovie handles Director.bulkWrite error gracefully (line 319).
+   */
+  it('should handle Director.bulkWrite error gracefully in updateExistingMovie', async () => {
+    mockMovieFindByIdAndUpdate.mockResolvedValue(existingMovieDoc2 as any);
+    mockDirectorBulkWrite.mockRejectedValue(new Error('Director bulkWrite error') as any);
+
+    const req = makeReq({
+      body: {
+        id: 'movie1',
+        director: { value: ['dir2'], added: ['dir2'], removed: ['dir1'] }
+      }
+    });
+    const res = makeRes();
+
+    await updateExistingMovie(req, res);
+
+    expect(mockDirectorBulkWrite).toHaveBeenCalledOnce();
+    expect(res.status).toHaveBeenCalledWith(200);
+  });
+
+  /**
+   * Verifies that updateExistingMovie handles Genre.bulkWrite error gracefully (line 355).
+   */
+  it('should handle Genre.bulkWrite error gracefully in updateExistingMovie', async () => {
+    mockMovieFindByIdAndUpdate.mockResolvedValue(existingMovieDoc2 as any);
+    mockGenreBulkWrite.mockRejectedValue(new Error('Genre bulkWrite error') as any);
+
+    const req = makeReq({
+      body: {
+        id: 'movie1',
+        genre: { value: ['genre2'], added: ['genre2'], removed: ['genre1'] }
+      }
+    });
+    const res = makeRes();
+
+    await updateExistingMovie(req, res);
+
+    expect(mockGenreBulkWrite).toHaveBeenCalledOnce();
+    expect(res.status).toHaveBeenCalledWith(200);
+  });
+
+  /**
+   * Verifies that updateExistingMovie handles Franchise.bulkWrite error gracefully (line 388).
+   */
+  it('should handle Franchise.bulkWrite error gracefully in updateExistingMovie', async () => {
+    mockMovieFindByIdAndUpdate.mockResolvedValue(existingMovieDoc2 as any);
+    mockFranchiseBulkWrite.mockRejectedValue(new Error('Franchise bulkWrite error') as any);
+
+    const req = makeReq({
+      body: {
+        id: 'movie1',
+        franchise: { current: 'franchise1', new: 'franchise2' }
+      }
+    });
+    const res = makeRes();
+
+    await updateExistingMovie(req, res);
+
+    expect(mockFranchiseBulkWrite).toHaveBeenCalledOnce();
+    expect(res.status).toHaveBeenCalledWith(200);
   });
 });
